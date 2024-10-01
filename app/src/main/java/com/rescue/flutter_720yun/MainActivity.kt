@@ -5,9 +5,12 @@ import android.graphics.drawable.ColorDrawable
 import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -19,6 +22,7 @@ import com.rescue.flutter_720yun.util.UserManager
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
+        drawerLayout = binding.drawerLayout
 
         val navView: BottomNavigationView = binding.navView
 
@@ -61,6 +66,13 @@ class MainActivity : AppCompatActivity() {
         UserManager.getUserInfo()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            android.R.id.home -> drawerLayout.openDrawer(GravityCompat.START)
+        }
+        return true
+    }
 }
 
 
