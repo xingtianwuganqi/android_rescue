@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.text.Spannable
 import android.text.SpannableString
@@ -31,6 +33,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.compose.ui.text.toLowerCase
 import com.google.android.material.button.MaterialButton
+import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
 import java.util.Locale
@@ -258,6 +261,18 @@ class LoginActivity : BaseActivity() {
                     val msg = resources.getString(R.string.login_success)
                     Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
                     viewModel.cleanLoginStatus()
+                    // 延时5秒执行
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        // 退出登录
+                        ActivityController.activities.forEach {
+                            when (it) {
+                                is LoginActivity -> {
+                                    it.finish()
+                                }
+                            }
+                        }
+                    }, 1500)
+
                 }else {
                     val msg = response.message ?: resources.getString(R.string.login_fail)
                     Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()

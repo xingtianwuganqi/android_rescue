@@ -3,21 +3,21 @@ package com.rescue.flutter_720yun
 import android.app.Activity
 
 object ActivityController {
-    val list: MutableList<Activity> = mutableListOf()
+    val activities: MutableList<Activity> = mutableListOf()
     fun addActivity(activity: Activity) {
-        list.add(activity)
+        activities.add(activity)
     }
 
     fun removeActivity(activity: Activity) {
-        list.remove(activity)
+        activities.remove(activity)
     }
 
     fun finishAll() {
-        for (activity in list) {
+        for (activity in activities) {
             if (!activity.isFinishing) {
                 activity.finish()
             }
         }
-        list.clear()
+        activities.clear()
     }
 }

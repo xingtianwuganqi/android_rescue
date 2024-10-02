@@ -9,6 +9,7 @@ open class BaseActivity : AppCompatActivity() {
     protected val baseBinding get() = _binding!!
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ActivityController.addActivity(this)
         _binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(baseBinding.root)
     }
