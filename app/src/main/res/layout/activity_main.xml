@@ -38,7 +38,8 @@
                     android:src="@drawable/icon_draw_search"
                     android:layout_gravity="end"
                     android:background="#00000000"
-                    android:layout_marginEnd="20dp"/>
+                    android:layout_marginEnd="20dp"
+                    android:contentDescription="@null" />
 
             </androidx.appcompat.widget.Toolbar>
 

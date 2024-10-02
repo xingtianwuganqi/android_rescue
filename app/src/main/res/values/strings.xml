@@ -27,7 +27,7 @@
     <string name="login_protocol">请阅读并同意</string>
     <string name="login_success">登录成功</string>
     <string name="login_fail">登录失败</string>
-    <string name="login_check_code">校验验证码</string>
+    <string name="login_check_phone">校验手机号</string>
     <string name="login_get_code">获取验证码</string>
     <string name="register_input_password">请输入6位或6位以上密码</string>
     <string name="register_input_code">请输入验证码</string>

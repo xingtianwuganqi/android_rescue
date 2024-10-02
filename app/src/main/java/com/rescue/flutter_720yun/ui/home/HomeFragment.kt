@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rescue.flutter_720yun.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.activity.LoginActivity
 import com.rescue.flutter_720yun.databinding.FragmentHomeBinding
 import com.rescue.flutter_720yun.models.HomeListModel
@@ -91,7 +92,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(model: HomeListModel?) {
-
+        val intent = Intent(activity, HomeDetailActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onImgClick(model: HomeListModel?, position: Int) {
@@ -100,6 +102,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     override fun likeActionClick(model: HomeListModel?) {
         if (UserManager.isLogin) {
+            // 点赞
 
         }else{
             val intent = Intent(activity, LoginActivity::class.java)
@@ -109,6 +112,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     override fun collectionClick(model: HomeListModel?) {
         if (UserManager.isLogin) {
+            // 收藏
 
         }else{
             val intent = Intent(activity, LoginActivity::class.java)

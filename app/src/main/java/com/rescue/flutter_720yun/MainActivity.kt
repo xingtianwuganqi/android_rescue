@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityController.addActivity(this)
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -72,6 +73,11 @@ class MainActivity : AppCompatActivity() {
             android.R.id.home -> drawerLayout.openDrawer(GravityCompat.START)
         }
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ActivityController.removeActivity(this)
     }
 }
 

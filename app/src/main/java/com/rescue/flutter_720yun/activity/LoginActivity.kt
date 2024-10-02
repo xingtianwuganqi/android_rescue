@@ -28,14 +28,16 @@ import android.text.style.AbsoluteSizeSpan
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import androidx.compose.ui.text.toLowerCase
 import com.google.android.material.button.MaterialButton
+import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
 import java.util.Locale
 import kotlin.math.log
 
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
     private var _binding: ActivityLoginBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: LoginViewModel
@@ -43,21 +45,40 @@ class LoginActivity : AppCompatActivity() {
     private var phoneNum: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
+        setContentLayout(R.layout.activity_login)
+        _binding = ActivityLoginBinding.bind(baseBinding.contentFrame.getChildAt(0))
+
         viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         // 获取页面类型
         type = intent.getStringExtra("type") ?: "login"
 
+        when(type) {
+            "login" -> {
+                val title = resources.getText(R.string.login_action).toString()
+                setupToolbar(title)
+            }
+            "register" -> {
+                val title = resources.getText(R.string.register_action).toString()
+                setupToolbar(title)
+            }
+
+            "findCheckCode" -> {
+                val title = resources.getText(R.string.login_check_phone).toString()
+                setupToolbar(title)
+            }
+            "registerCheckCode" -> {
+                val title = resources.getText(R.string.login_check_phone).toString()
+                setupToolbar(title)
+            }
+            "find" -> {
+                val title = resources.getText(R.string.login_find_password).toString()
+                setupToolbar(title)
+            }
+        }
+
         // 找回密码和注册才有phoneNum
         phoneNum = intent.getStringExtra("phoneNum")
-
-
-        // 返回按钮
-        val backBtn = binding.backButton
-        backBtn?.setOnClickListener {
-            finish()
-        }
 
         // 去注册
         val registerBtn = binding.registerButton
@@ -349,7 +370,7 @@ class LoginActivity : AppCompatActivity() {
 
                 passwordTextField.hint = resources.getText(R.string.register_input_code)
                 passwordTextField.inputType = InputType.TYPE_CLASS_TEXT
-                loginBtn.text = resources.getText(R.string.login_check_code)
+                loginBtn.text = resources.getText(R.string.login_check_phone)
 
                 getCodeBtn?.visibility = View.VISIBLE
                 showPassword?.visibility = View.GONE
