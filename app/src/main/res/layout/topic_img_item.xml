@@ -9,6 +9,6 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:background="@drawable/rounded_background"
-        />
+        android:contentDescription="@null" />
 
 </LinearLayout>

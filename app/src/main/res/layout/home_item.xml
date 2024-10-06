@@ -45,7 +45,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/nick_name"
         app:layout_constraintBottom_toBottomOf="@id/nick_name"
-        android:layout_marginEnd="10dp"/>
+        android:layout_marginEnd="10dp"
+        android:contentDescription="@null" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tag_info"
@@ -56,10 +57,10 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="5dp"
         android:layout_marginStart="65dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
         />
 
-    <TextView
+    <com.webtoonscorp.android.readmore.ReadMoreTextView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,6 +73,11 @@
         android:layout_marginEnd="15dp"
         android:textColor="@color/color_content"
         android:textSize="@dimen/content_font"
+        app:readMoreMaxLines="7"
+        app:readMoreOverflow="ellipsis"
+        app:readMoreText="@string/read_all"
+        app:readMoreTextColor="@color/color_system"
+        app:readMoreToggleArea="none"
         />
 
     <androidx.cardview.widget.CardView

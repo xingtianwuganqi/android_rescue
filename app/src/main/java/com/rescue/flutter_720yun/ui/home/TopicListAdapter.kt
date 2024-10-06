@@ -2,6 +2,7 @@ package com.rescue.flutter_720yun.ui.home
 
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.models.HomeListModel
@@ -69,13 +71,13 @@ class HomeListAdapter(private val context: Context, private val listener: OnItem
 class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val name: TextView = view.findViewById<TextView>(R.id.nick_name)
     val imgView: ImageView = view.findViewById<ImageView>(R.id.head_img)
-    val content: TextView = view.findViewById<TextView>(R.id.content)
+    val content: TextView = view.findViewById(R.id.content)
     val timeText: TextView = view.findViewById(R.id.time_text)
     val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
     val imgRecyclerView: RecyclerView = view.findViewById(R.id.img_recyclerview)
-    val likeBtn: Button = view.findViewById(R.id.like_button)
-    val collection: Button = view.findViewById(R.id.collect_button)
-    val commentBtn: Button = view.findViewById(R.id.comment_button)
+    val likeBtn: MaterialButton = view.findViewById(R.id.like_button)
+    val collection: MaterialButton = view.findViewById(R.id.collect_button)
+    val commentBtn: MaterialButton = view.findViewById(R.id.comment_button)
 
     fun bind(context: Context, item: HomeListModel?, listener: OnItemClickListener) {
         name.text = item?.userInfo?.username
@@ -88,8 +90,12 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 .into(imgView)
         }
         imgView.scaleType = ImageView.ScaleType.CENTER_CROP
-        content.text = item?.content
         timeText.text = item?.create_time?.timeToStr()
+
+        val readMore = context.resources.getString(R.string.read_all)
+        val readLess = context.resources.getString(R.string.read_all)
+        val color = context.resources.getColor(R.color.color_system)
+        content.text = item?.content
 
         if (item?.tagInfos?.isNotEmpty() == true) {
             tagInfo.visibility = View.VISIBLE
@@ -121,16 +127,28 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         if (item?.liked == true) {
-            likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_zan_se, 0, 0, 0)
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_se)
+            // 设置新图标
+            likeBtn.icon = newIcon
         }else{
-            likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_zan_un, 0, 0, 0)
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_un)
+            // 设置新图标
+            likeBtn.icon = newIcon
         }
 
 
         if (item?.collectioned == true) {
-            likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_collection_se, 0, 0, 0)
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_se)
+            // 设置新图标
+            collection.icon = newIcon
         }else{
-            likeBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_collection_un, 0, 0, 0)
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_un)
+            // 设置新图标
+            collection.icon = newIcon
         }
 
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.ui.home.HomePagingSource
@@ -21,6 +22,10 @@ class HomeViewModel : ViewModel() {
         items = Pager(PagingConfig(pageSize = 10)) {
             HomePagingSource(appService)
         }.flow.cachedIn(viewModelScope)
+    }
+
+    fun likeActionNetworking(model: HomeListModel) {
+        var like: Int
     }
 //    private val _models = MutableLiveData<List<HomeListModel>>()
 //    val models: LiveData<List<HomeListModel>> = _models

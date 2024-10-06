@@ -14,25 +14,23 @@ import com.rescue.flutter_720yun.util.toImgUrl
 class TopicImgAdapter(
     private val imgStr: List<String>,
     private val listener: OnChildItemClickListener
-    ): RecyclerView.Adapter<TopicImgAdapter.ViewHolder>() {
+    ): RecyclerView.Adapter<TopicImageViewHolder>() {
     interface OnChildItemClickListener  {
         fun onChildItemClick(position: Int)
     }
-    inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val imgView: ImageView = view.findViewById(R.id.topic_img)
-    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopicImageViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.topic_img_item, parent, false)
-        return ViewHolder(view)
+        return TopicImageViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return imgStr.size
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TopicImageViewHolder, position: Int) {
         val imgUrl = imgStr[position]
         Glide.with(BaseApplication.context)
             .load(imgUrl.toImgUrl())
@@ -54,4 +52,9 @@ class TopicImgAdapter(
             listener.onChildItemClick(position)
         }
     }
+}
+
+
+class TopicImageViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    val imgView = view.findViewById<ImageView>(R.id.topic_img)
 }

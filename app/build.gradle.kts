@@ -68,18 +68,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.roundedimageview)
     implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.viewpager2.viewpager2) // ViewPager2
-//    implementation(libs.kotlinx.coroutines.core)
-//    implementation(libs.kotlinx.coroutines.android)
-//    implementation(libs.androidx.swiperefreshlayout) // SwipeRefreshLayout
-
-
+    implementation(libs.androidx.viewpager2.viewpager2)
+    implementation("com.webtoonscorp.android:readmore-view:1.3.3")
 }
 
-//configurations.all {
-//    resolutionStrategy.eachDependency {
-//        if (requested.group == "androidx.compose.ui") {
-//            useVersion("1.7.0") // 统一使用 1.7.1 版本
-//        }
-//    }
-//}

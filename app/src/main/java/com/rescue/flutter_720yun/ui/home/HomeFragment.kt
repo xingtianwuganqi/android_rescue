@@ -93,6 +93,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     override fun onItemClick(model: HomeListModel?) {
         val intent = Intent(activity, HomeDetailActivity::class.java)
+        intent.putExtra("topic_id", model?.topic_id)
         startActivity(intent)
     }
 

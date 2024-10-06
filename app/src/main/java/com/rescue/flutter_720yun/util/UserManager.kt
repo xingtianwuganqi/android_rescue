@@ -7,21 +7,23 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.models.UserInfo
 
 object UserManager {
-    private var userInfo: UserInfo? = null
-    val isLogin: Boolean get() = userInfo != null
+    private var _userInfo: UserInfo? = null
+    val isLogin: Boolean get() = _userInfo != null
+    val token: String? get() = _userInfo?.token
+    val userId: Int?  get() = _userInfo?.id
     fun setUserInfo(info: UserInfo) {
         val sharedPreferences = BaseApplication.context.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("userinfo", Gson().toJson(info))
         editor.apply()
-        userInfo = info
+        _userInfo = info
     }
 
     fun getUserInfo() {
         val sharedPreferences =
             BaseApplication.context.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         val userInfoStr = sharedPreferences.getString("userinfo", "")
-        userInfo = if ((userInfoStr?.length ?: 0) > 0) {
+        _userInfo = if ((userInfoStr?.length ?: 0) > 0) {
             val info = Gson().fromJson(userInfoStr, UserInfo::class.java)
             info
         }else{

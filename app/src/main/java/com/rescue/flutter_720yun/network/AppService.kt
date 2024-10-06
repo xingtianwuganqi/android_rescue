@@ -7,6 +7,7 @@ import com.rescue.flutter_720yun.models.UserInfo
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Field
+import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -57,4 +58,11 @@ interface AppService {
                  @Field("confirm_password") confirm: String,
     ): Call<BaseResponse<UserInfo>>
 
+    // 点赞
+//    @FormUrlEncoded
+//    @POST("api/v1/")
+    // 详情
+    @FormUrlEncoded
+    @POST("api/v1/topicdetail/")
+    fun topicDetail(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<HomeListModel>>
 }

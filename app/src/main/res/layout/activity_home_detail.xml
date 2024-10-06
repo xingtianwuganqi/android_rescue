@@ -3,14 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp">
+    >
 
-    <TextView
-        android:id="@+id/secondActivityTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="这是第二个 Activity"
-        android:textSize="18sp" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/images_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+    </LinearLayout>
 
 </LinearLayout>

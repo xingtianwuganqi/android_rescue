@@ -25,7 +25,8 @@ data class UserInfo(
     val phone_number: String?,
     val email: String?,
     val create_time: String?,
-    val wx_id: String?
+    val wx_id: String?,
+    val token: String?
 )
 
 data class TagInfoModel(
