@@ -16,6 +16,7 @@ import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.ui.home.TagInfoAdapter
 import com.rescue.flutter_720yun.util.dpToPx
 import com.rescue.flutter_720yun.util.getImages
+import com.rescue.flutter_720yun.util.loadScaleImage
 import com.rescue.flutter_720yun.util.toImgUrl
 
 class HomeDetailAdapter(
@@ -44,7 +45,7 @@ class HomeDetailAdapter(
                 HomeDetailContentViewHolder(view)
             }
             IMAGE -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.topic_img_item,
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.detail_image_item,
                     parent,
                     false)
                 HomeDetailImageViewHolder(view)
@@ -105,10 +106,11 @@ class HomeDetailImageViewHolder(view: View): RecyclerView.ViewHolder(view) {
     fun bind(detail: HomeDetailModel) {
         detail.imageStr?.let {
             val imgStr = it.toImgUrl()
-            Glide.with(BaseApplication.context)
-                .load(imgStr)
-                .placeholder(R.drawable.icon_eee)
-                .into(imageView)
+//            Glide.with(BaseApplication.context)
+//                .load(imgStr)
+//                .placeholder(R.drawable.icon_eee)
+//                .into(imageView)
+            loadScaleImage(BaseApplication.context, imgStr, imageView)
         }
         val layoutParams = imageView.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.setMargins(0, 0, 0, 10.dpToPx())

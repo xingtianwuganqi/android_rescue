@@ -1,7 +1,17 @@
 package com.rescue.flutter_720yun.util
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.util.DisplayMetrics
+import android.widget.ImageView
+import androidx.compose.ui.unit.dp
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.models.HomeListModel
 import java.security.MessageDigest
 import java.util.Locale
@@ -57,4 +67,44 @@ fun <T> convertAnyToList(anyObject: Any, clazz: Class<T>): List<T>? {
         e.printStackTrace()
         null // 转换失败返回null
     }
+}
+
+/**
+ * 加载图片，支持高度伸缩
+ * @param context 上下文
+ * @param url 图片地址
+ * @param imageView 图片组件
+ */
+fun loadScaleImage(context: Context, url: String, imageView: ImageView) {
+    Glide.with(context)
+        .asBitmap()
+        .load(url)
+        .error(R.drawable.icon_eee)
+        .into(object : CustomTarget<Bitmap>() {
+            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                val imageWidth = resource.width
+                val imageHeight = resource.height
+
+                // 计算 ImageView 的高度
+                val imageViewWidth = getScreenWidth(BaseApplication.context) - 30.dpToPx()
+                val imageViewHeight = (imageViewWidth.toFloat() / imageWidth * imageHeight).toInt()
+
+                // 设置 ImageView 的高度
+                val params = imageView.layoutParams
+                params.height = imageViewHeight
+                imageView.layoutParams = params
+
+                // 将图片显示在 ImageView 中
+                imageView.setImageBitmap(resource)
+            }
+
+            override fun onLoadCleared(placeholder: Drawable?) {
+                // 可选的清除操作
+            }
+        })
+}
+
+
+fun getScreenWidth(context: Context): Int {
+    return context.resources.displayMetrics.widthPixels
 }
