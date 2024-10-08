@@ -24,6 +24,7 @@ import com.rescue.flutter_720yun.ui.home.OnItemClickListener
 import com.rescue.flutter_720yun.ui.home.TagInfoAdapter
 import com.rescue.flutter_720yun.ui.home.TopicImgAdapter
 import com.rescue.flutter_720yun.util.getImages
+import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toImgUrl
 import com.rescue.flutter_720yun.viewmodels.HomeDetailViewModel
 import kotlinx.coroutines.launch
@@ -67,6 +68,29 @@ class HomeDetailActivity : BaseActivity() {
         }
         val adapter = HomeDetailAdapter(detailList)
         imgRecyclerView.adapter = adapter
+    }
+
+    private fun addClickAction() {
+        val likeBtn = binding.likeButton
+        likeBtn.setOnClickListener{
+            lazyLogin {
+
+            }
+        }
+
+        val collectionBtn = binding.collectButton
+        collectionBtn.setOnClickListener {
+            lazyLogin {
+
+            }
+        }
+
+        val commentBtn = binding.commentButton
+        commentBtn.setOnClickListener {
+            lazyLogin {
+
+            }
+        }
     }
 
     override fun onDestroy() {

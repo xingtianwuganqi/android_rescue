@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.util
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
@@ -12,6 +13,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.activity.LoginActivity
 import com.rescue.flutter_720yun.models.HomeListModel
 import java.security.MessageDigest
 import java.util.Locale
@@ -86,7 +88,7 @@ fun loadScaleImage(context: Context, url: String, imageView: ImageView) {
                 val imageHeight = resource.height
 
                 // 计算 ImageView 的高度
-                val imageViewWidth = getScreenWidth(BaseApplication.context) - 30.dpToPx()
+                val imageViewWidth = DisplayUtil.getScreenWidth(BaseApplication.context) - 30.dpToPx()
                 val imageViewHeight = (imageViewWidth.toFloat() / imageWidth * imageHeight).toInt()
 
                 // 设置 ImageView 的高度
@@ -104,7 +106,11 @@ fun loadScaleImage(context: Context, url: String, imageView: ImageView) {
         })
 }
 
-
-fun getScreenWidth(context: Context): Int {
-    return context.resources.displayMetrics.widthPixels
+fun lazyLogin(callback: () -> Unit) {
+    if (UserManager.isLogin) {
+        callback()
+    }else{
+        val intent = Intent(BaseApplication.context, LoginActivity::class.java)
+        BaseApplication.context.startActivity(intent)
+    }
 }

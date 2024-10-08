@@ -1,5 +1,8 @@
 package com.rescue.flutter_720yun.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 data class BaseResponse<T> (
     val code: Int,
     var data: T,
@@ -18,6 +21,7 @@ data class HomeResponse (
     val message: String?
 )
 
+@Parcelize
 data class UserInfo(
     val id: Int?,
     val avator: String?,
@@ -27,14 +31,16 @@ data class UserInfo(
     val create_time: String?,
     val wx_id: String?,
     val token: String?
-)
+): Parcelable
 
+@Parcelize
 data class TagInfoModel(
     val id: Int?,
     val tag_name: String?,
     val tag_type: Int?
-)
+): Parcelable
 
+@Parcelize
 data class HomeListModel (
     val id: Int?,
     val content: String?,
@@ -58,4 +64,4 @@ data class HomeListModel (
     val commNum: Int?,
     val views_num: Int?,
     val collection_num: Int?,
-)
+): Parcelable
