@@ -8,7 +8,9 @@ import androidx.paging.cachedIn
 import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
+import com.rescue.flutter_720yun.network.awaitResponse
 import com.rescue.flutter_720yun.ui.home.HomePagingSource
+import com.rescue.flutter_720yun.util.paramDic
 
 class HomeViewModel : ViewModel() {
 
@@ -24,8 +26,17 @@ class HomeViewModel : ViewModel() {
         }.flow.cachedIn(viewModelScope)
     }
 
-    fun likeActionNetworking(model: HomeListModel) {
-        var like: Int
+    suspend fun likeActionNetworking(model: HomeListModel) {
+        var like_mark = if (model.liked == true) 1 else 0
+        val dic = paramDic
+        dic["like_mark"] = like_mark
+        val response = appService.topicLikeAction(dic).awaitResponse()
+        if (response.code == 200) {
+            model.liked = !(model.liked ?: false)
+        }else{
+
+        }
+
     }
 //    private val _models = MutableLiveData<List<HomeListModel>>()
 //    val models: LiveData<List<HomeListModel>> = _models

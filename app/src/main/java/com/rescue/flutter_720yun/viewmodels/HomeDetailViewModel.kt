@@ -8,6 +8,7 @@ import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResponse
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.paramDic
 
 class HomeDetailViewModel: ViewModel() {
     private val appService = ServiceCreator.create<AppService>()
@@ -28,4 +29,21 @@ class HomeDetailViewModel: ViewModel() {
             _loadFail.value = true
         }
     }
+
+    suspend fun likeActionNetworking(model: HomeListModel) {
+        var like_mark = if (model.liked == true) 1 else 0
+        val dic = paramDic
+        dic["like_mark"] = like_mark
+        val response = appService.topicLikeAction(dic).awaitResponse()
+        if (response.code == 200) {
+            model.liked = !(model.liked ?: false)
+            _homeData.value = model
+        }else{
+
+        }
+    }
+
+//    fun collectionActionNetworking(model: HomeListModel) {
+//        var
+//    }
 }

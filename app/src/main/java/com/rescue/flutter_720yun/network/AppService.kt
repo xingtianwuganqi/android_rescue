@@ -65,4 +65,9 @@ interface AppService {
     @FormUrlEncoded
     @POST("api/v1/topicdetail/")
     fun topicDetail(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<HomeListModel>>
+
+
+    @FormUrlEncoded
+    @POST("api/v1/likeaction/")
+    fun topicLikeAction(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

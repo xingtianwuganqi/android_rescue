@@ -51,6 +51,7 @@ class HomeDetailActivity : BaseActivity() {
         viewModel.homeData.observe(this) {
             uploadViews(it)
         }
+        addClickAction()
     }
 
     private fun uploadViews(homeData: HomeListModel?) {
@@ -73,21 +74,25 @@ class HomeDetailActivity : BaseActivity() {
     private fun addClickAction() {
         val likeBtn = binding.likeButton
         likeBtn.setOnClickListener{
-            lazyLogin {
-
+            lazyLogin(this) {
+                lifecycleScope.launch {
+                    viewModel.homeData.value?.let {
+                        viewModel.likeActionNetworking(it)
+                    }
+                }
             }
         }
 
         val collectionBtn = binding.collectButton
         collectionBtn.setOnClickListener {
-            lazyLogin {
+            lazyLogin(this) {
 
             }
         }
 
         val commentBtn = binding.commentButton
         commentBtn.setOnClickListener {
-            lazyLogin {
+            lazyLogin(this) {
 
             }
         }
@@ -97,8 +102,4 @@ class HomeDetailActivity : BaseActivity() {
         super.onDestroy()
         _binding = null
     }
-
-//    override fun onImgClick(model: HomeListModel?, position: Int) {
-//
-//    }
 }
