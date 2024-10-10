@@ -44,3 +44,9 @@ class DisplayUtil {
         }
     }
 }
+
+
+enum class RefreshState {
+    REFRESH,
+    MORE
+}

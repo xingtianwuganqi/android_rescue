@@ -40,32 +40,32 @@ interface OnItemClickListener {
     fun commentClick(model: HomeListModel?)
 }
 
-class HomeListAdapter(private val context: Context, private val listener: OnItemClickListener): PagingDataAdapter<HomeListModel, HomeListViewHolder>(
-    DiffCallback
-) {
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeListViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.home_item, parent, false)
-        return HomeListViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.bind(context, item, listener)
-    }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<HomeListModel>() {
-        override fun areItemsTheSame(oldItem: HomeListModel, newItem: HomeListModel): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: HomeListModel, newItem: HomeListModel): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-}
+//class HomeListAdapter(private val context: Context, private val listener: OnItemClickListener): PagingDataAdapter<HomeListModel, HomeListViewHolder>(
+//    DiffCallback
+//) {
+//
+//
+//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeListViewHolder {
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.home_item, parent, false)
+//        return HomeListViewHolder(view)
+//    }
+//
+//    override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
+//        val item = getItem(position)
+//        holder.bind(context, item, listener)
+//    }
+//
+//    companion object DiffCallback : DiffUtil.ItemCallback<HomeListModel>() {
+//        override fun areItemsTheSame(oldItem: HomeListModel, newItem: HomeListModel): Boolean {
+//            return oldItem.id == newItem.id
+//        }
+//
+//        override fun areContentsTheSame(oldItem: HomeListModel, newItem: HomeListModel): Boolean {
+//            return oldItem == newItem
+//        }
+//    }
+//
+//}
 
 
 class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {

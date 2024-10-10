@@ -44,4 +44,5 @@
     <string name="collection_action">收藏</string>
     <string name="comment_action">收藏</string>
     <string name="click_get_contact">点击获取联系方式</string>
+    <string name="no_more_data">已经到底啦</string>
 </resources>

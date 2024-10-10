@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.activity.LoginActivity
+import com.rescue.flutter_720yun.adapter.HomeListAdapter
 import com.rescue.flutter_720yun.databinding.FragmentHomeBinding
 import com.rescue.flutter_720yun.models.HomeListModel
+import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.viewmodels.HomeViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -27,12 +29,14 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     private val binding get() = _binding!!
     private lateinit var homeAdapter: HomeListAdapter
+    private lateinit var adapter: HomeListAdapter
+    private lateinit var homeViewModel: HomeViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
+        homeViewModel =
             ViewModelProvider(this)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -42,44 +46,73 @@ class HomeFragment : Fragment(), OnItemClickListener {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         context?.let {
-            homeAdapter = HomeListAdapter(it, this)
-            recyclerView.adapter = homeAdapter.withLoadStateFooter(
-                footer = HomeLoadStateAdapter()
-            )
-
-
+            adapter = HomeListAdapter(mutableListOf(), it, this)
+            recyclerView.adapter = adapter
         }
 
 
         val swipeRefreshLayout = binding.swipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener {
-            homeAdapter.refresh()
+            refreshData()
         }
 
-        lifecycleScope.launch {
-            homeViewModel.items.collectLatest {
-                homeAdapter.submitData(it)
-                swipeRefreshLayout.isRefreshing = false
-            }
-        }
+        recyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
 
-        homeAdapter.addLoadStateListener { loadState ->
-            when(loadState.refresh) {
-                is LoadState.Loading -> {
-                    swipeRefreshLayout.isRefreshing = true
-                }
-
-                is LoadState.NotLoading ->{
-                    swipeRefreshLayout.isRefreshing = false
-                }
-
-                is LoadState.Error -> {
-                    val errorState = loadState.refresh as LoadState.Error
-                    Log.e("Paging error", "Error: ${errorState.error.message}")
+                if (!homeViewModel.isLoading.value!! &&
+                    !homeViewModel.isLastPage.value!! &&
+                    lastVisibleItem + 1 >= totalItemCount) {
+                    loadMoreData()
                 }
             }
-        }
+        })
+
+        addListObserver()
+        loadData(RefreshState.REFRESH)
+
         return root
+    }
+
+    private fun addListObserver() {
+        lifecycleScope.launch {
+            homeViewModel.models.observe(viewLifecycleOwner) {
+                Log.d("TAG", "fuck it size ${it.size.toString()}")
+                adapter.addItems(it)
+                homeViewModel.loadingFinish()
+            }
+        }
+
+        // 观察是否到达最后一页
+        lifecycleScope.launch {
+            homeViewModel.isLastPage.observe(viewLifecycleOwner)  { isLastPage ->
+                if (isLastPage) {
+                    adapter.showNoMoreData()
+                } else {
+                    adapter.hideNoMoreData()
+                }
+            }
+        }
+    }
+
+    private fun refreshData() {
+        binding.swipeRefreshLayout.isRefreshing = true
+        adapter.clearItems()
+        loadData(RefreshState.REFRESH)
+        binding.swipeRefreshLayout.isRefreshing = false
+    }
+
+    fun loadMoreData() {
+        loadData(RefreshState.MORE)
+    }
+
+    private fun loadData(refresh: RefreshState) {
+        lifecycleScope.launch {
+            homeViewModel.loadListData(refresh)
+        }
     }
 
     override fun onDestroyView() {

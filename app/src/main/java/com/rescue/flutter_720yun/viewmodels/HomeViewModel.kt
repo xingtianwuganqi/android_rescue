@@ -1,5 +1,8 @@
 package com.rescue.flutter_720yun.viewmodels
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -10,20 +13,71 @@ import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResponse
 import com.rescue.flutter_720yun.ui.home.HomePagingSource
+import com.rescue.flutter_720yun.util.RefreshState
+import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 
 class HomeViewModel : ViewModel() {
 
     private var appService = ServiceCreator.create<AppService>()
-    var items = Pager(PagingConfig(pageSize = 10)) {
-        HomePagingSource(appService)
-    }.flow.cachedIn(viewModelScope)
+    private var page: Int = 1
 
-    // 手动刷新列表
-    fun refreshPagingData() {
-        items = Pager(PagingConfig(pageSize = 10)) {
-            HomePagingSource(appService)
-        }.flow.cachedIn(viewModelScope)
+
+    private val _models = MutableLiveData<List<HomeListModel>>()
+    private val _isLastPage = MutableLiveData(false)
+    private val _isLoading = MutableLiveData(false)
+
+    val models: LiveData<List<HomeListModel>> = _models
+    val isLastPage: LiveData<Boolean> = _isLastPage
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    suspend fun loadListData(refresh: RefreshState) {
+        if (_isLoading.value == true) {
+            return
+        }
+        if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+            return
+        }
+        if (refresh == RefreshState.REFRESH) {
+            page = 1
+            _isLastPage.value = false
+        }
+        _isLoading.value = true
+        Log.d("TAG", "load list page is $page")
+        try {
+            val service = ServiceCreator.create<AppService>()
+            var response = service.getTopicList(page, 10, 0).awaitResponse()
+            if (response.code == 200) {
+                val items = when (response.data) {
+                    is List<*> -> {
+                        val homeList = convertAnyToList(response.data, HomeListModel::class.java)
+                        (homeList ?: emptyList())
+                    }
+                    is Map<*, *> -> {
+                        emptyList()
+                    }// data 为 {}，返回空列表
+                    else -> {
+                        emptyList()
+                    }
+                }
+                Log.d("TAG","fuck first Id is ${items.first().topic_id}")
+                if (items.isNotEmpty()) {
+                    page += 1
+                    _models.value = items.toList()
+                }else{
+                    _isLastPage.value = true
+                }
+            }else{
+                _models.value = emptyList()
+            }
+        }catch (e: Exception) {
+            Log.d("TAG", "load list error $e")
+            _isLastPage.value = true
+        }finally {
+            _isLoading.value = false
+        }
+
+
     }
 
     suspend fun likeActionNetworking(model: HomeListModel) {
@@ -36,48 +90,9 @@ class HomeViewModel : ViewModel() {
         }else{
 
         }
-
     }
-//    private val _models = MutableLiveData<List<HomeListModel>>()
-//    val models: LiveData<List<HomeListModel>> = _models
-//
-//    private fun getList(): List<Int> {
-//        val list = List(10) {
-//            it
-//        }
-//        return list
-//    }
-//
-//    fun fetchData(loadCoach: Boolean) {
-//        if (loadCoach) {
-//            if (_models.value != null) {
-//                return
-//            }else{
-//                loadData()
-//            }
-//        }else{
-//            loadData()
-//        }
-//
-//    }
-//
-//    fun loadData() {
-//        val service = ServiceCreator.create<AppService>()
-//        service.getTopicList(1, 20, 0).enqueue(object : Callback<BaseListResp<HomeListModel>>{
-//            override fun onResponse(
-//                p0: Call<BaseListResp<HomeListModel>>,
-//                p1: Response<BaseListResp<HomeListModel>>
-//            ) {
-//                if (p1.isSuccessful && p1.body() != null) {
-//                    _models.value = p1.body()!!.data
-//                }else{
-//
-//                }
-//            }
-//
-//            override fun onFailure(p0: Call<BaseListResp<HomeListModel>>, p1: Throwable) {
-//
-//            }
-//        })
-//    }
+
+    fun loadingFinish() {
+        _isLoading.value = false
+    }
 }

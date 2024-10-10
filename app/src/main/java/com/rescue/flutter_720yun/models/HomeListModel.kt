@@ -42,7 +42,6 @@ data class TagInfoModel(
 
 @Parcelize
 data class HomeListModel (
-    val id: Int?,
     val content: String?,
     val create_time: String?,
     val upload_time: String?,
