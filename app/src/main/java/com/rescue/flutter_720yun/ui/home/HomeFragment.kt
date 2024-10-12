@@ -78,22 +78,26 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     private fun addListObserver() {
-        lifecycleScope.launch {
-            homeViewModel.models.observe(viewLifecycleOwner) {
-                Log.d("TAG", "fuck it size ${it.size.toString()}")
-                adapter.addItems(it)
-                homeViewModel.loadingFinish()
-            }
+        homeViewModel.models.observe(viewLifecycleOwner) {
+            Log.d("TAG", "fuck it size ${it.size.toString()}")
+            adapter.addItems(it)
+            homeViewModel.loadingFinish()
         }
 
         // 观察是否到达最后一页
-        lifecycleScope.launch {
-            homeViewModel.isLastPage.observe(viewLifecycleOwner)  { isLastPage ->
-                if (isLastPage) {
-                    adapter.showNoMoreData()
-                } else {
-                    adapter.hideNoMoreData()
-                }
+        homeViewModel.isLastPage.observe(viewLifecycleOwner)  { isLastPage ->
+            if (isLastPage) {
+                adapter.showNoMoreData()
+            } else {
+                adapter.hideNoMoreData()
+            }
+        }
+
+        // 观察某个元素发生变化了
+        homeViewModel.changeModel.observe(viewLifecycleOwner) {
+            it?.let {
+                adapter.uploadItem(it)
+                homeViewModel.cleanChangedModel()
             }
         }
     }
@@ -113,6 +117,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
         lifecycleScope.launch {
             homeViewModel.loadListData(refresh)
         }
+    }
+
+    // 点赞
+    private fun likeActionNetworking(model: HomeListModel?) {
+        homeViewModel.likeActionNetworking(model)
     }
 
     override fun onDestroyView() {
@@ -137,7 +146,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     override fun likeActionClick(model: HomeListModel?) {
         if (UserManager.isLogin) {
             // 点赞
-
+            likeActionNetworking(model)
         }else{
             val intent = Intent(activity, LoginActivity::class.java)
             startActivity(intent)
