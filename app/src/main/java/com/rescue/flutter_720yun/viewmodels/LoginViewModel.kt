@@ -9,7 +9,7 @@ import com.rescue.flutter_720yun.models.BaseResponse
 import com.rescue.flutter_720yun.models.UserInfo
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
-import com.rescue.flutter_720yun.network.awaitResponse
+import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.Tool
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.toMD5
@@ -38,7 +38,7 @@ class LoginViewModel: ViewModel() {
 
     suspend fun loginNetworking(phone: String, password: String) {
         val passwordMD5String = password.toMD5()
-        val response = appService.login(phone, passwordMD5String).awaitResponse()
+        val response = appService.login(phone, passwordMD5String).awaitResp()
         if (response.code == 200) {
             val userInfo = response.data
             UserManager.setUserInfo(userInfo)
@@ -51,18 +51,18 @@ class LoginViewModel: ViewModel() {
     // 获取验证码
     suspend fun getCodeNetworking(phone: String): BaseResponse<Any> {
         val code = Tool.encryptionString(Tool.code) ?: ""
-        return appService.getVerificationCode(phone, code).awaitResponse()
+        return appService.getVerificationCode(phone, code).awaitResp()
     }
 
     // 验证验证码
     suspend fun checkCodeNetworking(phone: String, code: String) {
-        val response = appService.checkCode(phone, code).awaitResponse()
+        val response = appService.checkCode(phone, code).awaitResp()
         _checkCodeSucc.value = response.code == 200
     }
 
     // 登录
     suspend fun register(phone: String, password: String) {
-        val response = appService.register(phone, password.toMD5(), password.toMD5()).awaitResponse()
+        val response = appService.register(phone, password.toMD5(), password.toMD5()).awaitResp()
         if (response.code == 200) {
             val userInfo = response.data
             UserManager.setUserInfo(userInfo)
@@ -74,7 +74,7 @@ class LoginViewModel: ViewModel() {
 
     // 找回密码
     suspend fun findPassword(phone: String, password: String, confirm_phone: String) {
-        val response = appService.uploadPassword(phone, password, confirm_phone).awaitResponse()
+        val response = appService.uploadPassword(phone, password, confirm_phone).awaitResp()
         _findPasswordStatus.value = response.code == 200
     }
 

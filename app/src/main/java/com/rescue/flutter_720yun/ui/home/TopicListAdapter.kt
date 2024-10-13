@@ -32,6 +32,7 @@ import com.rescue.flutter_720yun.util.toImgUrl
 
 // 定义点击监听接口
 interface OnItemClickListener {
+
     fun userClick(model: HomeListModel?)
     fun onItemClick(model: HomeListModel?)
     fun onImgClick(model: HomeListModel?, position: Int)

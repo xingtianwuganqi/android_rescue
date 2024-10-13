@@ -45,4 +45,7 @@
     <string name="comment_action">收藏</string>
     <string name="click_get_contact">点击获取联系方式</string>
     <string name="no_more_data">已经到底啦</string>
+    <string name="like_error">点赞失败</string>
+    <string name="collect_error">收藏失败</string>
+    <string name="network_request_error">网络请求失败</string>
 </resources>

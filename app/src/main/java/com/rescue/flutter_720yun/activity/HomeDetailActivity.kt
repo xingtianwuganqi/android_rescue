@@ -1,10 +1,18 @@
 package com.rescue.flutter_720yun.activity
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
@@ -14,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.rescue.flutter_720yun.BaseActivity
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adapter.HomeDetailAdapter
 import com.rescue.flutter_720yun.databinding.ActivityHomeDetailBinding
@@ -32,9 +41,11 @@ import kotlinx.coroutines.launch
 class HomeDetailActivity : BaseActivity() {
 
     private var _binding: ActivityHomeDetailBinding? = null
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
     private lateinit var viewModel: HomeDetailViewModel
-    private var topic_id: Int? = null
+    private var topicId: Int? = null
+    private var topic: HomeListModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_home_detail)
@@ -42,15 +53,24 @@ class HomeDetailActivity : BaseActivity() {
         setupToolbar("详情")
         viewModel = ViewModelProvider(this)[HomeDetailViewModel::class.java]
 
-        topic_id = intent.getIntExtra("topic_id", 1)
+        topicId = intent.getIntExtra("topic_id", 1)
 
-        lifecycleScope.launch {
-            viewModel.loadDetailNetworking(topic_id!!)
+        topicId?.let {
+            viewModel.loadDetailNetworking(it)
         }
 
         viewModel.homeData.observe(this) {
+
             uploadViews(it)
+            uploadBottom(it)
         }
+
+        viewModel.changeModel.observe(this) {
+            uploadBottom(it)
+            topic = it
+        }
+
+        // 添加点击事件
         addClickAction()
     }
 
@@ -71,6 +91,59 @@ class HomeDetailActivity : BaseActivity() {
         imgRecyclerView.adapter = adapter
     }
 
+
+    private fun uploadBottom(homeData: HomeListModel?) {
+        if (homeData?.liked == true) {
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_se)
+            // 设置新图标
+            binding.likeButton.icon = newIcon
+        }else{
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_un)
+            // 设置新图标
+            binding.likeButton.icon = newIcon
+        }
+
+        if (homeData?.collectioned == true) {
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_se)
+            // 设置新图标
+            binding.collectButton.icon = newIcon
+        }else{
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_un)
+            // 设置新图标
+            binding.collectButton.icon = newIcon
+        }
+        addBackListener()
+    }
+
+    private fun addBackListener() {
+        // 注册返回事件的回调
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                sendResultAndFinish()
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    override fun finishAction() {
+        super.finishAction()
+        sendResultAndFinish()
+    }
+
+    private fun sendResultAndFinish() {
+        topic?.let {
+            val intent = Intent()
+            intent.putExtra("result_model", it)
+            setResult(Activity.RESULT_OK, intent)
+        }
+
+    }
+
     private fun addClickAction() {
         val likeBtn = binding.likeButton
         likeBtn.setOnClickListener{
@@ -86,7 +159,9 @@ class HomeDetailActivity : BaseActivity() {
         val collectionBtn = binding.collectButton
         collectionBtn.setOnClickListener {
             lazyLogin(this) {
-
+                viewModel.homeData.value?.let {
+                    viewModel.collectionActionNetworking(it)
+                }
             }
         }
 

@@ -4,9 +4,10 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.gson.reflect.TypeToken
 import com.rescue.flutter_720yun.network.AppService
-import com.rescue.flutter_720yun.network.awaitResponse
 import com.rescue.flutter_720yun.models.HomeListModel
+import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.convertAnyToList
+import com.rescue.flutter_720yun.util.paramDic
 
 class HomePagingSource(
     private val apiService: AppService // 你的网络服务接口
@@ -17,8 +18,7 @@ class HomePagingSource(
             // 当前页码，第一页时默认为 1
             val currentPage = params.key ?: 1
             // 从 API 获取数据
-            val response = apiService.getTopicList(currentPage, 10, 0).awaitResponse()
-            Log.d("TAG", response.data.toString())
+            val response = apiService.getTopicList(paramDic).awaitResp()
             // 获取响应数据列表
             // 判断 data 的类型
             val items = when (response.data) {

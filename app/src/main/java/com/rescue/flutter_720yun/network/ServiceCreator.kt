@@ -1,4 +1,5 @@
 package com.rescue.flutter_720yun.network
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -48,11 +49,12 @@ object ServiceCreator {
 
 }
 
-suspend fun <T> Call<T>.awaitResponse(): T {
+suspend fun <T> Call<T>.awaitResp(): T {
     return suspendCoroutine { continuation ->
         enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 if (response.isSuccessful) {
+                    Log.d("TAG", "response body ${response.body()}")
                     continuation.resume(response.body()!!)
                 } else {
                     continuation.resumeWithException(Exception("Response error"))

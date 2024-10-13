@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Glide
@@ -45,6 +46,10 @@ fun String.toImgUrl(): String {
     }else{
         "http://img.rxswift.cn/${this}"
     }
+}
+
+fun String.toastString() {
+    Toast.makeText(BaseApplication.context, this, Toast.LENGTH_SHORT).show()
 }
 
 fun HomeListModel.getImages(): List<String>? {
@@ -132,3 +137,4 @@ val paramDic get() = if (UserManager.isLogin) {
 }else{
     params
 }
+

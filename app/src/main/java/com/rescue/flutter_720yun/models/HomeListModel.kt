@@ -64,3 +64,16 @@ data class HomeListModel (
     val views_num: Int?,
     val collection_num: Int?,
 ): Parcelable
+
+
+@Parcelize
+data class LikeActionModel(
+    val mark: Int,
+    val like: Int
+): Parcelable
+
+@Parcelize
+data class CollectionActionModel(
+    val mark: Int,
+    val collect: Int,
+): Parcelable

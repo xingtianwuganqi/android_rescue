@@ -5,18 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
+import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
-import com.rescue.flutter_720yun.network.awaitResponse
-import com.rescue.flutter_720yun.ui.home.HomePagingSource
+import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
+import retrofit2.awaitResponse
 
 class HomeViewModel : ViewModel() {
 
@@ -51,7 +50,11 @@ class HomeViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val service = ServiceCreator.create<AppService>()
-                var response = service.getTopicList(page, 10, 0).awaitResponse()
+                val dic = paramDic
+                dic["page"] = page
+                dic["size"] = 10
+                dic["order"] = 0
+                val response = service.getTopicList(dic).awaitResp()
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
@@ -89,15 +92,17 @@ class HomeViewModel : ViewModel() {
                 return@launch
             }
             try {
-                var likeMark = if (model?.liked == true) 0 else 1
+                val likeMark = if (model?.liked == true) 0 else 1
                 val dic = paramDic
                 dic["like_mark"] = likeMark
-                val response = appService.topicLikeAction(dic).awaitResponse()
+                dic["topic_id"] = model?.topic_id
+                val response = appService.topicLikeAction(dic).awaitResp()
                 if (response.code == 200) {
-                    model?.liked = !(model?.liked ?: false)
+                    model?.liked = response.data?.mark == 1
                     _changedModel.value = model
                 }else{
-                    _errorMsg.value = "点赞失败"
+                    val msg = BaseApplication.context.resources.getString(R.string.like_error)
+                    _errorMsg.value = msg
                 }
             }catch (e: Exception) {
                 _errorMsg.value = "点赞失败"
@@ -106,6 +111,37 @@ class HomeViewModel : ViewModel() {
             }
         }
 
+    }
+
+    fun collectionActionNetworking(model: HomeListModel?) {
+        viewModelScope.launch {
+            if (_isLoading.value == true) {
+                return@launch
+            }
+            try {
+                val collectMark = if (model?.collectioned == true) 0 else 1
+                val topicId = model?.topic_id
+                val dic = paramDic
+                dic["collect_mark"] = collectMark
+                dic["topic_id"] = topicId
+                val response = appService.topicCollectionAction(dic).awaitResp()
+                if (response.code == 200) {
+                    model?.collectioned = response.data?.mark == 1
+                    _changedModel.value = model
+                }else{
+                    _errorMsg.value = BaseApplication.context.getString(R.string.collect_error)
+                }
+
+            }catch (e: Exception) {
+                _errorMsg.value = BaseApplication.context.getString(R.string.network_request_error)
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun uploadItem(model: HomeListModel?) {
+        _changedModel.value = model
     }
 
     fun loadingFinish() {

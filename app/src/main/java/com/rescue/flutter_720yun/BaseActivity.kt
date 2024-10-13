@@ -17,6 +17,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ActivityController.removeActivity(this)
+        _binding = null
     }
 
     // 方法用于加载子 Activity 的布局
@@ -31,10 +32,14 @@ open class BaseActivity : AppCompatActivity() {
         if (showBackButton) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             toolbar.setNavigationOnClickListener {
+                finishAction()
                 this.finish()
             }
         }
     }
 
+    open fun finishAction() {
+
+    }
 
 }

@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.ui.home
 
+import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,15 +24,36 @@ import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.viewmodels.HomeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.toastString
+
 
 class HomeFragment : Fragment(), OnItemClickListener {
 
     private var _binding: FragmentHomeBinding? = null
-
     private val binding get() = _binding!!
-    private lateinit var homeAdapter: HomeListAdapter
     private lateinit var adapter: HomeListAdapter
     private lateinit var homeViewModel: HomeViewModel
+
+    // 处理反向传值
+    private val detailActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("TAG", "反向传值了")
+            val data: Intent? = result.data
+            val resultData = data?.getParcelableExtra<HomeListModel>("result_model")
+            Log.d("TAG", "data is $data")
+            Log.d("TAG", "resultData is $resultData")
+            Log.d("TAG", "result data is ${resultData?.topic_id}")
+            uploadItem(resultData)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -100,6 +123,10 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 homeViewModel.cleanChangedModel()
             }
         }
+
+        homeViewModel.errorMsg.observe(viewLifecycleOwner) {
+            it.toastString()
+        }
     }
 
     private fun refreshData() {
@@ -124,11 +151,24 @@ class HomeFragment : Fragment(), OnItemClickListener {
         homeViewModel.likeActionNetworking(model)
     }
 
+    // 收藏
+    private fun collectionActionNetworking(model: HomeListModel?) {
+        homeViewModel.collectionActionNetworking(model)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    // 更新item
+    private fun uploadItem(model: HomeListModel?) {
+        model?.let {
+            adapter.uploadItem(model)
+        }
+    }
+
+    // 用户点击
     override fun userClick(model: HomeListModel?) {
 
     }
@@ -136,7 +176,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     override fun onItemClick(model: HomeListModel?) {
         val intent = Intent(activity, HomeDetailActivity::class.java)
         intent.putExtra("topic_id", model?.topic_id)
-        startActivity(intent)
+        detailActivityLauncher.launch(intent)
     }
 
     override fun onImgClick(model: HomeListModel?, position: Int) {
@@ -156,7 +196,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     override fun collectionClick(model: HomeListModel?) {
         if (UserManager.isLogin) {
             // 收藏
-
+            collectionActionNetworking(model)
         }else{
             val intent = Intent(activity, LoginActivity::class.java)
             startActivity(intent)
