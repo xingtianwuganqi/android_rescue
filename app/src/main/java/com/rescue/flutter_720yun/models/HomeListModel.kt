@@ -53,11 +53,11 @@ data class HomeListModel (
     val is_complete: Boolean?,
     val preview_img: List<String>?,
     val imgs: List<String>?,
-    val getedcontact: Boolean?,
+    var getedcontact: Boolean?,
     val user: Int?,
     val likes_num: Int?,
     val address_info: String?,
-    val contact_info: String?,
+    var contact_info: String?,
     val tagInfos: List<TagInfoModel>?,
     val topic_id: Int?,
     val commNum: Int?,
@@ -76,4 +76,9 @@ data class LikeActionModel(
 data class CollectionActionModel(
     val mark: Int,
     val collect: Int,
+): Parcelable
+
+@Parcelize
+data class ContactInfoModel(
+    val contact: String,
 ): Parcelable

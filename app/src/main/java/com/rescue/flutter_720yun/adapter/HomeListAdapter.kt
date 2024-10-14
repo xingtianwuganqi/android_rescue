@@ -47,6 +47,12 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
         }
     }
 
+    fun refreshItem(newList: List<HomeListModel>) {
+        list.clear()
+        list.addAll(newList)
+        notifyDataSetChanged() // 通知适配器刷新所有项
+    }
+
     fun addItems(newList: List<HomeListModel>) {
         val startPosition = list.size
         list.addAll(newList)

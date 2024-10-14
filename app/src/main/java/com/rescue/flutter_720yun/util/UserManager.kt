@@ -11,6 +11,9 @@ object UserManager {
     val isLogin: Boolean get() = _userInfo != null
     val token: String? get() = _userInfo?.token
     val userId: Int?  get() = _userInfo?.id
+
+    val userInfo: UserInfo? get() = _userInfo
+
     fun setUserInfo(info: UserInfo) {
         val sharedPreferences = BaseApplication.context.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()

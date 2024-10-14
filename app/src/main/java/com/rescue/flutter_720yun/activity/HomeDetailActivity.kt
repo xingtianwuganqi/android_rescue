@@ -59,8 +59,13 @@ class HomeDetailActivity : BaseActivity() {
             viewModel.loadDetailNetworking(it)
         }
 
-        viewModel.homeData.observe(this) {
+        viewModelChanged()
+        // 添加点击事件
+        addClickAction()
+    }
 
+    private fun viewModelChanged() {
+        viewModel.homeData.observe(this) {
             uploadViews(it)
             uploadBottom(it)
         }
@@ -70,8 +75,26 @@ class HomeDetailActivity : BaseActivity() {
             topic = it
         }
 
-        // 添加点击事件
-        addClickAction()
+        viewModel.needBind.observe(this) {
+            if (it == true) {
+                // 去绑定手机号
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.putExtra("type", "bindPhone")
+                startActivity(intent)
+                viewModel.cleanNeedBind()
+            }
+        }
+
+        viewModel.needCheck.observe(this) {
+            if (it == true) {
+                // 去验证手机号
+                // 去绑定手机号
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.putExtra("type", "checkPhone")
+                startActivity(intent)
+                viewModel.cleanNeedCheck()
+            }
+        }
     }
 
     private fun uploadViews(homeData: HomeListModel?) {
@@ -116,6 +139,13 @@ class HomeDetailActivity : BaseActivity() {
             // 设置新图标
             binding.collectButton.icon = newIcon
         }
+
+        if (homeData?.getedcontact == true && homeData?.contact_info != null) {
+            binding.getContactBtn.text = homeData?.contact_info
+        }else{
+            binding.getContactBtn.text = BaseApplication.context.getString(R.string.click_get_contact)
+        }
+
         addBackListener()
     }
 
@@ -169,6 +199,14 @@ class HomeDetailActivity : BaseActivity() {
         commentBtn.setOnClickListener {
             lazyLogin(this) {
 
+            }
+        }
+
+        binding.getContactBtn.setOnClickListener {
+            lazyLogin(this) {
+                viewModel.homeData.value?.let {
+                    viewModel.clickGetContactInfoNetworking(it)
+                }
             }
         }
     }

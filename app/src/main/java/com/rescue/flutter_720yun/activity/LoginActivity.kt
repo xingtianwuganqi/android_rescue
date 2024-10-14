@@ -36,6 +36,7 @@ import com.google.android.material.button.MaterialButton
 import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.util.UserManager
 import java.util.Locale
 import kotlin.math.log
 
@@ -78,6 +79,16 @@ class LoginActivity : BaseActivity() {
                 val title = resources.getText(R.string.login_find_password).toString()
                 setupToolbar(title)
             }
+
+            "bindPhone" -> {
+                val title = "绑定手机号"
+                setupToolbar(title)
+            }
+
+            "checkPhone" ->{
+                val title = "校验手机号"
+                setupToolbar(title)
+            }
         }
 
         // 找回密码和注册才有phoneNum
@@ -106,6 +117,9 @@ class LoginActivity : BaseActivity() {
 
         if (type == "register") {
             phoneTextField.setText(phoneNum)
+        }else if (type == "checkPhone") {
+            val phone = UserManager.userInfo?.phone_number
+            phoneTextField.setText(phone)
         }
 
         // 登录按钮
@@ -135,7 +149,7 @@ class LoginActivity : BaseActivity() {
                         passwordTextField.text.trim().toString()
                     )
                 }
-            }else if (type == "findCheckCode" || type == "registerCheckCode") {
+            }else if (type == "findCheckCode" || type == "registerCheckCode" || type == "bindPhone" || type == "checkPhone") {
                 if (phoneTextField.text.trim().isEmpty()) {
                     val msg = resources.getString(R.string.login_phone_placeholder)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()

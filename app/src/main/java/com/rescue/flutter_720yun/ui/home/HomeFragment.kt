@@ -103,8 +103,12 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private fun addListObserver() {
         homeViewModel.models.observe(viewLifecycleOwner) {
             Log.d("TAG", "fuck it size ${it.size.toString()}")
-            adapter.addItems(it)
-            homeViewModel.loadingFinish()
+            if (homeViewModel.isRefreshing.value == true) {
+                adapter.refreshItem(it)
+                homeViewModel.cleanIsRefreshing()
+            }else {
+                adapter.addItems(it)
+            }
         }
 
         // 观察是否到达最后一页
@@ -131,7 +135,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     private fun refreshData() {
         binding.swipeRefreshLayout.isRefreshing = true
-        adapter.clearItems()
         loadData(RefreshState.REFRESH)
         binding.swipeRefreshLayout.isRefreshing = false
     }

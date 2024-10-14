@@ -3,6 +3,7 @@ package com.rescue.flutter_720yun.network
 import com.rescue.flutter_720yun.models.BaseListResp
 import com.rescue.flutter_720yun.models.BaseResponse
 import com.rescue.flutter_720yun.models.CollectionActionModel
+import com.rescue.flutter_720yun.models.ContactInfoModel
 import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.models.LikeActionModel
 import com.rescue.flutter_720yun.models.UserInfo
@@ -77,4 +78,10 @@ interface AppService {
     @POST("api/v1/collection/")
     fun topicCollectionAction(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<CollectionActionModel?>>
+
+    // 获取联系方式
+    @FormUrlEncoded
+    @POST("api/v1/getcontact/")
+    fun getTopicContact(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<BaseResponse<ContactInfoModel>>
 }

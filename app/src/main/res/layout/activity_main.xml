@@ -73,7 +73,8 @@
             app:menu="@menu/bottom_nav_menu"
             app:itemIconTint="@color/select_icon_color"
             app:itemTextColor="@color/select_icon_color"
-            app:itemRippleColor="@android:color/transparent"/>
+            app:itemRippleColor="@android:color/transparent"
+            app:labelVisibilityMode="labeled"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

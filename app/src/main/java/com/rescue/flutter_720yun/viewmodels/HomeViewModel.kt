@@ -26,12 +26,14 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableLiveData(false)
     private val _changedModel = MutableLiveData<HomeListModel?>()
     private val _errorMsg = MutableLiveData<String>()
+    private val _isRefreshing = MutableLiveData(false)
 
     val models: LiveData<List<HomeListModel>> = _models
     val isLastPage: LiveData<Boolean> = _isLastPage
     val isLoading: LiveData<Boolean> = _isLoading
     val changeModel: LiveData<HomeListModel?> = _changedModel
     val errorMsg: LiveData<String> = _errorMsg
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     private val appService = ServiceCreator.create<AppService>()
 
@@ -46,6 +48,7 @@ class HomeViewModel : ViewModel() {
             if (refresh == RefreshState.REFRESH) {
                 page = 1
                 _isLastPage.value = false
+                _isRefreshing.value = true
             }
             _isLoading.value = true
             try {
@@ -54,6 +57,7 @@ class HomeViewModel : ViewModel() {
                 dic["page"] = page
                 dic["size"] = 10
                 dic["order"] = 0
+                Log.d("TAG", "dic is $dic")
                 val response = service.getTopicList(dic).awaitResp()
                 if (response.code == 200) {
                     val items = when (response.data) {
@@ -144,12 +148,11 @@ class HomeViewModel : ViewModel() {
         _changedModel.value = model
     }
 
-    fun loadingFinish() {
-        _isLoading.value = false
-    }
-
     fun cleanChangedModel(){
         _changedModel.value = null
     }
 
+    fun cleanIsRefreshing() {
+        _isRefreshing.value = false
+    }
 }

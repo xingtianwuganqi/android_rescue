@@ -125,7 +125,6 @@ fun lazyLogin(activity: AppCompatActivity, callback: () -> Unit) {
 
 
 var params = mutableMapOf<String, Any?>(
-    "token" to UserManager.token,
     "appType" to "android",
     "appVersion" to "1.0.2",
     "androidVersion" to "8"
