@@ -6,6 +6,7 @@ import com.rescue.flutter_720yun.models.CollectionActionModel
 import com.rescue.flutter_720yun.models.ContactInfoModel
 import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.models.LikeActionModel
+import com.rescue.flutter_720yun.models.SearchKeywordModel
 import com.rescue.flutter_720yun.models.UserInfo
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -84,4 +85,8 @@ interface AppService {
     @POST("api/v1/getcontact/")
     fun getTopicContact(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<ContactInfoModel>>
+
+    @FormUrlEncoded
+    @GET("api/v1/searchkeywords/")
+    fun getSearchKeyword(): Call<BaseListResp<SearchKeywordModel>>
 }

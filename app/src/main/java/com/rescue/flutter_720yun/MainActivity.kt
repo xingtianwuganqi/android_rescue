@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.opengl.Visibility
@@ -15,6 +16,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.rescue.flutter_720yun.activity.SearchActivity
 import com.rescue.flutter_720yun.databinding.ActivityMainBinding
 import com.rescue.flutter_720yun.util.UserManager
 
@@ -38,8 +40,6 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_show, R.id.navigation_message, R.id.navigation_user
@@ -65,6 +65,12 @@ class MainActivity : AppCompatActivity() {
         }
         // 获取个人信息
         UserManager.getUserInfo()
+
+        // 搜索添加点击
+        binding.searchButton.setOnClickListener{
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

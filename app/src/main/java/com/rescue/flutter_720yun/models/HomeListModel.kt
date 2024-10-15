@@ -82,3 +82,10 @@ data class CollectionActionModel(
 data class ContactInfoModel(
     val contact: String,
 ): Parcelable
+
+
+@Parcelize
+data class SearchKeywordModel(
+    val id: Int,
+    val keyword: String,
+): Parcelable
