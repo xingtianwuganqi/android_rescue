@@ -22,23 +22,29 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding?.root)
         viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
 
-        hotFragment = SearchHistoryFragment()
-        // 将Fragment添加到Activity中
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.search_frame, hotFragment) // R.id.fragment_container是Activity布局文件中Fragment要放置的ViewGroup的ID
-            .commit()
+        // 仅在 Activity 首次创建时添加 Fragment，避免重复添加
+        if (savedInstanceState == null) {
+            hotFragment = SearchHistoryFragment()
+            // 将Fragment添加到Activity中
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.search_frame,
+                    hotFragment
+                ) // R.id.fragment_container是Activity布局文件中Fragment要放置的ViewGroup的ID
+                .commit()
 
+        }
         // 添加点击
         addClickListener()
     }
 
-    fun viewModelObserver() {
-
-    }
-
     private fun addClickListener() {
-        binding?.cancelBtn?.setOnClickListener {
+        binding?.backButton?.setOnClickListener {
             finish()
+        }
+
+        binding?.searchButton?.setOnClickListener {
+
         }
     }
 

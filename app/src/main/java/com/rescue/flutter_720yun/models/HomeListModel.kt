@@ -89,3 +89,9 @@ data class SearchKeywordModel(
     val id: Int,
     val keyword: String,
 ): Parcelable
+
+@Parcelize
+data class SearchHistoryItemModel(
+    val title: String,
+    val list: List<SearchKeywordModel>?
+): Parcelable
