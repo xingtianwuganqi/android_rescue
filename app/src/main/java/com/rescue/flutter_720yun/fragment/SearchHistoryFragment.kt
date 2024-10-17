@@ -37,7 +37,6 @@ class SearchHistoryFragment : Fragment() {
     private fun viewModelRequestData() {
         viewModel.keywordModels.observe(viewLifecycleOwner){
             it?.let {
-                Log.d("TAG", "data back is $it")
                 binding.historyRecyclerview.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.historyRecyclerview.adapter = SearchHistoryAdapter(it)
             }
@@ -50,4 +49,5 @@ class SearchHistoryFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
+
 }
