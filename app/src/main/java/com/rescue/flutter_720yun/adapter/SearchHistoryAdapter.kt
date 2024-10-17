@@ -10,6 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.models.SearchHistoryItemModel
@@ -34,7 +37,10 @@ class SearchHistoryAdapter(private val list: List<SearchHistoryItemModel>): Recy
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.textView.text = list[position].title
         val adapter = SearchKeywordAdapter(list[position].list)
-        holder.recyclerView.layoutManager = LinearLayoutManager(BaseApplication.context,LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager = FlexboxLayoutManager(BaseApplication.context)
+//        layoutManager.flexDirection = FlexDirection.ROW
+//        layoutManager.flexWrap = FlexWrap.WRAP
+        holder.recyclerView.layoutManager = layoutManager
         holder.recyclerView.adapter = adapter
     }
 }
@@ -57,14 +63,14 @@ class SearchKeywordAdapter(private val list: List<SearchKeywordModel>?): Recycle
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         list?.let {
             holder.textView.text = it[position].keyword
-            // 设置背景颜色
-            val background = GradientDrawable()
-            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
-            background.setColor(colorValue)
-            val cornerRadius: Float = 5F
-            background.cornerRadius = cornerRadius
-// 将这个背景应用到TextView
-            holder.textView.background = background
+//            // 设置背景颜色
+//            val background = GradientDrawable()
+//            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+//            background.setColor(colorValue)
+//            val cornerRadius: Float = 5F
+//            background.cornerRadius = cornerRadius
+//// 将这个背景应用到TextView
+//            holder.textView.background = background
         }
     }
 }

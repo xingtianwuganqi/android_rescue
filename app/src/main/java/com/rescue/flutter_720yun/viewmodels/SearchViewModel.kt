@@ -23,7 +23,7 @@ class SearchViewModel: ViewModel() {
     fun searchKeywordNetworking() {
         viewModelScope.launch {
             try {
-                var response = appService.getSearchKeyword().awaitResp()
+                val response = appService.getSearchKeyword().awaitResp()
                 if (response.code == 200) {
                     val historyItemModel = SearchHistoryItemModel("热门搜索", response.data)
                     _keywordModels.value = listOf(historyItemModel)
@@ -36,5 +36,10 @@ class SearchViewModel: ViewModel() {
 
             }
         }
+    }
+
+    //读取本地存储的数据
+    fun fetchLocalData() {
+        
     }
 }

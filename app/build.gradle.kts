@@ -71,5 +71,6 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.viewpager2.viewpager2)
     implementation("com.webtoonscorp.android:readmore-view:1.3.3")
+    implementation(libs.google.flexbox)
 }
 
