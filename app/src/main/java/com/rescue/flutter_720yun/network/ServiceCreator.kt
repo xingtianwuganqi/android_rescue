@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.network
 import android.util.Log
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -50,7 +51,7 @@ object ServiceCreator {
 }
 
 suspend fun <T> Call<T>.awaitResp(): T {
-    return suspendCoroutine { continuation ->
+    return suspendCancellableCoroutine { continuation ->
         enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 if (response.isSuccessful) {
@@ -65,9 +66,5 @@ suspend fun <T> Call<T>.awaitResp(): T {
                 continuation.resumeWithException(t)
             }
         })
-//
-//        continuation.invokeOnCancellation {
-//            cancel()
-//        }
     }
 }
