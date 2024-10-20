@@ -15,7 +15,6 @@ import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
-import retrofit2.awaitResponse
 
 class HomeViewModel : ViewModel() {
 
@@ -90,7 +89,6 @@ class HomeViewModel : ViewModel() {
     }
 
     fun likeActionNetworking(model: HomeListModel?) {
-
         viewModelScope.launch {
             if (_isLoading.value == true) {
                 return@launch

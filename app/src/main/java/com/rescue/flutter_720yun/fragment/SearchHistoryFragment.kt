@@ -40,7 +40,6 @@ class SearchHistoryFragment : Fragment(), SearchHistoryItemClickListener {
                 val adapter = SearchHistoryAdapter(it)
                 adapter.setItemClickListener(this)
                 binding.historyRecyclerview.adapter = adapter
-
             }
         }
 

@@ -88,4 +88,9 @@ interface AppService {
 
     @GET("api/v1/searchkeywords/")
     fun getSearchKeyword(): Call<BaseListResp<SearchKeywordModel>>
+
+    @FormUrlEncoded
+    @POST("api/v1/search/")
+    fun searchList(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<BaseResponse<Any>>
 }

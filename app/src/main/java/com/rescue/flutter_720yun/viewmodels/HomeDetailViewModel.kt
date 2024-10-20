@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class HomeDetailViewModel: ViewModel() {
     private val appService = ServiceCreator.create<AppService>()
+
     private var _homeData = MutableLiveData<HomeListModel?>()
     private var _loadFail = MutableLiveData(false)
     private var _isLoading = MutableLiveData(false)

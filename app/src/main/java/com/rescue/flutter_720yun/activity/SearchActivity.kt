@@ -69,6 +69,7 @@ class SearchActivity : AppCompatActivity() {
             if (text != null) {
                 if (text.isNotEmpty()) {
                     startSearch(text.toString())
+                    viewModel.addSearchKeyToLocalJson(text.toString())
                 }
             }
         }
@@ -77,6 +78,7 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 if (binding?.editText?.text.isNullOrBlank() || binding?.editText?.text.isNullOrEmpty()) {
                     showHotFragment()
+                    viewModel.cleanSearchList()
                 }
             }
 
@@ -92,9 +94,9 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
-    fun startSearch(keyword: String) {
-        viewModel.beginSearch(keyword)
+    private fun startSearch(keyword: String) {
         showListFragment()
+        viewModel.beginSearch(keyword)
     }
 
     private fun addViewModelObserver() {

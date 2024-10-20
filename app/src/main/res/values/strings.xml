@@ -18,6 +18,8 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
+    <string name="no_data">暂无数据</string>
+
     <string name="login_new_register">新用户注册</string>
     <string name="login_phone_placeholder">请输入手机号</string>
     <string name="login_password_placeholder">请输入密码</string>
