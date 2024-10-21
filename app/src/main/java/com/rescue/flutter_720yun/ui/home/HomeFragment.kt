@@ -29,6 +29,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.activity.ReleaseTopicActivity
 import com.rescue.flutter_720yun.util.toastString
 
 
@@ -77,6 +78,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
         val swipeRefreshLayout = binding.swipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener {
             refreshData()
+        }
+
+        binding.tip.setOnClickListener {
+            val intent = Intent(activity, ReleaseTopicActivity::class.java)
+            startActivity(intent)
         }
 
         recyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){

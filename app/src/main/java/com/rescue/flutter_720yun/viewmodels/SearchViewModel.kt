@@ -69,7 +69,6 @@ class SearchViewModel: ViewModel() {
                         resp)
                     historyItems.add(historyItemModel)
                 }
-                Log.d("TAG", "local data is $localData")
                 if (localData is List<*>) {
                     val list = (localData as List<String>?)?.map {
                         SearchKeywordModel(0,it)

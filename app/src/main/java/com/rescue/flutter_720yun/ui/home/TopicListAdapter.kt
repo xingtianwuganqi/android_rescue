@@ -93,9 +93,9 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         imgView.scaleType = ImageView.ScaleType.CENTER_CROP
         timeText.text = item?.create_time?.timeToStr()
 
-        val readMore = context.resources.getString(R.string.read_all)
-        val readLess = context.resources.getString(R.string.read_all)
-        val color = context.resources.getColor(R.color.color_system)
+//        val readMore = context.resources.getString(R.string.read_all)
+//        val readLess = context.resources.getString(R.string.read_all)
+//        val color = context.resources.getColor(R.color.color_system)
         content.text = item?.content
 
         if (item?.tagInfos?.isNotEmpty() == true) {
