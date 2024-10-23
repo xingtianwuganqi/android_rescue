@@ -9,6 +9,7 @@ data class BaseResponse<T> (
     val message: String
 )
 
+
 data class BaseListResp<T> (
     val code: Int?,
     val data: List<T>?,
@@ -37,7 +38,8 @@ data class UserInfo(
 data class TagInfoModel(
     val id: Int?,
     val tag_name: String?,
-    val tag_type: Int?
+    val tag_type: Int?,
+    var isSelected: Boolean = false
 ): Parcelable
 
 @Parcelize

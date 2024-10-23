@@ -51,7 +51,7 @@ class LoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContentLayout(R.layout.activity_login)
-        _binding = ActivityLoginBinding.bind(baseBinding.contentFrame.getChildAt(0))
+        _binding = ActivityLoginBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
         viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         // 获取页面类型

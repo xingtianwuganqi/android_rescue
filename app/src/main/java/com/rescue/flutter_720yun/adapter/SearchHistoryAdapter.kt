@@ -17,7 +17,7 @@ import com.rescue.flutter_720yun.models.SearchKeywordModel
 
 
 interface SearchHistoryItemClickListener {
-    fun itemClick(keyword: String)
+    fun itemClick(keyword: String?)
     fun onDeleteClick()
 }
 

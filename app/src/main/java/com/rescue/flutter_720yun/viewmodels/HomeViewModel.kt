@@ -107,7 +107,7 @@ class HomeViewModel : ViewModel() {
                     _errorMsg.value = msg
                 }
             }catch (e: Exception) {
-                _errorMsg.value = "点赞失败"
+                _errorMsg.value = BaseApplication.context.resources.getString(R.string.like_error)
             }finally {
                 _isLoading.value = true
             }

@@ -49,7 +49,7 @@ class HomeDetailActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_home_detail)
-        _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(0))
+        _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
         setupToolbar("详情")
         viewModel = ViewModelProvider(this)[HomeDetailViewModel::class.java]
 

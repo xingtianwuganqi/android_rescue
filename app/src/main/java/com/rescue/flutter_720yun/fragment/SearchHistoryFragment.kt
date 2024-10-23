@@ -46,8 +46,10 @@ class SearchHistoryFragment : Fragment(), SearchHistoryItemClickListener {
         viewModel.searchKeywordNetworking()
     }
 
-    override fun itemClick(keyword: String) {
-        viewModel.addSearchKeyToLocalJson(keyword)
+    override fun itemClick(keyword: String?) {
+        keyword?.let {
+            viewModel.addSearchKeyToLocalJson(it)
+        }
     }
 
     override fun onDeleteClick() {

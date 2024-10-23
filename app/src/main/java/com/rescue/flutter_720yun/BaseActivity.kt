@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.rescue.flutter_720yun.databinding.ActivityBaseBinding
 
@@ -42,4 +43,24 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
+    fun showLoading() {
+        baseBinding.progressBar.visibility = View.VISIBLE
+        baseBinding.errorView.visibility = View.GONE
+        baseBinding.contentFrame.getChildAt(2).visibility = View.GONE
+    }
+
+    fun showSuccess() {
+        baseBinding.progressBar.visibility = View.GONE
+        baseBinding.errorView.visibility = View.GONE
+        baseBinding.contentFrame.getChildAt(2).visibility = View.VISIBLE
+    }
+
+    fun showError(error: String? = null) {
+        baseBinding.progressBar.visibility = View.GONE
+        baseBinding.errorView.visibility = View.VISIBLE
+        baseBinding.contentFrame.getChildAt(2).visibility = View.GONE
+        error?.let {
+            baseBinding.errorView.text = error
+        }
+    }
 }
