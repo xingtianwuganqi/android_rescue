@@ -18,13 +18,22 @@ import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
 
 class ReleaseTopicViewModel: ViewModel() {
+    private var _selectTags = MutableLiveData<List<TagInfoModel>>()
+    val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
+
+    fun uploadSelectTags(items: List<TagInfoModel>){
+        _selectTags.value = items
+    }
+}
+
+class TagListViewModel: ViewModel() {
     private val network = ServiceCreator.create<HomeService>()
 
     private var _uiState = MutableLiveData<UiState<List<TagInfoModel>>>()
     val uiState: LiveData<UiState<List<TagInfoModel>>> get() = _uiState
 
     private var _selectTags = MutableLiveData<List<TagInfoModel>>()
-    private val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
+    val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
 
     fun getTagsNetworking() {
         viewModelScope.launch {
@@ -63,7 +72,6 @@ class ReleaseTopicViewModel: ViewModel() {
         val currentState = _uiState.value
         if (currentState is UiState.Success) {
             // 使用当前数据创建一个新的 Success 状态
-//            _uiState.value = UiState.Success(newData)
             var currentList = currentState.data
             currentList = currentList.map {
                 if (it.id == item.id) {
@@ -71,7 +79,6 @@ class ReleaseTopicViewModel: ViewModel() {
                 }
                 it
             }
-            _uiState.value = UiState.Success(currentList)
             _selectTags.value = currentList.filter {
                 it.isSelected
             }

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.models.TagInfoModel
 
 
@@ -17,7 +18,7 @@ interface TagListClickListener {
     fun onItemClick(item: TagInfoModel)
 }
 
-class TagListAdapter(private val list: List<TagInfoModel>?): RecyclerView.Adapter<TagListAdapter.ViewHolder>() {
+class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.Adapter<TagListAdapter.ViewHolder>() {
 
     private var listener: TagListClickListener? = null
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -57,5 +58,22 @@ class TagListAdapter(private val list: List<TagInfoModel>?): RecyclerView.Adapte
                 holder.textView.setTextColor(textColor)
             }
         }
+    }
+
+    fun addItems(items: List<TagInfoModel>) {
+        list.clear()
+        list.addAll(items)
+        notifyDataSetChanged() // 通知适配器刷新所有项
+    }
+
+    fun uploadItem(item: TagInfoModel) {
+        val position = list.indexOfFirst { it.id == item.id }
+        list[position] = item
+        notifyItemChanged(position)
+    }
+
+    fun clearItems() {
+        list.clear()
+        notifyDataSetChanged()
     }
 }
