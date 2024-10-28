@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
@@ -27,6 +28,8 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
     private val binding get() = _binding!!
 
     private lateinit var adapter: TagListAdapter
+
+    private lateinit var imgsAdapter: TagListAdapter
 
     private val tagSelectLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -56,6 +59,8 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
         binding.tagsRecyclerview.layoutManager = layoutManager
         binding.tagsRecyclerview.adapter = adapter
         adapter.setListener(this)
+
+//        val gridManager = GridLayoutManager(this)
     }
 
     private fun addClick() {

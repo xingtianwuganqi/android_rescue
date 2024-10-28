@@ -44,7 +44,7 @@
     <string name="content_close">收起</string>
     <string name="like_action">点赞</string>
     <string name="collection_action">收藏</string>
-    <string name="comment_action">收藏</string>
+    <string name="comment_action">评论</string>
     <string name="click_get_contact">点击获取联系方式</string>
     <string name="no_more_data">已经到底啦</string>
     <string name="like_error">点赞失败</string>
@@ -66,4 +66,7 @@
     <string name="release_remind">禁止出现商业广告、低俗、色情、暴力、具有侮辱性词汇或者与宠物无关等内容，违规者帖子会被删除!</string>
     <string name="release_add_tag">添加标签 ></string>
     <string name="release_chose_tag">选择标签</string>
+
+
+    <string name="message_system">系统消息</string>
 </resources>

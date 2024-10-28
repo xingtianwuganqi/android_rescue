@@ -4,17 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
-import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.activity.LoginActivity
@@ -50,6 +46,11 @@ fun String.toImgUrl(): String {
 
 fun String.toastString() {
     Toast.makeText(BaseApplication.context, this, Toast.LENGTH_SHORT).show()
+}
+
+fun String.imageResourcesId(): Int {
+    val packageName = "com.rescue.flutter_720yun"
+    return BaseApplication.context.resources.getIdentifier(this, "drawable", packageName)
 }
 
 fun HomeListModel.getImages(): List<String>? {

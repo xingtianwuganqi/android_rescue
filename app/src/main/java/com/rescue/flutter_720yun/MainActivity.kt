@@ -56,7 +56,28 @@ class MainActivity : AppCompatActivity() {
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                     supportActionBar?.setHomeAsUpIndicator(R.drawable.icon_draw_more)
                     searchBtn.visibility = View.VISIBLE
-                }else -> {
+                }
+
+                R.id.navigation_show -> {
+                    supportActionBar?.title = "秀宠"
+                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                    searchBtn.visibility = View.GONE
+                }
+
+                R.id.navigation_message -> {
+                    supportActionBar?.title = "消息"
+                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                    searchBtn.visibility = View.GONE
+                }
+
+                R.id.navigation_message -> {
+                    supportActionBar?.title = "我的"
+                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                    searchBtn.visibility = View.GONE
+                }
+
+
+                else -> {
                     supportActionBar?.title = ""
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     searchBtn.visibility = View.GONE
