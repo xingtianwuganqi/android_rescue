@@ -25,7 +25,8 @@
             android:exported="false" />
         <activity
             android:name=".activity.ReleaseTopicActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".BaseActivity"
             android:exported="false" />

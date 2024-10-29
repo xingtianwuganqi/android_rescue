@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.adapter.ReleaseImagesAdapter
 import com.rescue.flutter_720yun.adapter.TagListAdapter
 import com.rescue.flutter_720yun.adapter.TagListClickListener
 import com.rescue.flutter_720yun.databinding.ActivityReleaseTopicBinding
 import com.rescue.flutter_720yun.models.BaseListResp
 import com.rescue.flutter_720yun.models.TagInfoModel
 import com.rescue.flutter_720yun.viewmodels.ReleaseTopicViewModel
+import android.graphics.Rect
 
 class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
 
@@ -29,7 +31,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
 
     private lateinit var adapter: TagListAdapter
 
-    private lateinit var imgsAdapter: TagListAdapter
+    private lateinit var imagesAdapter: ReleaseImagesAdapter
 
     private val tagSelectLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -60,7 +62,30 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
         binding.tagsRecyclerview.adapter = adapter
         adapter.setListener(this)
 
-//        val gridManager = GridLayoutManager(this)
+        val gridManager = GridLayoutManager(this, 3)
+        binding.imagesRecyclerview.layoutManager = gridManager
+        imagesAdapter = ReleaseImagesAdapter(viewModel.releaseInfo.photos)
+        binding.imagesRecyclerview.adapter = imagesAdapter
+
+//        val rootView = window.decorView.findViewById<View>(android.R.id.content)
+//        rootView.viewTreeObserver.addOnGlobalLayoutListener {
+//            val rect = Rect()
+//            rootView.getWindowVisibleDisplayFrame(rect)
+//
+//            val screenHeight = rootView.rootView.height
+//            val keywordHeight = screenHeight - rect.bottom
+//
+//            // 如果键盘弹出，键盘高度会大于屏幕的1/4
+//            if (keywordHeight > screenHeight * 0.25) {
+//                binding.address.translationY = -keywordHeight.toFloat()
+//                binding.contact.translationY = -keywordHeight.toFloat()
+//                binding.imagesRecyclerview.translationY = -keywordHeight.toFloat()
+//            }else{
+//                binding.address.translationY = 0f
+//                binding.contact.translationY = 0f
+//                binding.imagesRecyclerview.translationY = 0f
+//            }
+//        }
     }
 
     private fun addClick() {

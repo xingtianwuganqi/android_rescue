@@ -13,7 +13,7 @@ data class CoachReleasePhoto(
 // 缓存的数据结构
 @Parcelize
 data class CoachReleaseInfo(
-    val tags: MutableList<TagInfoModel>,
+    var tags: List<TagInfoModel>,
     var content: String?,
     var photos: MutableList<CoachReleasePhoto>,
     var contact: String?,

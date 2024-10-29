@@ -23,7 +23,7 @@ class ReleaseTopicViewModel: ViewModel() {
     private var _selectTags = MutableLiveData<List<TagInfoModel>>()
     val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
 
-    private var releaseInfo: CoachReleaseInfo = CoachReleaseInfo(
+    var releaseInfo: CoachReleaseInfo = CoachReleaseInfo(
         mutableListOf(),
         null,
         mutableListOf(
@@ -38,6 +38,7 @@ class ReleaseTopicViewModel: ViewModel() {
     // 更新所选的标签
     fun uploadSelectTags(items: List<TagInfoModel>){
         _selectTags.value = items
+        releaseInfo.tags = items
     }
 }
 
