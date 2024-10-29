@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.models.BaseResponse
+import com.rescue.flutter_720yun.models.CoachReleaseInfo
+import com.rescue.flutter_720yun.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.models.HomeListModel
 import com.rescue.flutter_720yun.models.TagInfoModel
 import com.rescue.flutter_720yun.network.HomeService
@@ -21,6 +23,19 @@ class ReleaseTopicViewModel: ViewModel() {
     private var _selectTags = MutableLiveData<List<TagInfoModel>>()
     val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
 
+    private var releaseInfo: CoachReleaseInfo = CoachReleaseInfo(
+        mutableListOf(),
+        null,
+        mutableListOf(
+            CoachReleasePhoto(true,
+            null
+            )
+        ),
+        null,
+        null
+    )
+
+    // 更新所选的标签
     fun uploadSelectTags(items: List<TagInfoModel>){
         _selectTags.value = items
     }
