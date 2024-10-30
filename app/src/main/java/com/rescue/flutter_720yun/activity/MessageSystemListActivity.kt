@@ -27,5 +27,11 @@ class MessageSystemListActivity : BaseActivity() {
         _binding = ActivityMessageSystemListBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
 
+
+
+    }
+
+    fun viewModelObserver() {
+
     }
 }

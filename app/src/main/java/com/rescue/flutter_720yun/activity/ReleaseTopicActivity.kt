@@ -23,8 +23,16 @@ import com.rescue.flutter_720yun.models.BaseListResp
 import com.rescue.flutter_720yun.models.TagInfoModel
 import com.rescue.flutter_720yun.viewmodels.ReleaseTopicViewModel
 import android.graphics.Rect
+import com.luck.picture.lib.basic.PictureSelector
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.config.SelectMimeType
+import com.luck.picture.lib.engine.ImageEngine
+import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.interfaces.OnResultCallbackListener
+import com.rescue.flutter_720yun.util.GlideEngine
+import com.rescue.flutter_720yun.adapter.ReleaseImageClickListener
 
-class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
+class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageClickListener {
 
     private var _binding: ActivityReleaseTopicBinding? = null
     private val binding get() = _binding!!
@@ -66,6 +74,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
         binding.imagesRecyclerview.layoutManager = gridManager
         imagesAdapter = ReleaseImagesAdapter(viewModel.releaseInfo.photos)
         binding.imagesRecyclerview.adapter = imagesAdapter
+        imagesAdapter.setClickListener(this)
 
 //        val rootView = window.decorView.findViewById<View>(android.R.id.content)
 //        rootView.viewTreeObserver.addOnGlobalLayoutListener {
@@ -95,6 +104,8 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
         }
     }
 
+
+
     private fun uploadTagAdapter(items: ArrayList<TagInfoModel>?) {
         viewModel.uploadSelectTags(items?.toList() ?: listOf())
     }
@@ -119,5 +130,29 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener {
         val list = ArrayList(viewModel.selectTags.value?.toMutableList())
         intent.putParcelableArrayListExtra("tagModels", list)
         tagSelectLauncher.launch(intent)
+    }
+
+    override fun addImageClick() {
+        Log.d("TAG", "Click Add Image")
+        PictureSelector.create(this)
+            .openGallery(SelectMimeType.ofImage())
+            .setImageEngine(GlideEngine.createGlideEngine())
+            .setMaxSelectNum(6)
+            .setMinSelectNum(1)
+            .isDisplayCamera(false)
+            .forResult(object : OnResultCallbackListener<LocalMedia>{
+                override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
+
+                }
+
+                override fun onCancel() {
+
+                }
+
+            })
+    }
+
+    override fun deleteImageClick() {
+
     }
 }

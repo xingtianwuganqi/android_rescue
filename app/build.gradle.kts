@@ -72,5 +72,10 @@ dependencies {
     implementation(libs.androidx.viewpager2.viewpager2)
     implementation("com.webtoonscorp.android:readmore-view:1.3.3")
     implementation(libs.google.flexbox)
+    implementation("io.github.lucksiege:pictureselector:v3.11.2")
+    implementation("io.github.lucksiege:compress:v3.11.2")
+    implementation("io.github.lucksiege:ucrop:v3.11.2")
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+
 }
 
