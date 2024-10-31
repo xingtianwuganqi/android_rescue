@@ -31,6 +31,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.adapter.ReleaseImageClickListener
+import com.rescue.flutter_720yun.models.CoachReleasePhoto
 
 class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageClickListener {
 
@@ -72,7 +73,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
 
         val gridManager = GridLayoutManager(this, 3)
         binding.imagesRecyclerview.layoutManager = gridManager
-        imagesAdapter = ReleaseImagesAdapter(viewModel.releaseInfo.photos)
+        imagesAdapter = ReleaseImagesAdapter(viewModel.releaseInfo.photos.toMutableList())
         binding.imagesRecyclerview.adapter = imagesAdapter
         imagesAdapter.setClickListener(this)
 
@@ -127,22 +128,41 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
 
     override fun onItemClick(item: TagInfoModel) {
         val intent = Intent(this, TagListActivity::class.java)
-        val list = ArrayList(viewModel.selectTags.value?.toMutableList())
+        val list = viewModel.selectTags.value?.toMutableList()?.let { ArrayList(it) }
         intent.putParcelableArrayListExtra("tagModels", list)
         tagSelectLauncher.launch(intent)
     }
 
     override fun addImageClick() {
-        Log.d("TAG", "Click Add Image")
+        val images = viewModel.releaseInfo.photos.filter {
+            !it.isAdd
+        }
+        val allowSize = 6 - images.size
         PictureSelector.create(this)
             .openGallery(SelectMimeType.ofImage())
             .setImageEngine(GlideEngine.createGlideEngine())
-            .setMaxSelectNum(6)
-            .setMinSelectNum(1)
+            .setMaxSelectNum(allowSize)
             .isDisplayCamera(false)
             .forResult(object : OnResultCallbackListener<LocalMedia>{
                 override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
-
+                    val photos = result?.map {
+                        CoachReleasePhoto(
+                            false,
+                            null,
+                             it
+                        )
+                    }
+                    if (photos != null) {
+                        if (viewModel.releaseInfo.photos.filter {
+                                !it.isAdd
+                            }.size == 6) {
+                            viewModel.releaseInfo.photos = viewModel.releaseInfo.photos.filter {
+                                !it.isAdd
+                            }.toMutableList()
+                        }
+                        viewModel.releaseInfo.photos.addAll(0, photos)
+                        imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())
+                    }
                 }
 
                 override fun onCancel() {
@@ -152,7 +172,10 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             })
     }
 
-    override fun deleteImageClick() {
-
+    override fun deleteImageClick(item: CoachReleasePhoto) {
+        viewModel.releaseInfo.photos = viewModel.releaseInfo.photos.filter {
+            it.photoKey != item.photoKey
+        }.toMutableList()
+        imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())
     }
 }

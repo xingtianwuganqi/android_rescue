@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.models
 
 import android.os.Parcelable
+import com.luck.picture.lib.entity.LocalMedia
 import kotlinx.parcelize.Parcelize
 
 
@@ -8,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 data class CoachReleasePhoto(
     var isAdd: Boolean,
     val photoKey: String?,
+    var media: LocalMedia?
 ): Parcelable
 
 // 缓存的数据结构

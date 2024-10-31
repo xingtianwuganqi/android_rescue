@@ -34,7 +34,7 @@ class MessageListAdapter(private val list: List<MessageListModel>): RecyclerView
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = list[position]
-        val packageName = "com.rescue.flutter_720yun"
+        val packageName = BaseApplication.context.packageName
         val drawableId = BaseApplication.context.resources.getIdentifier(item.icon, "drawable", packageName)
         if (drawableId != 0) {
             holder.iconImage.setImageResource(drawableId)

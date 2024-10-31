@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,17 +8,21 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.models.CoachReleaseInfo
 import com.rescue.flutter_720yun.models.CoachReleasePhoto
+import com.rescue.flutter_720yun.models.HomeListModel
 
 interface ReleaseImageClickListener{
     fun addImageClick()
-    fun deleteImageClick()
+    fun deleteImageClick(item: CoachReleasePhoto)
 }
 
-class ReleaseImagesAdapter(var list: MutableList<CoachReleasePhoto>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ReleaseImagesAdapter(val list: MutableList<CoachReleasePhoto>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var listener: ReleaseImageClickListener? = null
+    private var listener: ReleaseImageClickListener? = null
     companion object {
         const val ADD = 0
         const val IMAGE = 1
@@ -31,13 +36,13 @@ class ReleaseImagesAdapter(var list: MutableList<CoachReleasePhoto>): RecyclerVi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
+        return when (viewType) {
             0 -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.release_add_item, parent, false)
-                return ReleaseAddViewHolder(view)
+                ReleaseAddViewHolder(view)
             }else -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.release_image_item, parent, false)
-                return ReleaseImageViewHolder(view)
+                ReleaseImageViewHolder(view)
             }
         }
     }
@@ -47,6 +52,7 @@ class ReleaseImagesAdapter(var list: MutableList<CoachReleasePhoto>): RecyclerVi
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = list[position]
         when (holder) {
             is ReleaseAddViewHolder -> {
                 holder.linearLayout.setOnClickListener {
@@ -55,14 +61,23 @@ class ReleaseImagesAdapter(var list: MutableList<CoachReleasePhoto>): RecyclerVi
             }
             is ReleaseImageViewHolder -> {
                 holder.cleanButton.setOnClickListener {
-                    listener?.deleteImageClick()
+                    listener?.deleteImageClick(item)
                 }
+                Glide.with(BaseApplication.context)
+                    .load(item.media?.path)
+                    .into(holder.imageView)
             }
         }
     }
 
     fun setClickListener(listener: ReleaseImageClickListener) {
         this.listener = listener
+    }
+
+    fun refreshItems(values: List<CoachReleasePhoto>) {
+        list.clear()
+        list.addAll(values)
+        notifyDataSetChanged() // 通知适配器刷新所有项
     }
 }
 
