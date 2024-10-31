@@ -28,7 +28,8 @@ class ReleaseTopicViewModel: ViewModel() {
         null,
         mutableListOf(
             CoachReleasePhoto(true,
-            null,
+                null,
+                null,
                 null
             ),
         ),

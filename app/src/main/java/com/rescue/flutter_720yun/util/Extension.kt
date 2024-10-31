@@ -16,7 +16,10 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.activity.LoginActivity
 import com.rescue.flutter_720yun.models.HomeListModel
 import java.security.MessageDigest
+import java.time.LocalDateTime
 import java.util.Locale
+import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 // Int Extension
 fun Int.dpToPx(): Int {
@@ -138,3 +141,24 @@ val paramDic get() = if (UserManager.isLogin) {
     params
 }
 
+// 时间格式
+fun dateFormatter(format: String): String {
+    val current = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern(format)
+    return current.format(formatter)
+}
+
+
+fun randomString(length: Int): String {
+    if (length <= 0) return ""
+
+    val base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    val randomString = StringBuilder()
+
+    repeat(length) {
+        val randomIndex = (base.indices).random()
+        randomString.append(base[randomIndex])
+    }
+
+    return randomString.toString()
+}

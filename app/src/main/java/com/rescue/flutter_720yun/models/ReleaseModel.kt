@@ -9,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 data class CoachReleasePhoto(
     var isAdd: Boolean,
     val photoKey: String?,
+    val previewKey: String?,
     var media: LocalMedia?
 ): Parcelable
 

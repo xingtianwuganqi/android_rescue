@@ -32,6 +32,8 @@ import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.models.CoachReleasePhoto
+import com.rescue.flutter_720yun.util.dateFormatter
+import com.rescue.flutter_720yun.util.randomString
 
 class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageClickListener {
 
@@ -145,14 +147,17 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             .isDisplayCamera(false)
             .forResult(object : OnResultCallbackListener<LocalMedia>{
                 override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
+
                     val photos = result?.map {
                         CoachReleasePhoto(
                             false,
-                            null,
+                            "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
+                            "${dateFormatter("yyyy-MM")}/preview/${randomString(8)}.jpeg",
                              it
                         )
                     }
                     if (photos != null) {
+                        viewModel.releaseInfo.photos.addAll(0, photos)
                         if (viewModel.releaseInfo.photos.filter {
                                 !it.isAdd
                             }.size == 6) {
@@ -160,7 +165,6 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                                 !it.isAdd
                             }.toMutableList()
                         }
-                        viewModel.releaseInfo.photos.addAll(0, photos)
                         imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())
                     }
                 }
@@ -176,6 +180,17 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         viewModel.releaseInfo.photos = viewModel.releaseInfo.photos.filter {
             it.photoKey != item.photoKey
         }.toMutableList()
+        if (viewModel.releaseInfo.photos.filter {
+            !it.isAdd
+            }.size < 6 && viewModel.releaseInfo.photos.filter {
+                it.isAdd
+            }.isEmpty()) {
+            viewModel.releaseInfo.photos.add(CoachReleasePhoto(true,
+                null,
+                null,
+                null)
+            )
+        }
         imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())
     }
 }

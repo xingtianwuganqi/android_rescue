@@ -46,7 +46,6 @@ class TagListActivity : BaseActivity(), TagListClickListener {
         if (arrayList != null) {
             selectArr = arrayList?.toList()
         }
-        Log.d("TAG", "array list is $selectArr")
 
         adapter = TagListAdapter(mutableListOf())
         val layoutManager = FlexboxLayoutManager(this)

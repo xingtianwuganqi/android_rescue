@@ -88,6 +88,6 @@ class ReleaseAddViewHolder(view: View): RecyclerView.ViewHolder(view) {
 }
 
 class ReleaseImageViewHolder(view: View): RecyclerView.ViewHolder(view) {
-    val cleanButton: ImageButton = view.findViewById(R.id.clear_button)
+    val cleanButton: ImageView = view.findViewById(R.id.clear_button)
     val imageView: ImageView = view.findViewById(R.id.imageView)
 }
