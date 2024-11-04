@@ -24,8 +24,8 @@ import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.models.HomeListModel
-import com.rescue.flutter_720yun.models.TagInfoModel
+import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.home.models.TagInfoModel
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.timeToStr
 import com.rescue.flutter_720yun.util.toImgUrl

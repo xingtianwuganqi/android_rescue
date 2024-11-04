@@ -18,11 +18,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.rescue.flutter_720yun.activity.SearchActivity
-import com.rescue.flutter_720yun.adapter.DrawerListAdapter
+import com.rescue.flutter_720yun.home.activity.SearchActivity
+import com.rescue.flutter_720yun.home.adapter.DrawerListAdapter
 import com.rescue.flutter_720yun.databinding.ActivityMainBinding
 import com.rescue.flutter_720yun.util.UserManager
-import com.rescue.flutter_720yun.viewmodels.MainViewModel
+import com.rescue.flutter_720yun.home.viewmodels.MainViewModel
 
 
 class MainActivity : AppCompatActivity() {

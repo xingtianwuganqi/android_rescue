@@ -15,26 +15,26 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <activity
-            android:name=".activity.MessageSystemListActivity"
+            android:name=".home.activity.MessageSystemListActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.TagListActivity"
+            android:name=".home.activity.TagListActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SearchActivity"
+            android:name=".home.activity.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ReleaseTopicActivity"
+            android:name=".home.activity.ReleaseTopicActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.HomeDetailActivity"
+            android:name=".home.activity.HomeDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".home.activity.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

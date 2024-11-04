@@ -9,9 +9,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.rescue.flutter_720yun.activity.MessageSystemListActivity
-import com.rescue.flutter_720yun.adapter.MessageListAdapter
-import com.rescue.flutter_720yun.adapter.MessageListItemClickListener
+import com.rescue.flutter_720yun.home.activity.MessageSystemListActivity
+import com.rescue.flutter_720yun.home.adapter.MessageListAdapter
+import com.rescue.flutter_720yun.home.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.databinding.FragmentMessageBinding
 
 class MessageFragment : Fragment(), MessageListItemClickListener {

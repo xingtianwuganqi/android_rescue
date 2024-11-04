@@ -13,8 +13,8 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.activity.LoginActivity
-import com.rescue.flutter_720yun.models.HomeListModel
+import com.rescue.flutter_720yun.home.activity.LoginActivity
+import com.rescue.flutter_720yun.home.models.HomeListModel
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.Locale

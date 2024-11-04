@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.rescue.flutter_720yun.BaseApplication
-import com.rescue.flutter_720yun.models.UserInfo
+import com.rescue.flutter_720yun.home.models.UserInfo
 
 object UserManager {
     private var _userInfo: UserInfo? = null

@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.models.MessageListModel
+import com.rescue.flutter_720yun.home.models.MessageListModel
 
 class MessageViewModel : ViewModel() {
 

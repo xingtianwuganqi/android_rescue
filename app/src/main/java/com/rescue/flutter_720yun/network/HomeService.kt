@@ -1,6 +1,6 @@
 package com.rescue.flutter_720yun.network
 
-import com.rescue.flutter_720yun.models.BaseResponse
+import com.rescue.flutter_720yun.home.models.BaseResponse
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST

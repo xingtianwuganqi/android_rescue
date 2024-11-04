@@ -1,13 +1,13 @@
 package com.rescue.flutter_720yun.network
 
-import com.rescue.flutter_720yun.models.BaseListResp
-import com.rescue.flutter_720yun.models.BaseResponse
-import com.rescue.flutter_720yun.models.CollectionActionModel
-import com.rescue.flutter_720yun.models.ContactInfoModel
-import com.rescue.flutter_720yun.models.HomeListModel
-import com.rescue.flutter_720yun.models.LikeActionModel
-import com.rescue.flutter_720yun.models.SearchKeywordModel
-import com.rescue.flutter_720yun.models.UserInfo
+import com.rescue.flutter_720yun.home.models.BaseListResp
+import com.rescue.flutter_720yun.home.models.BaseResponse
+import com.rescue.flutter_720yun.home.models.CollectionActionModel
+import com.rescue.flutter_720yun.home.models.ContactInfoModel
+import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.home.models.LikeActionModel
+import com.rescue.flutter_720yun.home.models.SearchKeywordModel
+import com.rescue.flutter_720yun.home.models.UserInfo
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Field
