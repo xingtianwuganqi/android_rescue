@@ -5,11 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -19,14 +15,11 @@ import com.rescue.flutter_720yun.home.adapter.ReleaseImagesAdapter
 import com.rescue.flutter_720yun.home.adapter.TagListAdapter
 import com.rescue.flutter_720yun.home.adapter.TagListClickListener
 import com.rescue.flutter_720yun.databinding.ActivityReleaseTopicBinding
-import com.rescue.flutter_720yun.home.models.BaseListResp
 import com.rescue.flutter_720yun.home.models.TagInfoModel
 import com.rescue.flutter_720yun.home.viewmodels.ReleaseTopicViewModel
-import android.graphics.Rect
 import com.luck.picture.lib.basic.PictureSelector
-import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.config.SelectMimeType
-import com.luck.picture.lib.engine.ImageEngine
+import com.luck.picture.lib.engine.CompressFileEngine
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.util.GlideEngine
@@ -34,6 +27,9 @@ import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
+import top.zibin.luban.Luban
+import top.zibin.luban.OnNewCompressListener
+import java.io.File
 
 class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageClickListener {
 
@@ -145,7 +141,21 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             .setImageEngine(GlideEngine.createGlideEngine())
             .setMaxSelectNum(allowSize)
             .isDisplayCamera(false)
-//            .setCompressEngine()
+            .setCompressEngine(CompressFileEngine { context, source, call ->
+                Luban.with(context).load(source).ignoreBy(50).setCompressListener(object : OnNewCompressListener{
+                    override fun onStart() {
+
+                    }
+
+                    override fun onSuccess(source: String?, compressFile: File?) {
+                        call?.onCallback(source, compressFile?.absoluteFile.toString())
+                    }
+
+                    override fun onError(source: String?, e: Throwable?) {
+                        call?.onCallback(source, null)
+                    }
+                })
+            })
             .forResult(object : OnResultCallbackListener<LocalMedia>{
                 override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
 
