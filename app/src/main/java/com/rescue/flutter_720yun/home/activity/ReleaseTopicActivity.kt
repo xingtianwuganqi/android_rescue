@@ -142,19 +142,19 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             .setMaxSelectNum(allowSize)
             .isDisplayCamera(false)
             .setCompressEngine(CompressFileEngine { context, source, call ->
-                Luban.with(context).load(source).ignoreBy(50).setCompressListener(object : OnNewCompressListener{
+                Luban.with(context).load(source).ignoreBy(60).setCompressListener(object : OnNewCompressListener{
                     override fun onStart() {
 
                     }
 
                     override fun onSuccess(source: String?, compressFile: File?) {
-                        call?.onCallback(source, compressFile?.absoluteFile.toString())
+                        call?.onCallback(source, compressFile?.absolutePath)
                     }
 
                     override fun onError(source: String?, e: Throwable?) {
                         call?.onCallback(source, null)
                     }
-                })
+                }).launch()
             })
             .forResult(object : OnResultCallbackListener<LocalMedia>{
                 override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
