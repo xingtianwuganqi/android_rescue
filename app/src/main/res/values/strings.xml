@@ -69,4 +69,16 @@
     <string name="release_upload">上传图片</string>
 
     <string name="message_system">系统消息</string>
+
+    <string name="drawer_footer">浏览记录</string>
+    <string name="drawer_collect">我的收藏</string>
+    <string name="drawer_black">黑名单</string>
+    <string name="drawer_rescue">领养相关</string>
+    <string name="drawer_upload">检测更新</string>
+    <string name="drawer_agreement">用户协议</string>
+    <string name="drawer_privacy">隐私协议</string>
+    <string name="drawer_about">关于我们</string>
+    <string name="drawer_help">支持我们</string>
+    <string name="drawer_recommend">推荐给朋友</string>
+
 </resources>

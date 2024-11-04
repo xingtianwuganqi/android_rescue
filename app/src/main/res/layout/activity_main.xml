@@ -79,13 +79,19 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <TextView
+    <LinearLayout
         android:id="@+id/drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
         android:layout_gravity="start"
-        android:text="drawer"/>
+        android:orientation="vertical">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/drawer_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

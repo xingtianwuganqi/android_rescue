@@ -145,6 +145,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             .setImageEngine(GlideEngine.createGlideEngine())
             .setMaxSelectNum(allowSize)
             .isDisplayCamera(false)
+//            .setCompressEngine()
             .forResult(object : OnResultCallbackListener<LocalMedia>{
                 override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
 

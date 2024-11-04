@@ -26,7 +26,7 @@ class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.
     }
 
     override fun getItemCount(): Int {
-        return list?.size ?: 0
+        return list.size ?: 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,7 +40,7 @@ class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        list?.let {
+        list.let {
             val item = it[position]
             val keyword = item.tag_name
             holder.textView.text = keyword

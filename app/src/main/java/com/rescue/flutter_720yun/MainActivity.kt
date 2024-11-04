@@ -12,13 +12,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.activity.SearchActivity
+import com.rescue.flutter_720yun.adapter.DrawerListAdapter
 import com.rescue.flutter_720yun.databinding.ActivityMainBinding
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.viewmodels.MainViewModel
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
 
+    val viewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java]
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -91,6 +98,16 @@ class MainActivity : AppCompatActivity() {
         binding.searchButton.setOnClickListener{
             val intent = Intent(this, SearchActivity::class.java)
             startActivity(intent)
+        }
+
+        addViewModelObserver()
+    }
+
+    private fun addViewModelObserver() {
+        viewModel.drawerList.observe(this) {
+            val adapter = DrawerListAdapter(it)
+            binding.drawerRecyclerview.layoutManager = LinearLayoutManager(this)
+            binding.drawerRecyclerview.adapter = adapter
         }
     }
 

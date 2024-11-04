@@ -97,3 +97,11 @@ data class SearchHistoryItemModel(
     val title: String,
     val list: List<SearchKeywordModel>?
 ): Parcelable
+
+
+@Parcelize
+data class DrawerListModel(
+    val icon: String,
+    val name: String,
+    val number: Int?
+): Parcelable

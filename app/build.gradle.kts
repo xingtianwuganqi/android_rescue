@@ -75,7 +75,6 @@ dependencies {
     implementation("io.github.lucksiege:pictureselector:v3.11.2")
     implementation("io.github.lucksiege:compress:v3.11.2")
     implementation("io.github.lucksiege:ucrop:v3.11.2")
-    implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.github.jenly1314:imageviewer:1.1.0")
 }
 
