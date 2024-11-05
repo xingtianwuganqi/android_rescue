@@ -24,6 +24,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
+import com.rescue.flutter_720yun.home.fragment.LocationSheetFragment
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
@@ -100,6 +101,11 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         binding.addTags.setOnClickListener {
             val intent = Intent(this, TagListActivity::class.java)
             tagSelectLauncher.launch(intent)
+        }
+
+        binding.addressEdit.setOnClickListener {
+            val bottomSheetFragment = LocationSheetFragment()
+            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
     }
 

@@ -1,15 +1,15 @@
 package com.rescue.flutter_720yun.home.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.home.models.BaseResponse
 import com.rescue.flutter_720yun.home.models.CoachReleaseInfo
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
-import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.home.models.ProvinceModel
 import com.rescue.flutter_720yun.home.models.TagInfoModel
 import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
@@ -18,10 +18,15 @@ import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
 
 class ReleaseTopicViewModel: ViewModel() {
     private var _selectTags = MutableLiveData<List<TagInfoModel>>()
+    private val _locationInfo = MutableLiveData<List<ProvinceModel>?>()
     val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
+    val locationInfo: LiveData<List<ProvinceModel>?> get() = _locationInfo
 
     var releaseInfo: CoachReleaseInfo = CoachReleaseInfo(
         mutableListOf(),
@@ -37,11 +42,35 @@ class ReleaseTopicViewModel: ViewModel() {
         null
     )
 
+    init {
+        _locationInfo.value = loadProvinceData()
+    }
+
     // 更新所选的标签
     fun uploadSelectTags(items: List<TagInfoModel>){
         _selectTags.value = items
         releaseInfo.tags = items
     }
+
+    private fun loadProvinceData(): List<ProvinceModel>? {
+        val data = readJsonFromRaw(BaseApplication.context, R.raw.location)
+        return data?.let { convertAnyToList(it, ProvinceModel::class.java) }
+    }
+
+    private fun readJsonFromRaw(context: Context, resId: Int): String? {
+        try {
+            val inputStream: InputStream = context.resources.openRawResource(resId)
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            return String(buffer)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
 }
 
 class TagListViewModel: ViewModel() {
