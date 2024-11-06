@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
 
-    val viewModel by lazy {
+    private val viewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
     override fun onCreate(savedInstanceState: Bundle?) {

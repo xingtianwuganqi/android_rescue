@@ -35,7 +35,7 @@ class HomeLayoutFragment : Fragment() {
             when(position) {
                 0 -> tab.text = "推荐"
                 1 -> tab.text = "同城"
-                3 -> tab.text = "找宠"
+                2 -> tab.text = "找宠"
             }
         }.attach()
 
