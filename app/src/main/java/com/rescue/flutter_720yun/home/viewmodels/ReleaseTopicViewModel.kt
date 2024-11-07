@@ -42,9 +42,6 @@ class ReleaseTopicViewModel: ViewModel() {
         null
     )
 
-    init {
-        _locationInfo.value = loadProvinceData()
-    }
 
     // 更新所选的标签
     fun uploadSelectTags(items: List<TagInfoModel>){
@@ -52,24 +49,6 @@ class ReleaseTopicViewModel: ViewModel() {
         releaseInfo.tags = items
     }
 
-    private fun loadProvinceData(): List<ProvinceModel>? {
-        val data = readJsonFromRaw(BaseApplication.context, R.raw.location)
-        return data?.let { convertAnyToList(it, ProvinceModel::class.java) }
-    }
-
-    private fun readJsonFromRaw(context: Context, resId: Int): String? {
-        try {
-            val inputStream: InputStream = context.resources.openRawResource(resId)
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            return String(buffer)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return null
-        }
-    }
 
 }
 

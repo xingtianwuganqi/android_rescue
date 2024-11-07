@@ -22,3 +22,11 @@ data class AreaModel(
     val code: Int,
     val name: String,
 ): Parcelable
+
+
+@Parcelize
+data class AddressItem(
+    val code: String,
+    val name: String,
+    val children: List<AddressItem>?
+): Parcelable
