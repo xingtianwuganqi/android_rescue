@@ -68,7 +68,6 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
             override fun onTabSelected(p0: TabLayout.Tab?) {
                 if (tabLayout.getTabAt(p0?.position!!)?.text != ""){
                     viewPager.currentItem = p0?.position!!
-                    updatePage(p0.position, pagerAdapter.fragments[p0.position].addressItems)
                 }
             }
 
