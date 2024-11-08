@@ -13,13 +13,13 @@ import com.rescue.flutter_720yun.home.models.AddressItem
 
 class LocationViewPagerAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
 
-    val fragments = mutableListOf<LocationListFragment>()
+    val fragments = listOf(LocationListFragment(),LocationListFragment(), LocationListFragment())
 
-    fun setFragments(newFragments: List<LocationListFragment>) {
-        fragments.clear()
-        fragments.addAll(newFragments)
-        notifyDataSetChanged()
-    }
+//    fun setFragments(newFragments: List<LocationListFragment>) {
+//        fragments.clear()
+//        fragments.addAll(newFragments)
+//        notifyDataSetChanged()
+//    }
 
     override fun getItemCount(): Int {
         return fragments.size
@@ -60,6 +60,11 @@ class LocationListAdapter(var list: MutableList<AddressItem>): RecyclerView.Adap
         this.onItemClick = onItemClick
         list.clear()
         list.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    fun cleanItem() {
+        list.clear()
         notifyDataSetChanged()
     }
 }

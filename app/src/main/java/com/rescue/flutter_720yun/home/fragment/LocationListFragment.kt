@@ -18,13 +18,15 @@ class LocationListFragment : Fragment() {
     private var _binding: FragmentLocationListBinding? = null
     private val binding get() = _binding!!
 
-    private var adapterValue: LocationListAdapter = LocationListAdapter(mutableListOf())
+    private val adapterValue by lazy {
+       LocationListAdapter(mutableListOf())
+    }
     var addressItems: List<AddressItem> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLocationListBinding.inflate(inflater,container, false)
         binding.localRecyclerview.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.localRecyclerview.adapter = adapterValue

@@ -26,7 +26,6 @@ class ReleaseTopicViewModel: ViewModel() {
     private var _selectTags = MutableLiveData<List<TagInfoModel>>()
     private val _locationInfo = MutableLiveData<List<ProvinceModel>?>()
     val selectTags: LiveData<List<TagInfoModel>> get() = _selectTags
-    val locationInfo: LiveData<List<ProvinceModel>?> get() = _locationInfo
 
     var releaseInfo: CoachReleaseInfo = CoachReleaseInfo(
         mutableListOf(),

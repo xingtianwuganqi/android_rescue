@@ -36,16 +36,17 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: LocationViewPagerAdapter
+    var selectCompletion: ((MutableList<AddressItem>) -> Unit)? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLocationSheetBinding.inflate(inflater, container, false)
 
         tabLayout = binding.tabLayout
         viewPager = binding.viewPager
         viewPager.isUserInputEnabled = false
-        var data = loadProvinceData()
+        val data = loadProvinceData()
         addressData = data ?: emptyList()
         setupTabsAndViewPager()
 
@@ -84,7 +85,7 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun updatePage(level: Int, items: List<AddressItem>) {
-        val fragment = LocationListFragment().apply {
+        val fragment = pagerAdapter.fragments[level].apply {
             setAddressItem(items) {
                 if (selectedItems.size > level) {
                     selectedItems[level] = it
@@ -94,10 +95,9 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
 
                 tabLayout.getTabAt(level)?.text = it.name
 
-                if (level == 2) {
+                if (it.children == null) {
                     sendResultAndDismiss()
                 }else{
-                    Log.d("TAG", "it value is ${it.children?.first()?.name}")
                     updatePage(level + 1, it.children ?: emptyList())
                     viewPager.currentItem = level + 1
                     tabLayout.getTabAt(level + 1)?.text = "请选择"
@@ -114,14 +114,13 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
             tabLayout.getTabAt(2)?.text = ""
         }
 
-        var fragments = pagerAdapter.fragments.toMutableList()
-        fragments = fragments.slice(0 until level).toMutableList()
-        fragments.add(fragment)
-        pagerAdapter.setFragments(fragments)
     }
 
-    fun sendResultAndDismiss() {
-
+    private fun sendResultAndDismiss() {
+        selectCompletion?.let { completion ->
+            completion(selectedItems)
+        }
+        dismiss()
     }
     private fun loadProvinceData(): List<AddressItem>? {
         val data = readJsonFromRaw(BaseApplication.context, R.raw.location)

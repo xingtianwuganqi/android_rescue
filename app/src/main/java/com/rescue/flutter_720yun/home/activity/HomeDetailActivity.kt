@@ -59,12 +59,12 @@ class HomeDetailActivity : BaseActivity() {
             viewModel.loadDetailNetworking(it)
         }
 
-        viewModelChanged()
-        // 添加点击事件
-        addClickAction()
+        addViewModelObserver()
+        addViewAction()
     }
 
-    private fun viewModelChanged() {
+
+    override fun addViewModelObserver() {
         viewModel.homeData.observe(this) {
             uploadViews(it)
             uploadBottom(it)
@@ -174,7 +174,7 @@ class HomeDetailActivity : BaseActivity() {
 
     }
 
-    private fun addClickAction() {
+    override fun addViewAction() {
         val likeBtn = binding.likeButton
         likeBtn.setOnClickListener{
             lazyLogin(this) {

@@ -13,6 +13,15 @@ open class BaseActivity : AppCompatActivity() {
         ActivityController.addActivity(this)
         _binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(baseBinding.root)
+
+    }
+
+    open fun addViewModelObserver() {
+
+    }
+
+    open fun addViewAction() {
+
     }
 
     override fun onDestroy() {

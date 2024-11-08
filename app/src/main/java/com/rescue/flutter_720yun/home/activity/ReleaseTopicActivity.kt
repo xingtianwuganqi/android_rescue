@@ -3,9 +3,16 @@ package com.rescue.flutter_720yun.home.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -22,12 +29,14 @@ import com.luck.picture.lib.config.SelectMimeType
 import com.luck.picture.lib.engine.CompressFileEngine
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.fragment.LocationSheetFragment
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
+import com.rescue.flutter_720yun.util.toastString
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
@@ -59,10 +68,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_release_topic)
         _binding = ActivityReleaseTopicBinding.bind(baseBinding.contentFrame.getChildAt(2))
-        setupToolbar("发布")
-
-        viewModelObserver()
-        addClick()
+        setupToolbar(BaseApplication.context.resources.getString(R.string.release_push))
 
         adapter = TagListAdapter(mutableListOf())
         val layoutManager = FlexboxLayoutManager(this)
@@ -76,28 +82,73 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         binding.imagesRecyclerview.adapter = imagesAdapter
         imagesAdapter.setClickListener(this)
 
-//        val rootView = window.decorView.findViewById<View>(android.R.id.content)
-//        rootView.viewTreeObserver.addOnGlobalLayoutListener {
-//            val rect = Rect()
-//            rootView.getWindowVisibleDisplayFrame(rect)
-//
-//            val screenHeight = rootView.rootView.height
-//            val keywordHeight = screenHeight - rect.bottom
-//
-//            // 如果键盘弹出，键盘高度会大于屏幕的1/4
-//            if (keywordHeight > screenHeight * 0.25) {
-//                binding.address.translationY = -keywordHeight.toFloat()
-//                binding.contact.translationY = -keywordHeight.toFloat()
-//                binding.imagesRecyclerview.translationY = -keywordHeight.toFloat()
-//            }else{
-//                binding.address.translationY = 0f
-//                binding.contact.translationY = 0f
-//                binding.imagesRecyclerview.translationY = 0f
-//            }
-//        }
+        addViewModelObserver()
+        addViewAction()
     }
 
-    private fun addClick() {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val menuItem = menu?.findItem(R.id.action_publish)
+
+        // 检查 menuItem 是否不为空
+        menuItem?.let {
+            val spanString = SpannableString(it.title) // 确保 title 不为空
+
+            // 设置颜色和大小
+            val color = ContextCompat.getColor(this, R.color.color_system)
+            spanString.setSpan(ForegroundColorSpan(color), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            spanString.setSpan(AbsoluteSizeSpan(16, true), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+
+            // 设置带格式的标题
+            it.title = spanString
+        }
+
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_publish -> {
+                pushTopicNetworking()
+                true
+            }else ->{
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    private fun pushTopicNetworking() {
+        if (binding.contentEdit.text.trim().isEmpty()){
+            BaseApplication.context.getString(R.string.release_context_desc).toastString()
+            return
+        }
+        viewModel.releaseInfo.content = binding.contentEdit.text.trim().toString()
+        val photos = viewModel.releaseInfo.photos.filter {
+            !it.isAdd
+        }
+        if (photos.isEmpty()) {
+            BaseApplication.context.getString(R.string.release_photos_desc).toastString()
+            return
+        }
+        if (binding.contactEdit.text.trim().isEmpty()) {
+            BaseApplication.context.getString(R.string.release_contact_desc).toastString()
+            return
+        }
+        viewModel.releaseInfo.contact = binding.contactEdit.text.trim().toString()
+
+        if ((viewModel.releaseInfo.address?.length ?: 0) == 0) {
+            BaseApplication.context.getString(R.string.release_address_desc).toastString()
+            return
+        }
+
+        // 发布
+    }
+
+    override fun addViewAction() {
         binding.addTags.setOnClickListener {
             val intent = Intent(this, TagListActivity::class.java)
             tagSelectLauncher.launch(intent)
@@ -106,6 +157,14 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         binding.addressEdit.setOnClickListener {
             val bottomSheetFragment = LocationSheetFragment()
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+            bottomSheetFragment.selectCompletion = { it1 ->
+                val nameArr = it1.map { item ->
+                    item.name
+                }
+                val addressStr = nameArr.joinToString(".")
+                viewModel.releaseInfo.address = addressStr
+                binding.addressEdit.setText(addressStr)
+            }
         }
     }
 
@@ -115,13 +174,14 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         viewModel.uploadSelectTags(items?.toList() ?: listOf())
     }
 
-    private fun viewModelObserver() {
+    override fun addViewModelObserver() {
         viewModel.selectTags.observe(this) {
             Log.d("TAG", "selectTags changed $it")
             if (it.isNotEmpty()) {
                 adapter.addItems(it)
                 binding.tagsRecyclerview.visibility = View.VISIBLE
                 binding.addTags.visibility = View.GONE
+                viewModel.releaseInfo.tags = it
             }else{
                 adapter.clearItems()
                 binding.tagsRecyclerview.visibility = View.GONE
