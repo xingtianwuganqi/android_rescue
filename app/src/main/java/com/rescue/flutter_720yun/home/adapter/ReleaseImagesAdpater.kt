@@ -64,7 +64,7 @@ class ReleaseImagesAdapter(val list: MutableList<CoachReleasePhoto>): RecyclerVi
                     listener?.deleteImageClick(item)
                 }
                 Glide.with(BaseApplication.context)
-                    .load(item.media?.path)
+                    .load(item.media?.compressPath)
                     .into(holder.imageView)
             }
         }

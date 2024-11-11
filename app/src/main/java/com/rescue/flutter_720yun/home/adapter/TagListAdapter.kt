@@ -52,7 +52,7 @@ class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.
                 holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
                 holder.textView.setTextColor(colorValue)
             }else{
-                val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_eee)
+                val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_bbb)
                 val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_node)
                 holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
                 holder.textView.setTextColor(textColor)

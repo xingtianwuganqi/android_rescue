@@ -34,12 +34,18 @@ import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.fragment.LocationSheetFragment
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
+import com.rescue.flutter_720yun.util.LoadingDialog
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
 import com.rescue.flutter_720yun.util.toastString
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
+import android.os.Handler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageClickListener {
 
@@ -144,7 +150,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             BaseApplication.context.getString(R.string.release_address_desc).toastString()
             return
         }
-
+        LoadingDialog.show(this)
         // 发布
         if (viewModel.uploadToken.value != null) {
             viewModel.releaseTopicNetworking()
@@ -181,7 +187,6 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
 
     override fun addViewModelObserver() {
         viewModel.selectTags.observe(this) {
-            Log.d("TAG", "selectTags changed $it")
             if (it.isNotEmpty()) {
                 adapter.addItems(it)
                 binding.tagsRecyclerview.visibility = View.VISIBLE
@@ -222,18 +227,28 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
 
         viewModel.imageUploadCompletion.observe(this) {
             if (it == 1) {
-//                viewModel.releaseTopicNetworking()
-                "图片上传完成".toastString()
-            }else{
-                "图片上传失败".toastString()
+                viewModel.releaseTopicNetworking()
+            }else if (it == 2){
+                BaseApplication.context.resources.getString(R.string.release_image_fail).toastString()
+                Log.d("TAG","${BaseApplication.context.resources.getString(R.string.release_image_fail)}")
+                LoadingDialog.hide()
             }
         }
 
         viewModel.releaseSuccess.observe(this) {
             if (it == 200) {
-                finish()
+                LoadingDialog.hide()
+                BaseApplication.context.resources.getString(R.string.release_success).toastString()
+                Log.d("TAG","${BaseApplication.context.resources.getString(R.string.release_success)}")
+                GlobalScope.launch(Dispatchers.Main) {
+                    delay(2000)
+                    finish()
+                }
             }else{
+                LoadingDialog.hide()
                 BaseApplication.context.resources.getString(R.string.release_fail).toastString()
+                Log.d("TAG","${BaseApplication.context.resources.getString(R.string.release_fail).toastString()}")
+
             }
         }
     }
@@ -256,7 +271,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             .setMaxSelectNum(allowSize)
             .isDisplayCamera(false)
             .setCompressEngine(CompressFileEngine { context, source, call ->
-                Luban.with(context).load(source).ignoreBy(60).setCompressListener(object : OnNewCompressListener{
+                Luban.with(context).load(source).ignoreBy(50).setCompressListener(object : OnNewCompressListener{
                     override fun onStart() {
 
                     }
@@ -279,7 +294,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                             "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
                             "${dateFormatter("yyyy-MM")}/preview/${randomString(8)}.jpeg",
                              it,
-                            false,
+                            null,
                         )
                     }
                     if (photos != null) {
@@ -316,7 +331,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                 null,
                 null,
                 null,
-                    false
+                null
                 )
             )
         }

@@ -56,7 +56,7 @@ class ReleaseTopicViewModel: ViewModel() {
                 null,
                 null,
                 null,
-                false
+                null
             ),
         ),
         null,
@@ -64,9 +64,7 @@ class ReleaseTopicViewModel: ViewModel() {
     )
 
     private val uploadManager by lazy {
-        val arr = arrayOf("z1")
-        val config = Configuration.Builder().zone(FixedZone(arr)).build()
-        UploadManager(config)
+        UploadManager()
     }
 
 
@@ -107,9 +105,9 @@ class ReleaseTopicViewModel: ViewModel() {
                 ) { false }
                 for (i in uploadPhotos) {
                     Log.d("TAG", "media path is ${i.media?.path}, photoKey is ${i.photoKey}")
-                    if (i.media?.path != null) {
+                    if (i.media?.compressPath != null) {
                         uploadManager.put(
-                            i.media!!.path,
+                            i.media!!.compressPath,
                             i.photoKey,
                             token,
                             { key, info, response ->
@@ -143,7 +141,7 @@ class ReleaseTopicViewModel: ViewModel() {
          }
     }
 
-    fun judgeUploadCompletion() {
+    private fun judgeUploadCompletion() {
         val totalSize = releaseInfo.photos.filter { photo ->
             !photo.isAdd
         }.size
@@ -151,7 +149,7 @@ class ReleaseTopicViewModel: ViewModel() {
         val uploadComp = releaseInfo.photos.filter { photo ->
             !photo.isAdd
         }.filter {
-            it.uploadComplete == null
+            it.uploadComplete != null
         }
 
         val uploadSucc = releaseInfo.photos.filter { photo ->
@@ -168,7 +166,7 @@ class ReleaseTopicViewModel: ViewModel() {
 
         if (totalSize == uploadSucc.size) {
             _imageUploadCompletion.value = 1
-        }else if (uploadFail) {
+        }else if (uploadFail && totalSize == uploadComp.size) {
             _imageUploadCompletion.value = 2
         }
 

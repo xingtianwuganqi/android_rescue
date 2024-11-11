@@ -53,7 +53,7 @@ class TagListActivity : BaseActivity(), TagListClickListener {
         binding.tagsRecyclerview.adapter = adapter
         adapter.setListener(this)
 
-        viewModelObserver()
+        addViewModelObserver()
         // 网络请求
         getTogsNetworking()
         // 监听系统返回
@@ -64,7 +64,7 @@ class TagListActivity : BaseActivity(), TagListClickListener {
         viewModel.getTagsNetworking()
     }
 
-    private fun viewModelObserver() {
+    override fun addViewModelObserver() {
         viewModel.uiState.observe(this) {
             when(it) {
                 is UiState.FirstLoading ->{
@@ -78,7 +78,7 @@ class TagListActivity : BaseActivity(), TagListClickListener {
                             item.id
                         }
                         data = data.map{ dataModel ->
-                           dataModel.isSelected = ids.contains(dataModel.id)
+                            dataModel.isSelected = ids.contains(dataModel.id)
                             dataModel
                         }
                     }

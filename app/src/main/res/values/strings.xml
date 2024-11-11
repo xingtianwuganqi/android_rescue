@@ -74,6 +74,7 @@
     <string name="release_address_desc">请选择地区</string>
     <string name="release_success">发布成功</string>
     <string name="release_fail">发布失败</string>
+    <string name="release_image_fail">图片上传失败</string>
 
     <string name="message_system">系统消息</string>
 

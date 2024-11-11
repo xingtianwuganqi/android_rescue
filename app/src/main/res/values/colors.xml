@@ -18,6 +18,7 @@
     <color name="color_url">#4169E1</color>
     <color name="color_back">#FAF9FA</color>
     <color name="color_remind">#F6831F</color>
+    <color name="color_aaa">#AAAAAA</color>
     <color name="color_bbb">#BBBBBB</color>
     <color name="color_eee">#EEEEEE</color>
 </resources>
