@@ -146,6 +146,11 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         }
 
         // 发布
+        if (viewModel.uploadToken.value != null) {
+            viewModel.releaseTopicNetworking()
+        }else{
+            viewModel.getUploadTokenNetworking()
+        }
     }
 
     override fun addViewAction() {
@@ -186,6 +191,49 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                 adapter.clearItems()
                 binding.tagsRecyclerview.visibility = View.GONE
                 binding.addTags.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.checkCode.observe(this) {code ->
+            code?.let {
+                when(code) {
+                    200 -> {
+
+                    }
+                    209 -> { // 未绑定手机号
+
+                    }
+                    219 -> { // 未验证手机号
+
+                    }
+                    else -> {
+
+                    }
+
+                }
+            }
+        }
+
+        viewModel.uploadToken.observe(this) {uploadToken ->
+            uploadToken?.let {
+                viewModel.imageUpload(it)
+            }
+        }
+
+        viewModel.imageUploadCompletion.observe(this) {
+            if (it == 1) {
+//                viewModel.releaseTopicNetworking()
+                "图片上传完成".toastString()
+            }else{
+                "图片上传失败".toastString()
+            }
+        }
+
+        viewModel.releaseSuccess.observe(this) {
+            if (it == 200) {
+                finish()
+            }else{
+                BaseApplication.context.resources.getString(R.string.release_fail).toastString()
             }
         }
     }
@@ -230,7 +278,8 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                             false,
                             "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
                             "${dateFormatter("yyyy-MM")}/preview/${randomString(8)}.jpeg",
-                             it
+                             it,
+                            false,
                         )
                     }
                     if (photos != null) {
@@ -266,7 +315,9 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                 CoachReleasePhoto(true,
                 null,
                 null,
-                null)
+                null,
+                    false
+                )
             )
         }
         imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())

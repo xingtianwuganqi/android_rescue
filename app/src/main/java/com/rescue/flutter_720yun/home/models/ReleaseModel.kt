@@ -10,7 +10,8 @@ data class CoachReleasePhoto(
     var isAdd: Boolean,
     val photoKey: String?,
     val previewKey: String?,
-    var media: LocalMedia?
+    var media: LocalMedia?,
+    var uploadComplete: Boolean?
 ): Parcelable
 
 // 缓存的数据结构
@@ -21,4 +22,10 @@ data class CoachReleaseInfo(
     var photos: MutableList<CoachReleasePhoto>,
     var contact: String?,
     var address: String?,
+): Parcelable
+
+
+@Parcelize
+data class UploadTokenModel(
+    val token: String
 ): Parcelable

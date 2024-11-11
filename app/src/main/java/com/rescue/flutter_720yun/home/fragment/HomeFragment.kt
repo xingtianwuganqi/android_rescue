@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
 import com.rescue.flutter_720yun.ui.home.OnItemClickListener
+import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 
 
@@ -75,8 +76,12 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
 
         binding.tip.setOnClickListener {
-            val intent = Intent(activity, ReleaseTopicActivity::class.java)
-            startActivity(intent)
+            activity?.let { it1 ->
+                lazyLogin(it1) {
+                    val intent = Intent(activity, ReleaseTopicActivity::class.java)
+                    startActivity(intent)
+                }
+            }
         }
 
         recyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){

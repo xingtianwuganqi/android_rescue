@@ -58,6 +58,7 @@ suspend fun <T> Call<T>.awaitResp(): T {
                     Log.d("TAG", "response body ${response.body()}")
                     continuation.resume(response.body()!!)
                 } else {
+                    Log.d("TAG", "response error ${response.body()}")
                     continuation.resumeWithException(Exception("Response error"))
                 }
             }

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -118,7 +119,7 @@ fun loadScaleImage(context: Context, url: String, imageView: ImageView) {
         })
 }
 
-fun lazyLogin(activity: AppCompatActivity, callback: () -> Unit) {
+fun lazyLogin(activity: Context, callback: () -> Unit) {
     if (UserManager.isLogin) {
         callback()
     }else{
