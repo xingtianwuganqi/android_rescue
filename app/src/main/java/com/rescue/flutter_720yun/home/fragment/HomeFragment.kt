@@ -34,7 +34,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private val binding get() = _binding!!
     private lateinit var adapter: HomeListAdapter
     private lateinit var homeViewModel: HomeViewModel
-    private var isSearch: String? = null // 是否是搜索
+    private var pageType: String = "0" // 0:首页 1：搜索 2：同城
     private var keyword: String? = null // 搜索关键字
 
     // 处理反向传值
@@ -54,10 +54,10 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
 
     companion object {
-        fun newInstance(isSearch: String): HomeFragment {
+        fun newInstance(pageType: String): HomeFragment {
             val fragment = HomeFragment()
             val args = Bundle()
-            args.putString("isSearch", isSearch)  // 将参数放入 Bundle
+            args.putString("pageType", pageType)  // 将参数放入 Bundle
             fragment.arguments = args
             return fragment
         }
@@ -65,8 +65,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val title = arguments?.getString("isSearch")  // 从 Bundle 中读取参数
-        this.isSearch = title
+        val title = arguments?.getString("pageType")  // 从 Bundle 中读取参数
+        this.pageType = title ?: "0"
     }
 
 
@@ -89,7 +89,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
             recyclerView.adapter = adapter
         }
 
-        if (isSearch != "1") {
+        if (pageType == "1") {
+
+        }else{
             val swipeRefreshLayout = binding.swipeRefreshLayout
             swipeRefreshLayout.setOnRefreshListener {
                 refreshData()
