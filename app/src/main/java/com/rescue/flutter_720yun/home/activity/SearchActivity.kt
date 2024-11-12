@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivitySearchBinding
+import com.rescue.flutter_720yun.home.fragment.HomeFragment
 import com.rescue.flutter_720yun.home.fragment.SearchHistoryFragment
 import com.rescue.flutter_720yun.home.fragment.SearchListFragment
 import com.rescue.flutter_720yun.home.viewmodels.SearchViewModel
@@ -19,7 +20,7 @@ class SearchActivity : AppCompatActivity() {
     private val binding get() = _binding
     private lateinit var viewModel: SearchViewModel
     private lateinit var hotFragment: Fragment
-    private lateinit var listFragment: Fragment
+    private lateinit var listFragment: HomeFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivitySearchBinding.inflate(layoutInflater)
@@ -29,7 +30,7 @@ class SearchActivity : AppCompatActivity() {
         // 仅在 Activity 首次创建时添加 Fragment，避免重复添加
         if (savedInstanceState == null) {
             hotFragment = SearchHistoryFragment()
-            listFragment = SearchListFragment()
+            listFragment = HomeFragment()
 
             // 添加 Fragment 到 FrameLayout
             supportFragmentManager.beginTransaction()
@@ -96,7 +97,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun startSearch(keyword: String) {
         showListFragment()
-        viewModel.beginSearch(keyword)
+//        viewModel.beginSearch(keyword)
+        listFragment.beginSearch(keyword)
     }
 
     private fun addViewModelObserver() {

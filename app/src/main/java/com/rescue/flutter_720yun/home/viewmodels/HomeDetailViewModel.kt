@@ -23,14 +23,12 @@ class HomeDetailViewModel: ViewModel() {
     private var _isLoading = MutableLiveData(false)
     private var _errorMsg = MutableLiveData<String>()
     private val _changedModel = MutableLiveData<HomeListModel?>()
-    private val _needCheck = MutableLiveData(false)
-    private val _needBind = MutableLiveData(false)
+    private val _statusCode = MutableLiveData<Int?>()
     val homeData: LiveData<HomeListModel?> get() = _homeData
     val isLoading: LiveData<Boolean> get() = _isLoading
     val errorMsg: LiveData<String> get() = _errorMsg
     val changeModel: LiveData<HomeListModel?> get() = _changedModel
-    val needCheck: LiveData<Boolean> get() = _needCheck
-    val needBind: LiveData<Boolean> get() = _needBind
+    val statusCode: LiveData<Int?> get() = _statusCode
 
     fun loadDetailNetworking(topicId: Int) {
         viewModelScope.launch {
@@ -119,16 +117,13 @@ class HomeDetailViewModel: ViewModel() {
                 val dic = paramDic
                 dic["topic_id"] = model?.topic_id
                 val response = appService.getTopicContact(dic).awaitResp()
+                _statusCode.value = response.code
                 if (response.code == 200) {
                     model?.contact_info = response.data.contact
                     model?.getedcontact = true
                     _changedModel.value = model
                 } else if (response.code == 202) { // 无法获取联系方式
                     _errorMsg.value = BaseApplication.context.getString(R.string.unable_get_contact)
-                } else if (response.code == 209) {// 没有绑定手机号
-                    // 去绑定手机号
-                } else if (response.code == 210) { // 没有验证手机号
-
                 }else{
                     _errorMsg.value = BaseApplication.context.getString(R.string.get_contact_error)
                 }
@@ -140,11 +135,8 @@ class HomeDetailViewModel: ViewModel() {
         }
     }
 
-    fun cleanNeedCheck() {
-        _needCheck.value = false
+    fun cleanStatusCode() {
+        _statusCode.value = null
     }
 
-    fun cleanNeedBind() {
-        _needBind.value = false
-    }
 }

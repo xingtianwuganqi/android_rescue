@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.home.activity
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Spannable
@@ -42,6 +44,7 @@ import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
 import android.os.Handler
+import android.widget.Button
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -150,6 +153,29 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             BaseApplication.context.getString(R.string.release_address_desc).toastString()
             return
         }
+        pushDialog()
+    }
+
+    private fun pushDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("发布提示")
+        builder.setMessage("请详细阅读《用户协议》，特别是用户权利和义务部分，发布内容时请严格遵守用户协议。\n禁止出现商业广告、低俗、色情、暴力、具有侮辱性语音或与宠物无关等内容，违规者帖子会被删除。")
+        builder.setCancelable(false)
+        builder.setPositiveButton("确定发布", DialogInterface.OnClickListener { dialogInterface, i ->
+                startPublish()
+            })
+        builder.setNegativeButton("取消", DialogInterface.OnClickListener { dialogInterface, i ->
+
+            })
+        val dialog = builder.create()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.color_system))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.color_node))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).textSize = 16F
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).textSize = 16F
+    }
+
+    private fun startPublish() {
         LoadingDialog.show(this)
         // 发布
         if (viewModel.uploadToken.value != null) {
@@ -202,14 +228,23 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         viewModel.checkCode.observe(this) {code ->
             code?.let {
                 when(code) {
-                    200 -> {
-
-                    }
                     209 -> { // 未绑定手机号
-
+                        ContextCompat.getString(this,R.string.login_unbind).toastString()
+                        GlobalScope.launch(Dispatchers.Main) {
+                            delay(2000)
+                        }
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.putExtra("type", "bindPhone")
+                        startActivity(intent)
                     }
-                    219 -> { // 未验证手机号
-
+                    210 -> { // 未验证手机号
+                        ContextCompat.getString(this,R.string.login_uncheck).toastString()
+                        GlobalScope.launch(Dispatchers.Main) {
+                            delay(2000)
+                        }
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.putExtra("type", "checkPhone")
+                        startActivity(intent)
                     }
                     else -> {
 

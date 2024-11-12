@@ -34,6 +34,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private val binding get() = _binding!!
     private lateinit var adapter: HomeListAdapter
     private lateinit var homeViewModel: HomeViewModel
+    private var isSearch: String? = null // 是否是搜索
+    private var keyword: String? = null // 搜索关键字
 
     // 处理反向传值
     private val detailActivityLauncher = registerForActivityResult(
@@ -49,6 +51,24 @@ class HomeFragment : Fragment(), OnItemClickListener {
             uploadItem(resultData)
         }
     }
+
+
+    companion object {
+        fun newInstance(isSearch: String): HomeFragment {
+            val fragment = HomeFragment()
+            val args = Bundle()
+            args.putString("isSearch", isSearch)  // 将参数放入 Bundle
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val title = arguments?.getString("isSearch")  // 从 Bundle 中读取参数
+        this.isSearch = title
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,10 +89,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
             recyclerView.adapter = adapter
         }
 
-
-        val swipeRefreshLayout = binding.swipeRefreshLayout
-        swipeRefreshLayout.setOnRefreshListener {
-            refreshData()
+        if (isSearch != "1") {
+            val swipeRefreshLayout = binding.swipeRefreshLayout
+            swipeRefreshLayout.setOnRefreshListener {
+                refreshData()
+            }
         }
 
         binding.tip.setOnClickListener {
@@ -152,6 +173,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
         lifecycleScope.launch {
             homeViewModel.loadListData(refresh)
         }
+    }
+
+    // 开始搜索
+    fun beginSearch(keyword: String) {
+        this.keyword = keyword
     }
 
     // 点赞

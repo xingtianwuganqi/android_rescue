@@ -12,6 +12,7 @@ import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.RefreshState
+import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
@@ -87,6 +88,64 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
+//    fun searchListNetworking(keyword: String, refreshState: RefreshState) {
+//        viewModelScope.launch {
+//            if (isLoading) {
+//                return@launch
+//            }
+//            try {
+//                if (refreshState == RefreshState.REFRESH) {
+//                    _uiState.value = UiState.FirstLoading
+//                    page = 1
+//                }
+//                if (page == 1) {
+//                    _isLastPage.value = false
+//                }
+//                isLoading = true
+//                val dic = paramDic
+//                dic["keyword"] = keyword
+//                dic["page"] = page
+//                dic["size"] = 10
+//                val response = appService.searchList(dic).awaitResp()
+//                if (response.code == 200) {
+//                    val items = when (response.data) {
+//                        is List<*> -> {
+//                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
+//                            (homeList ?: emptyList())
+//                        }
+//                        is Map<*, *> -> {
+//                            emptyList()
+//                        }// data 为 {}，返回空列表
+//                        else -> {
+//                            emptyList()
+//                        }
+//                    }
+//                    if (items.isNotEmpty()) {
+//                        page += 1
+//                        _uiState.value = UiState.Success<List<HomeListModel>>(items)
+//                    }else{
+//                        if (page == 1) {
+//                            _uiState.value = UiState.Error("暂无数据")
+//                        }else{
+//                            _isLastPage.value = true
+//                        }
+//                    }
+//                }else{
+//                    if (page == 1) {
+//                        _uiState.value = UiState.Error("暂无数据")
+//                    }
+//                }
+//            }catch (e: Exception) {
+//                if (page == 1) {
+//                    _uiState.value = UiState.Error("暂无数据")
+//                }
+//            }finally {
+//                isLoading = false
+//                _refreshState.value = refreshState
+//            }
+//        }
+//    }
 
     fun likeActionNetworking(model: HomeListModel?) {
         viewModelScope.launch {

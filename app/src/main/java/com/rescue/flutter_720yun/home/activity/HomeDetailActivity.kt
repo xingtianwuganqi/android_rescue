@@ -58,26 +58,26 @@ class HomeDetailActivity : BaseActivity() {
             topic = it
         }
 
-        viewModel.needBind.observe(this) {
-            if (it == true) {
-                // 去绑定手机号
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.putExtra("type", "bindPhone")
-                startActivity(intent)
-                viewModel.cleanNeedBind()
+        viewModel.statusCode.observe(this) {
+            it?.let { code ->
+                when (code) {
+                    209 -> {
+                        // 去绑定手机号
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.putExtra("type", "bindPhone")
+                        startActivity(intent)
+                    }
+                    210 -> {
+                        // 去校验手机号
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.putExtra("type", "checkPhone")
+                        startActivity(intent)
+                    }
+                }
             }
+            viewModel.cleanStatusCode()
         }
 
-        viewModel.needCheck.observe(this) {
-            if (it == true) {
-                // 去验证手机号
-                // 去绑定手机号
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.putExtra("type", "checkPhone")
-                startActivity(intent)
-                viewModel.cleanNeedCheck()
-            }
-        }
     }
 
     private fun uploadViews(homeData: HomeListModel?) {
