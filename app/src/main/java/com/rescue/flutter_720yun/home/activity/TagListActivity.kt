@@ -44,7 +44,7 @@ class TagListActivity : BaseActivity(), TagListClickListener {
 
         val arrayList = intent.getParcelableArrayListExtra<TagInfoModel>("tagModels")
         if (arrayList != null) {
-            selectArr = arrayList?.toList()
+            selectArr = arrayList.toList()
         }
 
         adapter = TagListAdapter(mutableListOf())

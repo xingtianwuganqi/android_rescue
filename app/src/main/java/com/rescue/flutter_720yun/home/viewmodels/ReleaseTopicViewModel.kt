@@ -257,9 +257,21 @@ class TagListViewModel: ViewModel() {
         if (currentState is UiState.Success) {
             // 使用当前数据创建一个新的 Success 状态
             var currentList = currentState.data
-            currentList = currentList.map {
+            currentList = currentList.map { it ->
                 if (it.id == item.id) {
-                    it.isSelected = !it.isSelected
+                    if (item.tag_type == 0) {
+                        it.isSelected = !it.isSelected
+                    }else{
+                        if (item.isSelected) {
+                            it.isSelected = !it.isSelected
+                        }else {
+                            if (currentList.filter { it1 ->
+                                    it1.isSelected && it1.tag_type != item.tag_type
+                                }.isEmpty()) {
+                                it.isSelected = !it.isSelected
+                            }
+                        }
+                    }
                 }
                 it
             }

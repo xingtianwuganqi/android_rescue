@@ -40,23 +40,25 @@ class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        list.let {
-            val item = it[position]
-            val keyword = item.tag_name
-            holder.textView.text = keyword
-            holder.textView.setOnClickListener {
+        val item = list[position]
+        val keyword = item.tag_name
+        holder.textView.text = keyword
+        holder.textView.setOnClickListener {
+            if (item.tag_type == 0) {
                 listener?.onItemClick(item)
-            }
-            if (item.isSelected) {
-                val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
-                holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
-                holder.textView.setTextColor(colorValue)
             }else{
-                val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_bbb)
-                val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_node)
-                holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
-                holder.textView.setTextColor(textColor)
+
             }
+        }
+        if (item.isSelected) {
+            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+            holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
+            holder.textView.setTextColor(colorValue)
+        }else{
+            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_bbb)
+            val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_node)
+            holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
+            holder.textView.setTextColor(textColor)
         }
     }
 

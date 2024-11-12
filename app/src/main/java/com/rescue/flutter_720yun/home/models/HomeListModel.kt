@@ -38,8 +38,9 @@ data class UserInfo(
 data class TagInfoModel(
     val id: Int?,
     val tag_name: String?,
-    val tag_type: Int?,
-    var isSelected: Boolean = false
+    val tag_type: Int?, // 0:通用，1，2：互斥
+    var isSelected: Boolean = false,
+    var isEnable: Boolean = true
 ): Parcelable
 
 @Parcelize
