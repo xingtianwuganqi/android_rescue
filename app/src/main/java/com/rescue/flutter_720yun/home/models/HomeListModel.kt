@@ -40,7 +40,7 @@ data class TagInfoModel(
     val tag_name: String?,
     val tag_type: Int?, // 0:通用，1，2：互斥
     var isSelected: Boolean = false,
-    var isEnable: Boolean = true
+    var isEnable: Boolean?
 ): Parcelable
 
 @Parcelize

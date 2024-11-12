@@ -124,6 +124,10 @@ class TagListActivity : BaseActivity(), TagListClickListener {
 
     override fun onItemClick(item: TagInfoModel) {
         viewModel.uploadSelectTag(item)
-        adapter.uploadItem(item)
+        val currentState = viewModel.uiState.value
+        if (currentState is UiState.Success) {
+            val currentList = currentState.data
+            adapter.uploadAllItem(currentList)
+        }
     }
 }

@@ -266,14 +266,30 @@ class TagListViewModel: ViewModel() {
                             it.isSelected = !it.isSelected
                         }else {
                             if (currentList.filter { it1 ->
-                                    it1.isSelected && it1.tag_type != item.tag_type
+                                    it1.isSelected && it1.tag_type != 0 && it1.tag_type != item.tag_type
                                 }.isEmpty()) {
                                 it.isSelected = !it.isSelected
+                            }else{
+                                it.isSelected = false
                             }
                         }
                     }
                 }
                 it
+            }
+            val selectType = currentList.filter {
+                it.isSelected && it.tag_type != 0
+            }.map {
+                it.tag_type
+            }
+            Log.d("TAG", "select types $selectType")
+            currentList = currentList.map { it2 ->
+                if (it2.tag_type != 0 && selectType.isNotEmpty() && !selectType.contains(it2.tag_type)) {
+                    it2.isEnable = false
+                }else{
+                    it2.isEnable = true
+                }
+                it2
             }
             _selectTags.value = currentList.filter {
                 it.isSelected

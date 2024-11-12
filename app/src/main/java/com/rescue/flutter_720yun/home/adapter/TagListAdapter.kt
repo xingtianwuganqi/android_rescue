@@ -44,21 +44,25 @@ class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.
         val keyword = item.tag_name
         holder.textView.text = keyword
         holder.textView.setOnClickListener {
-            if (item.tag_type == 0) {
-                listener?.onItemClick(item)
-            }else{
-
-            }
+            listener?.onItemClick(item)
         }
-        if (item.isSelected) {
-            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
-            holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
-            holder.textView.setTextColor(colorValue)
-        }else{
-            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_bbb)
+        if (item.isEnable == false) {
+            val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_eee)
             val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_node)
             holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
             holder.textView.setTextColor(textColor)
+        }else{
+            if (item.isSelected) {
+                val colorValue =
+                    ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+                holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
+                holder.textView.setTextColor(colorValue)
+            } else {
+                val colorValue = ContextCompat.getColor(BaseApplication.context, R.color.color_bbb)
+                val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_node)
+                holder.textView.strokeColor = ColorStateList.valueOf(colorValue)
+                holder.textView.setTextColor(textColor)
+            }
         }
     }
 
@@ -72,6 +76,12 @@ class TagListAdapter(private val list: MutableList<TagInfoModel>): RecyclerView.
         val position = list.indexOfFirst { it.id == item.id }
         list[position] = item
         notifyItemChanged(position)
+    }
+
+    fun uploadAllItem(items: List<TagInfoModel>) {
+        list.clear()
+        list.addAll(items)
+        notifyDataSetChanged()
     }
 
     fun clearItems() {
