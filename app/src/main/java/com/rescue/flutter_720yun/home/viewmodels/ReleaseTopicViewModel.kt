@@ -200,12 +200,7 @@ class ReleaseTopicViewModel: ViewModel() {
         }
     }
 
-    // 清空checkCode
-    fun cleanCheckCode() {
-        _checkCode.value = null
-    }
-
-    fun cleanImageUploadCompletion() {
+    private fun cleanImageUploadCompletion() {
         _imageUploadCompletion.value = null
     }
 }

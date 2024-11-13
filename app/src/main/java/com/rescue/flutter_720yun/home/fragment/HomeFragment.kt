@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
 import com.rescue.flutter_720yun.ui.home.OnItemClickListener
+import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 
@@ -89,13 +90,17 @@ class HomeFragment : Fragment(), OnItemClickListener {
             recyclerView.adapter = adapter
         }
 
-        if (pageType == "1") {
+        val swipeRefreshLayout = binding.swipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
 
+        if (pageType == "1") {
+            binding.swipeRefreshLayout.isEnabled = false
+            binding.tip.visibility = View.GONE
         }else{
-            val swipeRefreshLayout = binding.swipeRefreshLayout
-            swipeRefreshLayout.setOnRefreshListener {
-                refreshData()
-            }
+            binding.swipeRefreshLayout.isEnabled = true
+            binding.tip.visibility = View.VISIBLE
         }
 
         binding.tip.setOnClickListener {
@@ -129,15 +134,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     private fun addListObserver() {
-        homeViewModel.models.observe(viewLifecycleOwner) {
-            Log.d("TAG", "fuck it size ${it.size.toString()}")
-            if (homeViewModel.isRefreshing.value == true) {
-                adapter.refreshItem(it)
-                homeViewModel.cleanIsRefreshing()
-            }else {
-                adapter.addItems(it)
-            }
-        }
 
         // 观察是否到达最后一页
         homeViewModel.isLastPage.observe(viewLifecycleOwner)  { isLastPage ->
@@ -152,12 +148,31 @@ class HomeFragment : Fragment(), OnItemClickListener {
         homeViewModel.changeModel.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.uploadItem(it)
-                homeViewModel.cleanChangedModel()
             }
         }
 
         homeViewModel.errorMsg.observe(viewLifecycleOwner) {
             it.toastString()
+        }
+
+        homeViewModel.uiState.observe(viewLifecycleOwner) {
+            when (it) {
+                is UiState.FirstLoading -> {
+                    showLoading()
+                }
+
+                is UiState.Success -> {
+                    showSuccess()
+                    if (homeViewModel.refreshState.value == RefreshState.REFRESH) {
+                        adapter.refreshItem(it.data)
+                    }else{
+                        adapter.addItems(it.data)
+                    }
+                }
+                is UiState.Error -> {
+                    showError(it.message)
+                }
+            }
         }
     }
 
@@ -168,18 +183,48 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     fun loadMoreData() {
-        loadData(RefreshState.MORE)
+        if (pageType == "0") {
+            loadData(RefreshState.MORE)
+        }else if (pageType == "1") {
+            keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.MORE) }
+        }
     }
 
     private fun loadData(refresh: RefreshState) {
-        lifecycleScope.launch {
+        if (pageType == "0") {
             homeViewModel.loadListData(refresh)
+        }else if (pageType == "1") {
+            keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.REFRESH) }
         }
+
     }
 
     // 开始搜索
     fun beginSearch(keyword: String) {
         this.keyword = keyword
+        homeViewModel.searchListNetworking(keyword, RefreshState.REFRESH)
+    }
+
+
+    private fun showLoading() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.errorView.visibility = View.GONE
+        binding.swipeRefreshLayout.visibility = View.GONE
+    }
+
+    private fun showSuccess() {
+        binding.progressBar.visibility = View.GONE
+        binding.errorView.visibility = View.GONE
+        binding.swipeRefreshLayout.visibility = View.VISIBLE
+    }
+
+    private fun showError(error: String? = null) {
+        binding.progressBar.visibility = View.GONE
+        binding.errorView.visibility = View.VISIBLE
+        binding.swipeRefreshLayout.visibility = View.GONE
+        error?.let {
+            binding.errorView.text = error
+        }
     }
 
     // 点赞

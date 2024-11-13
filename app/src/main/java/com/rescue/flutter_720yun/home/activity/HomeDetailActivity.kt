@@ -19,7 +19,9 @@ import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeDetailActivity : BaseActivity() {
 
@@ -44,6 +46,7 @@ class HomeDetailActivity : BaseActivity() {
 
         addViewModelObserver()
         addViewAction()
+        addBackListener()
     }
 
 
@@ -75,7 +78,6 @@ class HomeDetailActivity : BaseActivity() {
                     }
                 }
             }
-            viewModel.cleanStatusCode()
         }
 
     }
@@ -101,24 +103,24 @@ class HomeDetailActivity : BaseActivity() {
     private fun uploadBottom(homeData: HomeListModel?) {
         if (homeData?.liked == true) {
             // 获取 drawable 资源（图标）
-            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_se)
+            val newIcon: Drawable? = ContextCompat.getDrawable(this, R.drawable.icon_zan_se)
             // 设置新图标
             binding.likeButton.icon = newIcon
         }else{
             // 获取 drawable 资源（图标）
-            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_un)
+            val newIcon: Drawable? = ContextCompat.getDrawable(this, R.drawable.icon_zan_un)
             // 设置新图标
             binding.likeButton.icon = newIcon
         }
 
         if (homeData?.collectioned == true) {
             // 获取 drawable 资源（图标）
-            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_se)
+            val newIcon: Drawable? = ContextCompat.getDrawable(this, R.drawable.icon_collection_se)
             // 设置新图标
             binding.collectButton.icon = newIcon
         }else{
             // 获取 drawable 资源（图标）
-            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_un)
+            val newIcon: Drawable? = ContextCompat.getDrawable(this, R.drawable.icon_collection_un)
             // 设置新图标
             binding.collectButton.icon = newIcon
         }
@@ -126,10 +128,9 @@ class HomeDetailActivity : BaseActivity() {
         if (homeData?.getedcontact == true && homeData?.contact_info != null) {
             binding.getContactBtn.text = homeData?.contact_info
         }else{
-            binding.getContactBtn.text = BaseApplication.context.getString(R.string.click_get_contact)
+            binding.getContactBtn.text = BaseApplication.context.resources.getString(R.string.click_get_contact)
         }
 
-        addBackListener()
     }
 
     private fun addBackListener() {
@@ -158,19 +159,15 @@ class HomeDetailActivity : BaseActivity() {
     }
 
     override fun addViewAction() {
-        val likeBtn = binding.likeButton
-        likeBtn.setOnClickListener{
+        binding.likeButton.setOnClickListener{
             lazyLogin(this) {
-                lifecycleScope.launch {
-                    viewModel.homeData.value?.let {
-                        viewModel.likeActionNetworking(it)
-                    }
+                viewModel.homeData.value?.let {
+                    viewModel.likeActionNetworking(it)
                 }
             }
         }
 
-        val collectionBtn = binding.collectButton
-        collectionBtn.setOnClickListener {
+        binding.collectButton.setOnClickListener {
             lazyLogin(this) {
                 viewModel.homeData.value?.let {
                     viewModel.collectionActionNetworking(it)
@@ -178,8 +175,7 @@ class HomeDetailActivity : BaseActivity() {
             }
         }
 
-        val commentBtn = binding.commentButton
-        commentBtn.setOnClickListener {
+        binding.commentButton.setOnClickListener {
             lazyLogin(this) {
 
             }
@@ -187,8 +183,13 @@ class HomeDetailActivity : BaseActivity() {
 
         binding.getContactBtn.setOnClickListener {
             lazyLogin(this) {
-                viewModel.homeData.value?.let {
-                    viewModel.clickGetContactInfoNetworking(it)
+                if (viewModel.homeData.value?.getedcontact == true && viewModel.homeData.value?.contact_info != null) {
+                    // 复制
+
+                }else {
+                    viewModel.homeData.value?.let {
+                        viewModel.clickGetContactInfoNetworking(it)
+                    }
                 }
             }
         }

@@ -27,13 +27,20 @@ class HomeViewModel : ViewModel() {
     private val _changedModel = MutableLiveData<HomeListModel?>()
     private val _errorMsg = MutableLiveData<String>()
     private val _isRefreshing = MutableLiveData(false)
+    private var _refreshState = MutableLiveData<RefreshState>()
+    private var _isFirstLoading = MutableLiveData(true)
+    private val _uiState = MutableLiveData<UiState<List<HomeListModel>>>()
 
-    val models: LiveData<List<HomeListModel>> = _models
-    val isLastPage: LiveData<Boolean> = _isLastPage
-    val isLoading: LiveData<Boolean> = _isLoading
-    val changeModel: LiveData<HomeListModel?> = _changedModel
-    val errorMsg: LiveData<String> = _errorMsg
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
+    val uiState: LiveData<UiState<List<HomeListModel>>> get() = _uiState
+
+    val models: LiveData<List<HomeListModel>> get() = _models
+    val isLastPage: LiveData<Boolean> get() = _isLastPage
+    val isLoading: LiveData<Boolean> get() = _isLoading
+    val changeModel: LiveData<HomeListModel?> get() = _changedModel
+    val errorMsg: LiveData<String> get() = _errorMsg
+    val isRefreshing: LiveData<Boolean> get() = _isRefreshing
+    val isFirstLoading: LiveData<Boolean> get() = _isFirstLoading
+    val refreshState: LiveData<RefreshState> get() = _refreshState
 
     private val appService = ServiceCreator.create<AppService>()
 
@@ -42,22 +49,24 @@ class HomeViewModel : ViewModel() {
             if (_isLoading.value == true) {
                 return@launch
             }
-            if (refresh == RefreshState.MORE && _isLastPage.value == true) {
-                return@launch
-            }
+            _isLoading.value = true
             if (refresh == RefreshState.REFRESH) {
                 page = 1
                 _isLastPage.value = false
-                _isRefreshing.value = true
             }
-            _isLoading.value = true
+            if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+                return@launch
+            }
+            if (_isFirstLoading.value == true) {
+                _uiState.value = UiState.FirstLoading
+            }
+            _refreshState.value = refresh
             try {
                 val service = ServiceCreator.create<AppService>()
                 val dic = paramDic
                 dic["page"] = page
                 dic["size"] = 10
                 dic["order"] = 0
-                Log.d("TAG", "dic is $dic")
                 val response = service.getTopicList(dic).awaitResp()
                 if (response.code == 200) {
                     val items = when (response.data) {
@@ -74,78 +83,104 @@ class HomeViewModel : ViewModel() {
                     }
                     if (items.isNotEmpty()) {
                         page += 1
-                        _models.value = items.toList()
+                        _uiState.value = UiState.Success(items)
                     }else{
-                        _isLastPage.value = true
+                        if (page == 1) {
+                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }else{
+                            _isLastPage.value = true
+                        }
                     }
                 }else{
-                    _models.value = emptyList()
+                    if (page == 1) {
+                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
                 }
             }catch (e: Exception) {
-                _isLastPage.value = true
+                if (page == 1) {
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                    _uiState.value = UiState.Error(noMoreData)
+                }
             }finally {
                 _isLoading.value = false
+                _isRefreshing.value = false
+                if (_isFirstLoading.value == true && _uiState.value is UiState.Success) {
+                    _isFirstLoading.value = false
+                }
             }
         }
     }
 
-//    fun searchListNetworking(keyword: String, refreshState: RefreshState) {
-//        viewModelScope.launch {
-//            if (isLoading) {
-//                return@launch
-//            }
-//            try {
-//                if (refreshState == RefreshState.REFRESH) {
-//                    _uiState.value = UiState.FirstLoading
-//                    page = 1
-//                }
-//                if (page == 1) {
-//                    _isLastPage.value = false
-//                }
-//                isLoading = true
-//                val dic = paramDic
-//                dic["keyword"] = keyword
-//                dic["page"] = page
-//                dic["size"] = 10
-//                val response = appService.searchList(dic).awaitResp()
-//                if (response.code == 200) {
-//                    val items = when (response.data) {
-//                        is List<*> -> {
-//                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
-//                            (homeList ?: emptyList())
-//                        }
-//                        is Map<*, *> -> {
-//                            emptyList()
-//                        }// data 为 {}，返回空列表
-//                        else -> {
-//                            emptyList()
-//                        }
-//                    }
-//                    if (items.isNotEmpty()) {
-//                        page += 1
-//                        _uiState.value = UiState.Success<List<HomeListModel>>(items)
-//                    }else{
-//                        if (page == 1) {
-//                            _uiState.value = UiState.Error("暂无数据")
-//                        }else{
-//                            _isLastPage.value = true
-//                        }
-//                    }
-//                }else{
-//                    if (page == 1) {
-//                        _uiState.value = UiState.Error("暂无数据")
-//                    }
-//                }
-//            }catch (e: Exception) {
-//                if (page == 1) {
-//                    _uiState.value = UiState.Error("暂无数据")
-//                }
-//            }finally {
-//                isLoading = false
-//                _refreshState.value = refreshState
-//            }
-//        }
-//    }
+    fun searchListNetworking(keyword: String, refresh: RefreshState) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                if (refresh == RefreshState.REFRESH) {
+                    page = 1
+                    _isLastPage.value = false
+                }
+                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+                    return@launch
+                }
+                if (_isFirstLoading.value == true) {
+                    _uiState.value = UiState.FirstLoading
+                }
+                _refreshState.value = refresh
+
+                val dic = paramDic
+                dic["keyword"] = keyword
+                dic["page"] = page
+                dic["size"] = 10
+                val response = appService.searchList(dic).awaitResp()
+                if (response.code == 200) {
+                    val items = when (response.data) {
+                        is List<*> -> {
+                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
+                            (homeList ?: emptyList())
+                        }
+                        is Map<*, *> -> {
+                            emptyList()
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            emptyList()
+                        }
+                    }
+                    if (items.isNotEmpty()) {
+                        page += 1
+                        _uiState.value = UiState.Success(items)
+                    }else{
+                        if (page == 1) {
+                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }else{
+                            _isLastPage.value = true
+                        }
+                    }
+                }else{
+                    if (page == 1) {
+                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
+                }
+            }catch (e: Exception) {
+                if (page == 1) {
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                    _uiState.value = UiState.Error(noMoreData)
+                }
+            }finally {
+                _isLoading.value = false
+                _isRefreshing.value = false
+                if (_isFirstLoading.value == true && _uiState.value is UiState.Success) {
+                    _isFirstLoading.value = false
+                }
+            }
+        }
+    }
 
     fun likeActionNetworking(model: HomeListModel?) {
         viewModelScope.launch {
@@ -199,17 +234,5 @@ class HomeViewModel : ViewModel() {
                 _isLoading.value = false
             }
         }
-    }
-
-    fun uploadItem(model: HomeListModel?) {
-        _changedModel.value = model
-    }
-
-    fun cleanChangedModel(){
-        _changedModel.value = null
-    }
-
-    fun cleanIsRefreshing() {
-        _isRefreshing.value = false
     }
 }

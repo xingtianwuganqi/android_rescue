@@ -13,7 +13,9 @@ import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.paramDic
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeDetailViewModel: ViewModel() {
     private val appService = ServiceCreator.create<AppService>()
@@ -54,7 +56,6 @@ class HomeDetailViewModel: ViewModel() {
     }
 
     fun likeActionNetworking(model: HomeListModel?) {
-
         viewModelScope.launch {
             if (_isLoading.value == true) {
                 return@launch
@@ -73,9 +74,9 @@ class HomeDetailViewModel: ViewModel() {
                     _errorMsg.value = msg
                 }
             }catch (e: Exception) {
-                _errorMsg.value = "点赞失败"
+                _errorMsg.value = BaseApplication.context.resources.getString(R.string.like_error)
             }finally {
-                _isLoading.value = true
+                _isLoading.value = false
             }
         }
 
@@ -114,29 +115,26 @@ class HomeDetailViewModel: ViewModel() {
                 if (_isLoading.value == true) {
                     return@launch
                 }
-                val dic = paramDic
-                dic["topic_id"] = model?.topic_id
-                val response = appService.getTopicContact(dic).awaitResp()
-                _statusCode.value = response.code
-                if (response.code == 200) {
-                    model?.contact_info = response.data.contact
-                    model?.getedcontact = true
-                    _changedModel.value = model
-                } else if (response.code == 202) { // 无法获取联系方式
-                    _errorMsg.value = BaseApplication.context.getString(R.string.unable_get_contact)
-                }else{
-                    _errorMsg.value = BaseApplication.context.getString(R.string.get_contact_error)
-                }
+                    val dic = paramDic
+                    dic["topic_id"] = model?.topic_id
+                    val response = appService.getTopicContact(dic).awaitResp()
+                    _statusCode.value = response.code
+                    if (response.code == 200) {
+                        model?.contact_info = response.data.contact
+                        model?.getedcontact = true
+                        _changedModel.value = model
+                    } else if (response.code == 202) { // 无法获取联系方式
+                        _errorMsg.value = BaseApplication.context.getString(R.string.unable_get_contact)
+                    }else{
+                        _errorMsg.value = BaseApplication.context.getString(R.string.get_contact_error)
+                    }
+
             }catch (e: Exception) {
                 _errorMsg.value = BaseApplication.context.getString(R.string.network_request_error)
             }finally {
                 _isLoading.value = false
             }
         }
-    }
-
-    fun cleanStatusCode() {
-        _statusCode.value = null
     }
 
 }

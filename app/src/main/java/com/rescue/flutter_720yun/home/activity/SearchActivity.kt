@@ -11,7 +11,6 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivitySearchBinding
 import com.rescue.flutter_720yun.home.fragment.HomeFragment
 import com.rescue.flutter_720yun.home.fragment.SearchHistoryFragment
-import com.rescue.flutter_720yun.home.fragment.SearchListFragment
 import com.rescue.flutter_720yun.home.viewmodels.SearchViewModel
 
 class SearchActivity : AppCompatActivity() {
@@ -30,7 +29,7 @@ class SearchActivity : AppCompatActivity() {
         // 仅在 Activity 首次创建时添加 Fragment，避免重复添加
         if (savedInstanceState == null) {
             hotFragment = SearchHistoryFragment()
-            listFragment = HomeFragment()
+            listFragment = HomeFragment.newInstance("1")
 
             // 添加 Fragment 到 FrameLayout
             supportFragmentManager.beginTransaction()
