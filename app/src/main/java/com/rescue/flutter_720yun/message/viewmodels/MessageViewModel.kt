@@ -1,6 +1,5 @@
-package com.rescue.flutter_720yun.ui.message
+package com.rescue.flutter_720yun.message.viewmodels
 
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

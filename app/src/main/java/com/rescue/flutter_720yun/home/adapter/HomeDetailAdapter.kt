@@ -12,16 +12,19 @@ import com.makeramen.roundedimageview.RoundedImageView
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeDetailModel
-import com.rescue.flutter_720yun.home.models.HomeListModel
-import com.rescue.flutter_720yun.ui.home.TagInfoAdapter
 import com.rescue.flutter_720yun.util.dpToPx
-import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.loadScaleImage
 import com.rescue.flutter_720yun.util.toImgUrl
+
+interface DetailImgClickListener {
+    fun clickItem(model: List<HomeDetailModel>, position: Int)
+}
 
 class HomeDetailAdapter(
     private val detailList: List<HomeDetailModel>
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var onClickListener: DetailImgClickListener? = null
 
     companion object {
         const val DETAIL = 0
@@ -61,16 +64,33 @@ class HomeDetailAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is HomeDetailContentViewHolder -> holder.bind(detailList[position])
-            is HomeDetailImageViewHolder -> holder.bind(detailList[position])
+            is HomeDetailImageViewHolder -> {
+                val item = detailList[position]
+                item.imageStr?.let {
+                    val imgStr = it.toImgUrl()
+                    loadScaleImage(BaseApplication.context, imgStr, holder.imageView)
+                }
+                val layoutParams = holder.imageView.layoutParams as ViewGroup.MarginLayoutParams
+                layoutParams.setMargins(0, 0, 0, 10.dpToPx())
+                holder.imageView.layoutParams = layoutParams
+
+                holder.imageView.setOnClickListener {
+                    onClickListener?.clickItem(detailList, position)
+                }
+            }
         }
+    }
+
+    fun setOnClickListener(listener: DetailImgClickListener) {
+        onClickListener = listener
     }
 }
 
 class HomeDetailContentViewHolder(view: View): RecyclerView.ViewHolder(view) {
-    val headImg: RoundedImageView = view.findViewById(R.id.head_img)
-    val nickName: TextView = view.findViewById(R.id.nick_name)
-    val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
-    val contentText: TextView = view.findViewById(R.id.content)
+    private val headImg: RoundedImageView = view.findViewById(R.id.head_img)
+    private val nickName: TextView = view.findViewById(R.id.nick_name)
+    private val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
+    private val contentText: TextView = view.findViewById(R.id.content)
 
     fun bind(detailData: HomeDetailModel) {
         detailData.data?.userInfo?.avator?.let {
@@ -103,18 +123,4 @@ class HomeDetailContentViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
 class HomeDetailImageViewHolder(view: View): RecyclerView.ViewHolder(view) {
     var imageView: ImageView = view.findViewById(R.id.topic_img)
-    fun bind(detail: HomeDetailModel) {
-        detail.imageStr?.let {
-            val imgStr = it.toImgUrl()
-//            Glide.with(BaseApplication.context)
-//                .load(imgStr)
-//                .placeholder(R.drawable.icon_eee)
-//                .into(imageView)
-            loadScaleImage(BaseApplication.context, imgStr, imageView)
-        }
-        val layoutParams = imageView.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParams.setMargins(0, 0, 0, 10.dpToPx())
-        imageView.layoutParams = layoutParams
-
-    }
 }

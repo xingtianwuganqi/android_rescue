@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -14,16 +15,18 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.adapter.HomeDetailAdapter
 import com.rescue.flutter_720yun.databinding.ActivityHomeDetailBinding
+import com.rescue.flutter_720yun.home.adapter.DetailImgClickListener
 import com.rescue.flutter_720yun.home.models.HomeDetailModel
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
+import com.wei.wimagepreviewlib.WImagePreviewBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HomeDetailActivity : BaseActivity() {
+class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
     private var _binding: ActivityHomeDetailBinding? = null
     private val binding get() = _binding!!
@@ -96,9 +99,22 @@ class HomeDetailActivity : BaseActivity() {
             detailList.add(imageModel)
         }
         val adapter = HomeDetailAdapter(detailList)
+        adapter.setOnClickListener(this)
         imgRecyclerView.adapter = adapter
     }
 
+    override fun clickItem(model: List<HomeDetailModel>, position: Int) {
+        val imgUrls = model.filter {
+            it.imageStr != null
+        }.map {
+            "http://img.rxswift.cn/${it.imageStr}"
+        }
+        WImagePreviewBuilder
+            .load(this)
+            .setData(imgUrls)
+            .setPosition(position-1)
+            .start()
+    }
 
     private fun uploadBottom(homeData: HomeListModel?) {
         if (homeData?.liked == true) {
@@ -155,7 +171,6 @@ class HomeDetailActivity : BaseActivity() {
             intent.putExtra("result_model", it)
             setResult(Activity.RESULT_OK, intent)
         }
-
     }
 
     override fun addViewAction() {

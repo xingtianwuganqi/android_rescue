@@ -1,4 +1,4 @@
-package com.rescue.flutter_720yun.ui.show
+package com.rescue.flutter_720yun.show.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

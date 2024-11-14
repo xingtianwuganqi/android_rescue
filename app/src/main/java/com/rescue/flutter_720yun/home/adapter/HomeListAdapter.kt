@@ -4,17 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
-import com.rescue.flutter_720yun.ui.home.HomeListViewHolder
-import com.rescue.flutter_720yun.ui.home.OnItemClickListener
 
 class HomeListAdapter(private val list: MutableList<HomeListModel>,
                       private val context: Context,
-                      private val listener: OnItemClickListener):
+                      private val listener: OnItemClickListener
+):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val VIEW_TYPE_ITEM = 1

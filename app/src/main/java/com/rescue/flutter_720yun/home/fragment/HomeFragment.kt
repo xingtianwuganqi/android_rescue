@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
@@ -20,14 +19,14 @@ import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
-import kotlinx.coroutines.launch
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
-import com.rescue.flutter_720yun.ui.home.OnItemClickListener
+import com.rescue.flutter_720yun.home.adapter.OnItemClickListener
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
-
+import com.wei.wimagepreviewlib.WImagePreviewBuilder
 
 class HomeFragment : Fragment(), OnItemClickListener {
 
@@ -261,7 +260,16 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onImgClick(model: HomeListModel?, position: Int) {
-
+        val imageArr = model?.getImages()?.map {
+            "http://img.rxswift.cn/$it"
+        }
+        imageArr?.let {
+            WImagePreviewBuilder
+                .load(this)
+                .setData(it)
+                .setPosition(position)
+                .start()
+        }
     }
 
     override fun likeActionClick(model: HomeListModel?) {

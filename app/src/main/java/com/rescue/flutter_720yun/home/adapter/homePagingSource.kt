@@ -1,8 +1,6 @@
-package com.rescue.flutter_720yun.ui.home
-import android.util.Log
+package com.rescue.flutter_720yun.home.adapter
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.google.gson.reflect.TypeToken
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.network.awaitResp

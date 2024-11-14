@@ -1,4 +1,4 @@
-package com.rescue.flutter_720yun.ui.message
+package com.rescue.flutter_720yun.message.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,7 @@ import com.rescue.flutter_720yun.message.activity.MessageSystemListActivity
 import com.rescue.flutter_720yun.home.adapter.MessageListAdapter
 import com.rescue.flutter_720yun.home.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.databinding.FragmentMessageBinding
+import com.rescue.flutter_720yun.message.viewmodels.MessageViewModel
 
 class MessageFragment : Fragment(), MessageListItemClickListener {
 

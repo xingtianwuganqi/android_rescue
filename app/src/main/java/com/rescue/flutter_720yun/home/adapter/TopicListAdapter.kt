@@ -1,4 +1,4 @@
-package com.rescue.flutter_720yun.ui.home
+package com.rescue.flutter_720yun.home.adapter
 
 
 import android.content.Context
@@ -7,16 +7,12 @@ import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
-import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -110,14 +106,14 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         if ((item?.getImages()?.size ?: 0) > 1) {
             imgRecyclerView.layoutManager = GridLayoutManager(context, 2)
             val images = item?.getImages()?.slice(0..1) ?: listOf("", "")
-            imgRecyclerView.adapter = TopicImgAdapter(images, object : TopicImgAdapter.OnChildItemClickListener{
+            imgRecyclerView.adapter = TopicImgAdapter(item?.getImages() ?: emptyList(), images, object : TopicImgAdapter.OnChildItemClickListener {
                 override fun onChildItemClick(position: Int) {
                     listener.onImgClick(item, position)
                 }
             })
         }else{
             imgRecyclerView.layoutManager = GridLayoutManager(context, 1)
-            imgRecyclerView.adapter = TopicImgAdapter(item?.imgs ?: listOf(""), object : TopicImgAdapter.OnChildItemClickListener{
+            imgRecyclerView.adapter = TopicImgAdapter(item?.getImages() ?: emptyList(), item?.getImages() ?: emptyList(), object : TopicImgAdapter.OnChildItemClickListener {
                 override fun onChildItemClick(position: Int) {
                     listener.onImgClick(item, position)
                 }

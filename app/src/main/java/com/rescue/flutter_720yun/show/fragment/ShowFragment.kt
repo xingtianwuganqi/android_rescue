@@ -1,4 +1,4 @@
-package com.rescue.flutter_720yun.ui.show
+package com.rescue.flutter_720yun.show.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
+import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
 
 class ShowFragment : Fragment() {
 
