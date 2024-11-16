@@ -21,4 +21,5 @@
     <color name="color_aaa">#AAAAAA</color>
     <color name="color_bbb">#BBBBBB</color>
     <color name="color_eee">#EEEEEE</color>
+    <color name="color_red">#FE2449</color>
 </resources>
