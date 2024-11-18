@@ -77,5 +77,6 @@ dependencies {
     implementation("io.github.lucksiege:ucrop:v3.11.2")
     implementation("com.qiniu:qiniu-android-sdk:7.6.4")
     implementation("com.github.Wei-1021:WImagePreview:1.4.3")
+    implementation("com.github.getActivity:XXPermissions:20.0")
 }
 
