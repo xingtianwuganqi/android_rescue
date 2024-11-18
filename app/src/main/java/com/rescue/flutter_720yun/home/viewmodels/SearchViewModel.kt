@@ -13,6 +13,7 @@ import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.SearchHistoryItemModel
 import com.rescue.flutter_720yun.home.models.SearchKeywordModel
 import com.rescue.flutter_720yun.network.AppService
+import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.RefreshState
@@ -27,7 +28,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class SearchViewModel: ViewModel() {
-    private val appService = ServiceCreator.create<AppService>()
+    private val appService = ServiceCreator.create<HomeService>()
 
     private var _keywordModels = MutableLiveData<List<SearchHistoryItemModel>?>()
     private var _keyword = MutableLiveData<String>()

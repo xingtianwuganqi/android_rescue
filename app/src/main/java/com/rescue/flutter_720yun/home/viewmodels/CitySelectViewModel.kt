@@ -2,6 +2,7 @@ package com.rescue.flutter_720yun.home.viewmodels
 
 import android.content.Context
 import android.location.Address
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -10,6 +11,7 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.AddressItem
 import com.rescue.flutter_720yun.home.models.CityModel
 import com.rescue.flutter_720yun.util.ParameterizedTypeImpl
+import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 import com.rescue.flutter_720yun.util.UiState
 import java.io.IOException
 import java.io.InputStream
@@ -17,10 +19,13 @@ import java.io.InputStream
 class CitySelectViewModel: ViewModel() {
 
     private var _cityModels = MutableLiveData<UiState<List<AddressItem>>>()
-    val cityModels get() = _cityModels
+    private var _cityName = MutableLiveData<String>()
+    val cityModels: LiveData<UiState<List<AddressItem>>> get() = _cityModels
+    val cityName: LiveData<String> get() = _cityName
 
     init {
-        loadProvinceData()
+        _cityName.value = getSharePreInfo()
+        loadCityData()
     }
 
     private fun loadCityData() {
@@ -63,5 +68,9 @@ class CitySelectViewModel: ViewModel() {
             e.printStackTrace()
             null
         }
+    }
+
+    private fun getSharePreInfo(): String {
+        return SharedPreferencesUtil.getString("local_city", BaseApplication.context) ?: "北京市"
     }
 }

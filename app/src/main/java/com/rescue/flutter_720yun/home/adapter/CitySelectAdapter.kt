@@ -31,7 +31,7 @@ class CitySelectAdapter(val list: List<AddressItem>): RecyclerView.Adapter<CityS
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
         holder.titleText.text = item.name
-        holder.cityList.layoutManager = LinearLayoutManager(BaseApplication.context, LinearLayoutManager.HORIZONTAL, false)
+        holder.cityList.layoutManager = LinearLayoutManager(BaseApplication.context, LinearLayoutManager.VERTICAL, false)
         holder.cityList.adapter = CityItemAdapter(item.children)
     }
 
@@ -55,7 +55,8 @@ class CityItemAdapter(val list: List<AddressItem>?): RecyclerView.Adapter<CityIt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        val item = list?.get(position)
+        holder.titleText.text = item?.name
     }
 
 

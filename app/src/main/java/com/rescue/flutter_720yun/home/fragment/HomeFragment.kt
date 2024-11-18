@@ -35,7 +35,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private lateinit var adapter: HomeListAdapter
     private lateinit var homeViewModel: HomeViewModel
     private var pageType: String = "0" // 0:首页 1：搜索 2：同城
-    private var keyword: String? = null // 搜索关键字
+//    private var keyword: String? = null // 搜索关键字
 
     // 处理反向传值
     private val detailActivityLauncher = registerForActivityResult(
@@ -187,7 +187,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 loadData(RefreshState.MORE)
             }
             "1" -> {
-                keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.MORE) }
+                homeViewModel.searchKeyword?.let { homeViewModel.searchListNetworking(it, RefreshState.MORE) }
             }
             "2" -> {
                 homeViewModel.localListNetworking("北京市", RefreshState.MORE)
@@ -203,7 +203,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             }
 
             "1" -> {
-                keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.REFRESH) }
+                homeViewModel.searchKeyword?.let { homeViewModel.searchListNetworking(it, RefreshState.REFRESH) }
             }
 
             "2" -> {
@@ -214,10 +214,12 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     // 开始搜索
     fun beginSearch(keyword: String) {
-        this.keyword = keyword
         homeViewModel.searchListNetworking(keyword, RefreshState.REFRESH)
     }
 
+    fun beginLoadLocalCity(city: String) {
+        homeViewModel.localListNetworking(city, RefreshState.REFRESH)
+    }
 
     private fun showLoading() {
         binding.progressBar.visibility = View.VISIBLE

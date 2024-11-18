@@ -20,9 +20,7 @@ import com.google.gson.Gson
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.home.adapter.LocationViewPagerAdapter
 import com.rescue.flutter_720yun.home.models.AddressItem
-import com.rescue.flutter_720yun.home.models.ProvinceModel
 import com.rescue.flutter_720yun.util.ParameterizedTypeImpl
-import com.rescue.flutter_720yun.util.convertAnyToList
 import java.io.IOException
 import java.io.InputStream
 

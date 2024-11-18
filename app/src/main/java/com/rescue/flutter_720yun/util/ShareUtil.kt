@@ -3,7 +3,7 @@ package com.rescue.flutter_720yun.util
 import android.content.Context
 import android.content.SharedPreferences
 
-object ShareUtil {
+object SharedPreferencesUtil {
 
     private var sps: SharedPreferences?=null
 
@@ -16,15 +16,15 @@ object ShareUtil {
 
     fun putString(key:String,value:String?,context:Context){
         if(!value.isNullOrBlank()){
-            var editor:SharedPreferences.Editor=getSps(context).edit()
+            val editor:SharedPreferences.Editor=getSps(context).edit()
             editor.putString(key,value)
-            editor.commit()
+            editor.apply()
         }
     }
 
     fun getString(key:String,context:Context):String?{
-        if(!key.isNullOrBlank()){
-            var sps:SharedPreferences=getSps(context)
+        if(key.isNotBlank()){
+            val sps:SharedPreferences=getSps(context)
             return sps.getString(key,null)
         }
         return null

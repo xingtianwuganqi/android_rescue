@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.home.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.network.AppService
+import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.RefreshState
@@ -31,6 +33,9 @@ class HomeViewModel : ViewModel() {
     private var _isFirstLoading = MutableLiveData(true)
     private val _uiState = MutableLiveData<UiState<List<HomeListModel>>>()
 
+//    private val _keyword = MutableLiveData<String>()
+//    private val _cityName = MutableLiveData<String>()
+
     val uiState: LiveData<UiState<List<HomeListModel>>> get() = _uiState
 
     val models: LiveData<List<HomeListModel>> get() = _models
@@ -41,8 +46,10 @@ class HomeViewModel : ViewModel() {
     val isRefreshing: LiveData<Boolean> get() = _isRefreshing
     val isFirstLoading: LiveData<Boolean> get() = _isFirstLoading
     val refreshState: LiveData<RefreshState> get() = _refreshState
+    var searchKeyword: String? = null
+    var cityName: String? = null
 
-    private val appService = ServiceCreator.create<AppService>()
+    private val appService = ServiceCreator.create<HomeService>()
 
     fun loadListData(refresh: RefreshState) {
         viewModelScope.launch {
@@ -62,12 +69,11 @@ class HomeViewModel : ViewModel() {
             }
             _refreshState.value = refresh
             try {
-                val service = ServiceCreator.create<AppService>()
                 val dic = paramDic
                 dic["page"] = page
                 dic["size"] = 10
                 dic["order"] = 0
-                val response = service.getTopicList(dic).awaitResp()
+                val response = appService.getTopicList(dic).awaitResp()
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
@@ -123,6 +129,7 @@ class HomeViewModel : ViewModel() {
                 if (refresh == RefreshState.REFRESH) {
                     page = 1
                     _isLastPage.value = false
+                    searchKeyword = keyword
                 }
                 if (refresh == RefreshState.MORE && _isLastPage.value == true) {
                     return@launch
@@ -131,7 +138,6 @@ class HomeViewModel : ViewModel() {
                     _uiState.value = UiState.FirstLoading
                 }
                 _refreshState.value = refresh
-
                 val dic = paramDic
                 dic["keyword"] = keyword
                 dic["page"] = page
@@ -192,6 +198,7 @@ class HomeViewModel : ViewModel() {
                 if (refresh == RefreshState.REFRESH) {
                     page = 1
                     _isLastPage.value = false
+                    cityName = address
                 }
                 if (refresh == RefreshState.MORE && _isLastPage.value == true) {
                     return@launch
@@ -205,7 +212,8 @@ class HomeViewModel : ViewModel() {
                 dic["address"] = address
                 dic["page"] = page
                 dic["size"] = 10
-                val response = appService.searchList(dic).awaitResp()
+                Log.d("TAG","dic is $dic")
+                val response = appService.localTopicList(dic).awaitResp()
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {

@@ -9,6 +9,7 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.network.AppService
+import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.UserManager
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HomeDetailViewModel: ViewModel() {
-    private val appService = ServiceCreator.create<AppService>()
+    private val appService = ServiceCreator.create<HomeService>()
 
     private var _homeData = MutableLiveData<HomeListModel?>()
     private var _loadFail = MutableLiveData(false)

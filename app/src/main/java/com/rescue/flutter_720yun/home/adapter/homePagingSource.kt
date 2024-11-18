@@ -3,12 +3,13 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 
 class HomePagingSource(
-    private val apiService: AppService // 你的网络服务接口
+    private val apiService: HomeService // 你的网络服务接口
 ) : PagingSource<Int, HomeListModel>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, HomeListModel> {

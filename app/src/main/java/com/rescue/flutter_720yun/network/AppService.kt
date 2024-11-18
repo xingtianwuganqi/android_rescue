@@ -17,10 +17,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface AppService {
-    @FormUrlEncoded
-    @POST("api/v1/topiclist/")
-    fun getTopicList(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
-    ): Call<BaseResponse<Any>>
+
 
     @FormUrlEncoded
     @POST("api/v1/login/")
@@ -64,33 +61,7 @@ interface AppService {
 //    @FormUrlEncoded
 //    @POST("api/v1/")
     // 详情
-    @FormUrlEncoded
-    @POST("api/v1/topicdetail/")
-    fun topicDetail(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
-    ): Call<BaseResponse<HomeListModel>>
 
 
-    @FormUrlEncoded
-    @POST("api/v1/likeaction/")
-    fun topicLikeAction(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
-    ): Call<BaseResponse<LikeActionModel?>>
 
-    @FormUrlEncoded
-    @POST("api/v1/collection/")
-    fun topicCollectionAction(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
-    ): Call<BaseResponse<CollectionActionModel?>>
-
-    // 获取联系方式
-    @FormUrlEncoded
-    @POST("api/v1/getcontact/")
-    fun getTopicContact(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
-    ): Call<BaseResponse<ContactInfoModel>>
-
-    @GET("api/v1/searchkeywords/")
-    fun getSearchKeyword(): Call<BaseListResp<SearchKeywordModel>>
-
-    @FormUrlEncoded
-    @POST("api/v1/search/")
-    fun searchList(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
-    ): Call<BaseResponse<Any>>
 }
