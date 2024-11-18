@@ -182,6 +182,75 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun localListNetworking(address: String, refresh: RefreshState) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                if (refresh == RefreshState.REFRESH) {
+                    page = 1
+                    _isLastPage.value = false
+                }
+                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+                    return@launch
+                }
+                if (_isFirstLoading.value == true) {
+                    _uiState.value = UiState.FirstLoading
+                }
+                _refreshState.value = refresh
+
+                val dic = paramDic
+                dic["address"] = address
+                dic["page"] = page
+                dic["size"] = 10
+                val response = appService.searchList(dic).awaitResp()
+                if (response.code == 200) {
+                    val items = when (response.data) {
+                        is List<*> -> {
+                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
+                            (homeList ?: emptyList())
+                        }
+                        is Map<*, *> -> {
+                            emptyList()
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            emptyList()
+                        }
+                    }
+                    if (items.isNotEmpty()) {
+                        page += 1
+                        _uiState.value = UiState.Success(items)
+                    }else{
+                        if (page == 1) {
+                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }else{
+                            _isLastPage.value = true
+                        }
+                    }
+                }else{
+                    if (page == 1) {
+                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
+                }
+            }catch (e: Exception) {
+                if (page == 1) {
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                    _uiState.value = UiState.Error(noMoreData)
+                }
+            }finally {
+                _isLoading.value = false
+                _isRefreshing.value = false
+                if (_isFirstLoading.value == true && _uiState.value is UiState.Success) {
+                    _isFirstLoading.value = false
+                }
+            }
+        }
+    }
+
     fun likeActionNetworking(model: HomeListModel?) {
         viewModelScope.launch {
             if (_isLoading.value == true) {

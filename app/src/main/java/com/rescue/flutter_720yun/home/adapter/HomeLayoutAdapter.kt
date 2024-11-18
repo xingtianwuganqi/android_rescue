@@ -5,7 +5,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.rescue.flutter_720yun.home.fragment.HomeFragment
 
 class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-    private val fragments = listOf(HomeFragment(), HomeFragment())
+    private val fragments = listOf(HomeFragment(), HomeFragment.newInstance("2"))
 
     override fun getItemCount(): Int = fragments.size
 

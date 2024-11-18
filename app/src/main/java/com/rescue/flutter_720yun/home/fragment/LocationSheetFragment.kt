@@ -146,16 +146,16 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun readJsonFromRaw(context: Context, resId: Int): String? {
-        try {
+        return try {
             val inputStream: InputStream = context.resources.openRawResource(resId)
             val size = inputStream.available()
             val buffer = ByteArray(size)
             inputStream.read(buffer)
             inputStream.close()
-            return String(buffer)
+            String(buffer)
         } catch (e: IOException) {
             e.printStackTrace()
-            return null
+            null
         }
     }
 

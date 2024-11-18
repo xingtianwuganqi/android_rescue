@@ -182,20 +182,34 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     fun loadMoreData() {
-        if (pageType == "0") {
-            loadData(RefreshState.MORE)
-        }else if (pageType == "1") {
-            keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.MORE) }
+        when (pageType) {
+            "0" -> {
+                loadData(RefreshState.MORE)
+            }
+            "1" -> {
+                keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.MORE) }
+            }
+            "2" -> {
+                homeViewModel.localListNetworking("北京市", RefreshState.MORE)
+            }
         }
+
     }
 
     private fun loadData(refresh: RefreshState) {
-        if (pageType == "0") {
-            homeViewModel.loadListData(refresh)
-        }else if (pageType == "1") {
-            keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.REFRESH) }
-        }
+        when (pageType) {
+            "0" -> {
+                homeViewModel.loadListData(refresh)
+            }
 
+            "1" -> {
+                keyword?.let { homeViewModel.searchListNetworking(it, RefreshState.REFRESH) }
+            }
+
+            "2" -> {
+                homeViewModel.localListNetworking("北京市", RefreshState.REFRESH)
+            }
+        }
     }
 
     // 开始搜索
