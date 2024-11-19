@@ -38,5 +38,8 @@ class LocationListFragment : Fragment() {
         adapterValue.setItems(items, onItemClick)
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

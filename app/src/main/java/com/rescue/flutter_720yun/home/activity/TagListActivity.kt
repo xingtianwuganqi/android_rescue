@@ -110,11 +110,10 @@ class TagListActivity : BaseActivity(), TagListClickListener {
     }
 
     private fun sendResultAndFinish() {
-        var arrayList: ArrayList<TagInfoModel>?
-        if (viewModel.selectTags.value != null) {
-            arrayList = ArrayList(viewModel.selectTags?.value?.toMutableList())
+        val arrayList: ArrayList<TagInfoModel>? = if (viewModel.selectTags.value != null) {
+            viewModel.selectTags.value?.toMutableList()?.let { ArrayList(it) }
         }else{
-            arrayList = ArrayList()
+            ArrayList()
         }
         val intent = Intent()
         intent.putParcelableArrayListExtra("result_tag", arrayList)
@@ -129,5 +128,10 @@ class TagListActivity : BaseActivity(), TagListClickListener {
             val currentList = currentState.data
             adapter.uploadAllItem(currentList)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

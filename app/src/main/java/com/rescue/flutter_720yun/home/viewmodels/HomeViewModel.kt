@@ -48,6 +48,7 @@ class HomeViewModel : ViewModel() {
     val refreshState: LiveData<RefreshState> get() = _refreshState
     var searchKeyword: String? = null
     var cityName: String? = null
+    var pageType: String = "0" // 0:首页 1：搜索 2：同城
 
     private val appService = ServiceCreator.create<HomeService>()
 

@@ -10,10 +10,10 @@ import com.rescue.flutter_720yun.util.UiState
 
 class LocalListViewModel: ViewModel() {
 
-    private var _cityName = MutableLiveData<String>()
-    val cityName: LiveData<String> get() = _cityName
+    private var _cityName = MutableLiveData<String?>()
+    val cityName: LiveData<String?> get() = _cityName
 
-    init {
+    fun loadCityInfo(){
         _cityName.value = getSharePreInfo()
     }
 

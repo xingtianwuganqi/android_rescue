@@ -33,9 +33,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: HomeListAdapter
-    private lateinit var homeViewModel: HomeViewModel
-    private var pageType: String = "0" // 0:首页 1：搜索 2：同城
-//    private var keyword: String? = null // 搜索关键字
+    private val homeViewModel: HomeViewModel by lazy {
+        ViewModelProvider(this)[HomeViewModel::class.java]
+    }
 
     // 处理反向传值
     private val detailActivityLauncher = registerForActivityResult(
@@ -66,7 +66,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val title = arguments?.getString("pageType")  // 从 Bundle 中读取参数
-        this.pageType = title ?: "0"
+        homeViewModel.pageType = title ?: "0"
+        Log.d("TAG","Home Fragment onCreate")
     }
 
 
@@ -75,11 +76,14 @@ class HomeFragment : Fragment(), OnItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        Log.d("TAG","Home Fragment onCreateView networking")
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val recyclerView: RecyclerView = binding.recyclerview
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -94,7 +98,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             refreshData()
         }
 
-        if (pageType == "1") {
+        if (homeViewModel.pageType == "1") {
             binding.swipeRefreshLayout.isEnabled = false
             binding.tip.visibility = View.GONE
         }else{
@@ -127,9 +131,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
         })
 
         addListObserver()
-        loadData(RefreshState.REFRESH)
+        if (homeViewModel.uiState.value !is UiState.Success) {
+            loadData(RefreshState.REFRESH)
+        }
 
-        return root
+        Log.d("TAG","Home Fragment onViewCreated networking")
     }
 
     private fun addListObserver() {
@@ -182,7 +188,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     fun loadMoreData() {
-        when (pageType) {
+        when (homeViewModel.pageType) {
             "0" -> {
                 loadData(RefreshState.MORE)
             }
@@ -190,14 +196,16 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 homeViewModel.searchKeyword?.let { homeViewModel.searchListNetworking(it, RefreshState.MORE) }
             }
             "2" -> {
-                homeViewModel.localListNetworking("北京市", RefreshState.MORE)
+                homeViewModel.cityName?.let {
+                    homeViewModel.localListNetworking(it, RefreshState.MORE)
+                }
             }
         }
 
     }
 
     private fun loadData(refresh: RefreshState) {
-        when (pageType) {
+        when (homeViewModel.pageType) {
             "0" -> {
                 homeViewModel.loadListData(refresh)
             }
@@ -207,7 +215,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
             }
 
             "2" -> {
-                homeViewModel.localListNetworking("北京市", RefreshState.REFRESH)
+                homeViewModel.cityName?.let {
+                    homeViewModel.localListNetworking(it, RefreshState.REFRESH)
+                }
             }
         }
     }

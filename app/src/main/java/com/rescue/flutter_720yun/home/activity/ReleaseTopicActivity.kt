@@ -372,4 +372,9 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         }
         imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

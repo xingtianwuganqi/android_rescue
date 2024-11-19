@@ -73,4 +73,13 @@ class CitySelectViewModel: ViewModel() {
     private fun getSharePreInfo(): String {
         return SharedPreferencesUtil.getString("local_city", BaseApplication.context) ?: "北京市"
     }
+
+    fun uploadCityInfo(addressItem: AddressItem) {
+        _cityName.value = addressItem.name
+        SharedPreferencesUtil.putString(
+            "local_city",
+            addressItem.name,
+            BaseApplication.context
+        )
+    }
 }

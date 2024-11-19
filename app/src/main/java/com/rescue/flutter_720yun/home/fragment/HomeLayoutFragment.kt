@@ -38,6 +38,7 @@ class HomeLayoutFragment : Fragment() {
                 2 -> tab.text = "找宠"
             }
         }.attach()
+        viewPager.offscreenPageLimit = 3
 
         return root
     }

@@ -30,7 +30,6 @@ class SearchHistoryFragment : Fragment(), SearchHistoryItemClickListener {
         viewModelRequestData()
 
         return binding.root
-//        return inflater.inflate(R.layout.fragment_search_history, container, false)
     }
 
     private fun viewModelRequestData() {
@@ -55,8 +54,9 @@ class SearchHistoryFragment : Fragment(), SearchHistoryItemClickListener {
     override fun onDeleteClick() {
         viewModel.deleteLocalKeyword()
     }
-    override fun onDestroy() {
-        super.onDestroy()
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 

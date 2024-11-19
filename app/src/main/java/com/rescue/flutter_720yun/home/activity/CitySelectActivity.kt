@@ -6,11 +6,13 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityCitySelectBinding
 import com.rescue.flutter_720yun.home.adapter.CitySelectAdapter
@@ -52,11 +54,20 @@ class CitySelectActivity : BaseActivity() {
                 }
             }
         }
+
+        viewModel.cityName.observe(this) {
+            val str = BaseApplication.context.resources.getString(R.string.local_name, it)
+            binding.localTitle.text = str
+        }
     }
 
     private fun loadCityAdapter(cities: List<AddressItem>) {
         binding.cityRecyclerview.layoutManager = LinearLayoutManager(this)
-        binding.cityRecyclerview.adapter = CitySelectAdapter(cities)
+        binding.cityRecyclerview.adapter = CitySelectAdapter(cities, { addressItem ->
+            addressItem?.let {
+                viewModel.uploadCityInfo(it)
+            }
+        })
     }
 
 
@@ -82,5 +93,10 @@ class CitySelectActivity : BaseActivity() {
             intent.putExtra("local_city", it)
             setResult(Activity.RESULT_OK, intent)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

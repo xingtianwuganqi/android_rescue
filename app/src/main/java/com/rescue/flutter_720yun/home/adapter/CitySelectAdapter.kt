@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.AddressItem
-import com.rescue.flutter_720yun.home.models.CityModel
 
-class CitySelectAdapter(val list: List<AddressItem>): RecyclerView.Adapter<CitySelectAdapter.ViewHolder>() {
+class CitySelectAdapter(
+    val list: List<AddressItem>,
+    private val clickCallback: (AddressItem?) -> Unit
+    ): RecyclerView.Adapter<CitySelectAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val titleText: TextView = view.findViewById(R.id.city_content)
@@ -32,14 +34,17 @@ class CitySelectAdapter(val list: List<AddressItem>): RecyclerView.Adapter<CityS
         val item = list[position]
         holder.titleText.text = item.name
         holder.cityList.layoutManager = LinearLayoutManager(BaseApplication.context, LinearLayoutManager.VERTICAL, false)
-        holder.cityList.adapter = CityItemAdapter(item.children)
+        holder.cityList.adapter = CityItemAdapter(item.children,clickCallback)
     }
 
 
 }
 
 
-class CityItemAdapter(val list: List<AddressItem>?): RecyclerView.Adapter<CityItemAdapter.ViewHolder>() {
+class CityItemAdapter(
+    val list: List<AddressItem>?,
+    val clickItem: (AddressItem?) -> Unit
+): RecyclerView.Adapter<CityItemAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val titleText: TextView = view.findViewById(R.id.city_title)
@@ -57,6 +62,9 @@ class CityItemAdapter(val list: List<AddressItem>?): RecyclerView.Adapter<CityIt
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list?.get(position)
         holder.titleText.text = item?.name
+        holder.titleText.setOnClickListener {
+            clickItem(item)
+        }
     }
 
 
