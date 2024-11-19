@@ -29,7 +29,7 @@ import com.rescue.flutter_720yun.util.toastString
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
 
 class HomeFragment : Fragment(), OnItemClickListener {
-
+    private var rootView : View ?= null
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: HomeListAdapter
@@ -77,9 +77,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+
         Log.d("TAG","Home Fragment onCreateView networking")
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -167,6 +167,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 }
 
                 is UiState.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
                     showSuccess()
                     if (homeViewModel.refreshState.value == RefreshState.REFRESH) {
                         adapter.refreshItem(it.data)

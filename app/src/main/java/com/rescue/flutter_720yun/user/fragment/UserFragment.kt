@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.user.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,8 @@ class UserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        Log.d("TAG","User Fragment onCreateView networking")
+
         return inflater.inflate(R.layout.fragment_user, container, false)
     }
 

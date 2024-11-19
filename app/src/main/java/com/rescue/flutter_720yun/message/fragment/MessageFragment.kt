@@ -2,6 +2,7 @@ package com.rescue.flutter_720yun.message.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import com.rescue.flutter_720yun.databinding.FragmentMessageBinding
 import com.rescue.flutter_720yun.message.viewmodels.MessageViewModel
 
 class MessageFragment : Fragment(), MessageListItemClickListener {
-
+    private var rootView : View? = null
     private var _binding: FragmentMessageBinding? = null
     private val binding get() = _binding!!
 
@@ -23,21 +24,21 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         val messageViewModel =
             ViewModelProvider(this)[MessageViewModel::class.java]
         _binding = FragmentMessageBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
+        if (rootView == null) {
+            rootView = binding.root
+        }
         messageViewModel.messageList.observe(viewLifecycleOwner) {
             val adapter = MessageListAdapter(it)
             binding.messageList.adapter = adapter
             binding.messageList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter.setClickListener(this)
-
         }
-
-        return root
+        Log.d("TAG","Message Fragment onCreateView networking")
+        return rootView
     }
 
     override fun itemClick(position: Int) {

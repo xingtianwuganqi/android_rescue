@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.show.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,6 +67,7 @@ class ShowFragment : Fragment() {
         showViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+        Log.d("TAG","Show Fragment onCreateView networking")
 
         return root
     }
