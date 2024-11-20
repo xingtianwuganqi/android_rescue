@@ -17,19 +17,21 @@ class SearchHistoryFragment : Fragment(), SearchHistoryItemClickListener {
 
     private var _binding: FragmentSearchHistoryBinding? = null
     private val binding: FragmentSearchHistoryBinding get() = _binding!!
-
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by lazy {
+        ViewModelProvider(requireActivity())[SearchViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchHistoryBinding.inflate(inflater, container,false)
-        viewModel = ViewModelProvider(requireActivity())[SearchViewModel::class.java]
-
-        viewModelRequestData()
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModelRequestData()
     }
 
     private fun viewModelRequestData() {

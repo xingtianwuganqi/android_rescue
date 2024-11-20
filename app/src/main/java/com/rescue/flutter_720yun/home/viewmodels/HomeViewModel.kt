@@ -57,7 +57,6 @@ class HomeViewModel : ViewModel() {
             if (_isLoading.value == true) {
                 return@launch
             }
-            _isLoading.value = true
             if (refresh == RefreshState.REFRESH) {
                 page = 1
                 _isLastPage.value = false
@@ -68,6 +67,7 @@ class HomeViewModel : ViewModel() {
             if (_isFirstLoading.value == true) {
                 _uiState.value = UiState.FirstLoading
             }
+            _isLoading.value = true
             _refreshState.value = refresh
             try {
                 val dic = paramDic
@@ -101,13 +101,13 @@ class HomeViewModel : ViewModel() {
                     }
                 }else{
                     if (page == 1) {
-                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
                         _uiState.value = UiState.Error(noMoreData)
                     }
                 }
             }catch (e: Exception) {
                 if (page == 1) {
-                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
                     _uiState.value = UiState.Error(noMoreData)
                 }
             }finally {

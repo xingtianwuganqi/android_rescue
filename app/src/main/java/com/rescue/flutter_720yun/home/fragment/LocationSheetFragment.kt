@@ -40,15 +40,17 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLocationSheetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         tabLayout = binding.tabLayout
         viewPager = binding.viewPager
         viewPager.isUserInputEnabled = false
         val data = loadProvinceData()
         addressData = data ?: emptyList()
         setupTabsAndViewPager()
-
-        return binding.root
     }
 
     private fun setupTabsAndViewPager() {

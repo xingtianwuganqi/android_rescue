@@ -66,4 +66,9 @@ interface HomeService {
     @POST("api/v1/search/")
     fun searchList(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v2/findpet/list")
+    fun findPetList(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<BaseResponse<Any>>
 }

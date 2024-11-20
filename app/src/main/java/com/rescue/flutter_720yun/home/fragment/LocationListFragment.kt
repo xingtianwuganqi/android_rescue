@@ -28,9 +28,13 @@ class LocationListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLocationListBinding.inflate(inflater,container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.localRecyclerview.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.localRecyclerview.adapter = adapterValue
-        return binding.root
     }
 
     fun setAddressItem(items: List<AddressItem>, onItemClick: (AddressItem) -> Unit) {
