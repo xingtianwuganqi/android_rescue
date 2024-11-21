@@ -43,11 +43,8 @@ class FindPetViewModel(
 
     val uiState: LiveData<UiState<List<FindPetModel>>> get() = _uiState
 
-    init {
-        findPetListNetworking(RefreshState.REFRESH)
-    }
 
-    private fun findPetListNetworking(refresh: RefreshState) {
+    fun findPetListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
             try {
                 if (_isLoading.value == true) {

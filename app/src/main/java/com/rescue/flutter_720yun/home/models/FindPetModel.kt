@@ -17,12 +17,12 @@ data class FindPetModel(
     var desc: String?,
     var contact: String?,
     var userInfo: UserInfo?,
-    var liked: Int?,
-    var collection: Int?,
+    var liked: Boolean?,
+    var collection: Boolean?,
 
     var likeNum: Int?,
     var collectionNum: Int?,
     var commNum: Int?,
     var contact_info: String?,
-    var getedcontact: Int?
+    var getedcontact: Boolean?
 ): Parcelable
