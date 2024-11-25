@@ -91,7 +91,32 @@
         app:readMoreOverflow="ellipsis"
         app:readMoreText="@string/read_all"
         app:readMoreTextColor="@color/color_system"
-        app:readMoreToggleArea="none"
+        app:readMoreToggleArea="all"
+        app:readLessText="@string/read_close"
+        app:readLessTextColor="@color/color_system"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+        android:id="@+id/find_contact"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:contentDescription="@null"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:cornerRadius="6dp"
+        android:backgroundTint="@color/color_system"
+        android:text="@string/find_contact"
+        android:textColor="@color/white"
+        android:textSize="@dimen/content_font"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="65dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         />
 
     <TextView
@@ -102,7 +127,7 @@
         android:textColor="@color/color_desc"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/find_contact"
         android:layout_marginStart="65dp"
         android:layout_marginEnd="15dp"
         android:layout_marginTop="6dp"

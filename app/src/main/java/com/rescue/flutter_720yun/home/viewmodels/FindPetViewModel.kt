@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.FindPetModel
-import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
@@ -28,6 +27,8 @@ class FindPetViewModel(
     private var _isLastPage = MutableLiveData(false)
     private var _refreshState = MutableLiveData<RefreshState>()
     private var _uiState = MutableLiveData<UiState<List<FindPetModel>>>()
+    private var _changeModel = MutableLiveData<FindPetModel>()
+    private var _errorMsg = MutableLiveData<String?>()
 
     override val isLoading: LiveData<Boolean>
         get() = _isLoading
@@ -42,6 +43,9 @@ class FindPetViewModel(
         get() = _refreshState
 
     val uiState: LiveData<UiState<List<FindPetModel>>> get() = _uiState
+
+    val changeModel: LiveData<FindPetModel> get() = _changeModel
+    val errorMsg: LiveData<String?> get() = _errorMsg
 
 
     fun findPetListNetworking(refresh: RefreshState) {
@@ -109,4 +113,31 @@ class FindPetViewModel(
         }
     }
 
+
+    fun getFindPetContactNetworking(model: FindPetModel) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                val dic = paramDic
+                dic["topic_id"] = model.findId
+                dic["topic_type"] = 2
+                val response = appService.getTopicContact(dic).awaitResp()
+                if (response.code == 200) {
+                    model.getedcontact = true
+                    model.contact_info = response.data.contact
+                    _changeModel.value = model
+                }else{
+                    _errorMsg.value = response.message
+                }
+            }catch (e: Exception) {
+                _isLoading.value = false
+                _errorMsg.value = BaseApplication.context.resources.getString(R.string.network_request_error)
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }

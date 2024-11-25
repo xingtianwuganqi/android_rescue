@@ -26,6 +26,9 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <activity
+            android:name=".home.activity.FindPetDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".home.activity.FindPetActivity"
             android:exported="false" />
         <activity

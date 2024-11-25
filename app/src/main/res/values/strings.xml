@@ -19,6 +19,7 @@
     <string name="login_failed">"Login failed"</string>
 
     <string name="no_data">暂无数据</string>
+    <string name="copy_success">复制成功</string>
 
     <string name="login_new_register">新用户注册</string>
     <string name="login_phone_placeholder">请输入手机号</string>
@@ -43,6 +44,7 @@
     <string name="login_uncheck">未校验手机号</string>
 
     <string name="read_all">全文</string>
+    <string name="read_close">收起</string>
     <string name="content_open">展开</string>
     <string name="content_close">收起</string>
     <string name="like_action">点赞</string>
@@ -68,6 +70,7 @@
     <string name="find_title">找宠小助手</string>
     <string name="find_go">去找宠</string>
     <string name="find_want">想领养</string>
+    <string name="find_contact">获取TA的联系方式</string>
 
     <string name="release_hint">请简单介绍下宠物，例如：\n名字：xxx\n年龄：xxx\n性别：xxx\n品种：xxx\n健康信息：xxx
     \n领养要求：xxx</string>

@@ -26,10 +26,10 @@ import com.rescue.flutter_720yun.util.toImgUrl
 
 interface FindPetItemClickListener {
     fun userClick(model: FindPetModel?)
-    fun onItemClick(model: FindPetModel?)
     fun likeActionClick(model: FindPetModel?)
     fun collectionClick(model: FindPetModel?)
     fun commentClick(model: FindPetModel?)
+    fun getContactClick(model: FindPetModel?)
 }
 
 class FindPetListAdapter(
@@ -105,13 +105,14 @@ class FindPetListAdapter(
 
 class FindPetListViewHolder(view: View): ViewHolder(view) {
     val name: TextView = view.findViewById(R.id.nick_name)
-    val imageView: ImageView = view.findViewById(R.id.head_img)
+    private val imageView: ImageView = view.findViewById(R.id.head_img)
     val content: TextView = view.findViewById(R.id.content)
-    val timeText: TextView = view.findViewById(R.id.time_text)
-    val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
-    val likeBtn: MaterialButton = view.findViewById(R.id.like_button)
-    val collection: MaterialButton = view.findViewById(R.id.collect_button)
-    val commentBtn: MaterialButton = view.findViewById(R.id.comment_button)
+    private val timeText: TextView = view.findViewById(R.id.time_text)
+    private val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
+    private val likeBtn: MaterialButton = view.findViewById(R.id.like_button)
+    private val collection: MaterialButton = view.findViewById(R.id.collect_button)
+    private val commentBtn: MaterialButton = view.findViewById(R.id.comment_button)
+    private val contactButton: MaterialButton = view.findViewById(R.id.find_contact)
 
     fun bind(item: FindPetModel?, listener: FindPetItemClickListener) {
         name.text = item?.userInfo?.username
@@ -140,6 +141,12 @@ class FindPetListViewHolder(view: View): ViewHolder(view) {
         tagInfo.layoutManager = LinearLayoutManager(BaseApplication.context, LinearLayoutManager.HORIZONTAL, false)
         val paddingTop = 26 * BaseApplication.context.resources.displayMetrics.density
         content.setPadding(0, paddingTop.toInt(), 0, 0)
+
+        if (item?.getedcontact == true && item.contact_info != null) {
+            contactButton.text = item.contact_info
+        }else{
+            contactButton.text = ContextCompat.getString(BaseApplication.context, R.string.find_contact)
+        }
 
         if (item?.liked == true) {
             // 获取 drawable 资源（图标）
@@ -175,8 +182,8 @@ class FindPetListViewHolder(view: View): ViewHolder(view) {
             listener.userClick(item)
         }
 
-        content.setOnClickListener{
-            listener.onItemClick(item)
+        contactButton.setOnClickListener{
+            listener.getContactClick(item)
         }
 
         likeBtn.setOnClickListener{

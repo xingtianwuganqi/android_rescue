@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.home.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,14 +9,18 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentFindPetBinding
+import com.rescue.flutter_720yun.home.activity.FindPetDetailActivity
 import com.rescue.flutter_720yun.home.adapter.FindPetItemClickListener
 import com.rescue.flutter_720yun.home.adapter.FindPetListAdapter
 import com.rescue.flutter_720yun.home.models.FindPetModel
 import com.rescue.flutter_720yun.home.viewmodels.FindPetViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.lazyLogin
+import com.rescue.flutter_720yun.util.toastString
 
 class FindPetFragment : Fragment(), FindPetItemClickListener {
 
@@ -71,6 +76,11 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
 //            }
 //        })
 
+        binding.backImage.setOnClickListener{
+            val intent = Intent(activity, FindPetDetailActivity::class.java)
+            startActivity(intent)
+        }
+
         adapter = FindPetListAdapter(mutableListOf(), this)
         binding.findList.layoutManager = LinearLayoutManager(activity)
         binding.findList.adapter = adapter
@@ -99,6 +109,14 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
                     showError(it.message ?: "")
                 }
             }
+        }
+
+        viewModel.errorMsg.observe(viewLifecycleOwner) {
+            it?.toastString()
+        }
+
+        viewModel.changeModel.observe(viewLifecycleOwner) {
+            adapter.uploadItem(it)
         }
     }
 
@@ -130,8 +148,15 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
 
     }
 
-    override fun onItemClick(model: FindPetModel?) {
-
+    override fun getContactClick(model: FindPetModel?) {
+        lazyLogin(requireActivity()) {
+            if (model?.getedcontact == false && model.contact == null) {
+                viewModel.getFindPetContactNetworking(model)
+            }else{
+                // 复制到剪贴板
+                BaseApplication.context.resources.getString(R.string.copy_success).toastString()
+            }
+        }
     }
 
     override fun likeActionClick(model: FindPetModel?) {

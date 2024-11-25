@@ -28,7 +28,7 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == VIEW_TYPE_LOADING) {
+        if (viewType == VIEW_TYPE_LOADING) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.loading_item, parent, false)
             return LoadingViewHolder(view)
         }else {
