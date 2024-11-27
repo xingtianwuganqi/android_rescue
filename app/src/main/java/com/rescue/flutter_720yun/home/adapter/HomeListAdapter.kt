@@ -15,27 +15,16 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
 ):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val VIEW_TYPE_ITEM = 1
-    private val VIEW_TYPE_LOADING = 2
-
-    private var showNoMore = false
     override fun getItemCount(): Int {
-        return if (showNoMore) list.size + 1 else list.size
+        return  list.size
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position < list.size) VIEW_TYPE_ITEM else VIEW_TYPE_LOADING
-    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == VIEW_TYPE_LOADING) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.loading_item, parent, false)
-            return LoadingViewHolder(view)
-        }else {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.home_item, parent, false)
-            return HomeListViewHolder(view)
-        }
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.home_item, parent, false)
+        return HomeListViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -48,7 +37,7 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
     fun refreshItem(newList: List<HomeListModel>) {
         list.clear()
         list.addAll(newList)
-        notifyDataSetChanged() // 通知适配器刷新所有项
+        notifyItemRangeChanged(0, newList.size) // 刷新一个范围内的项。
     }
 
     fun addItems(newList: List<HomeListModel>) {
@@ -61,21 +50,6 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
         val position = list.indexOfFirst { it.topic_id == item.topic_id }
         list[position] = item
         notifyItemChanged(position)
-    }
-
-    fun clearItems() {
-        list.clear()
-        notifyDataSetChanged()
-    }
-
-    fun showNoMoreData() {
-        showNoMore = true
-        notifyItemInserted(list.size)
-    }
-
-    fun hideNoMoreData() {
-        showNoMore = false
-        notifyItemRemoved(list.size)
     }
 }
 

@@ -70,6 +70,7 @@ class FindPetViewModel(
                 dic["page"] = page
                 dic["size"] = 10
                 val response = appService.findPetList(dic).awaitResp()
+                _isFirstLoading.value = false
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {

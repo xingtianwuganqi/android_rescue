@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home.fragment.SearchListFragment">
+    android:layout_gravity="top">
 
     <!-- 加载中占位视图 -->
     <ProgressBar
@@ -31,6 +31,7 @@
         android:id="@+id/search_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="30dp"
         />
 
 </FrameLayout>

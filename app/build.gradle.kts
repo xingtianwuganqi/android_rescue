@@ -78,5 +78,9 @@ dependencies {
     implementation("com.qiniu:qiniu-android-sdk:7.6.4")
     implementation("com.github.Wei-1021:WImagePreview:1.4.3")
     implementation("com.github.getActivity:XXPermissions:20.0")
+    implementation("io.github.scwang90:refresh-layout-kernel:3.0.0-alpha") //核心必须依赖
+    implementation("io.github.scwang90:refresh-header-material:3.0.0-alpha") //谷歌刷新头
+    implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")    //经典加载
+
 }
 

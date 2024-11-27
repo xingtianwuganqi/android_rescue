@@ -21,6 +21,10 @@ import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.MaterialHeader
+import com.scwang.smart.refresh.layout.api.RefreshFooter
+import com.scwang.smart.refresh.layout.wrapper.RefreshFooterWrapper
 
 class FindPetFragment : Fragment(), FindPetItemClickListener {
 
@@ -56,25 +60,14 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
 
 
     private fun addViewAction() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            binding.swipeRefreshLayout.isRefreshing = true
+        binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
+        binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
+        binding.refreshLayout.setOnRefreshListener {
             viewModel.findPetListNetworking(RefreshState.REFRESH)
         }
-
-//        binding.findList.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-//                val totalItemCount = layoutManager.itemCount
-//                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-//
-//                if (!viewModel.isLoading.value!! &&
-//                    !viewModel.isLastPage.value!! &&
-//                    lastVisibleItem + 1 >= totalItemCount) {
-//                    viewModel.findPetListNetworking(RefreshState.MORE)
-//                }
-//            }
-//        })
+        binding.refreshLayout.setOnLoadMoreListener {
+            viewModel.findPetListNetworking(RefreshState.MORE)
+        }
 
         binding.backImage.setOnClickListener{
             val intent = Intent(activity, FindPetDetailActivity::class.java)
@@ -94,7 +87,6 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
                 }
 
                 is UiState.Success -> {
-                    binding.swipeRefreshLayout.isRefreshing = false
                     showSuccess()
                     val list = it.data
                     if (viewModel.refreshState.value == RefreshState.REFRESH) {
@@ -105,8 +97,17 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
                 }
 
                 is UiState.Error -> {
-                    binding.swipeRefreshLayout.isRefreshing = false
                     showError(it.message ?: "")
+                }
+            }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            if (it == false) {
+                binding.refreshLayout.finishRefresh()
+                binding.refreshLayout.finishLoadMore()
+                if (viewModel.isLastPage.value == true) {
+                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
                 }
             }
         }
@@ -118,6 +119,8 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
         viewModel.changeModel.observe(viewLifecycleOwner) {
             adapter.uploadItem(it)
         }
+
+
     }
 
     private fun showLoading() {

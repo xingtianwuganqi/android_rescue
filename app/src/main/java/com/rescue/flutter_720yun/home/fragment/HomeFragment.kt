@@ -26,6 +26,8 @@ import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.MaterialHeader
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
 
 class HomeFragment : Fragment(), OnItemClickListener {
@@ -93,16 +95,21 @@ class HomeFragment : Fragment(), OnItemClickListener {
             recyclerView.adapter = adapter
         }
 
-        val swipeRefreshLayout = binding.swipeRefreshLayout
-        swipeRefreshLayout.setOnRefreshListener {
+        binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
+        binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
+        binding.refreshLayout.setOnRefreshListener {
             refreshData()
         }
+        binding.refreshLayout.setOnLoadMoreListener {
+            loadMoreData()
+        }
+
 
         if (homeViewModel.pageType == "1") {
-            binding.swipeRefreshLayout.isEnabled = false
+            binding.refreshLayout.isEnabled = false
             binding.tip.visibility = View.GONE
         }else{
-            binding.swipeRefreshLayout.isEnabled = true
+            binding.refreshLayout.isEnabled = true
             binding.tip.visibility = View.VISIBLE
         }
 
@@ -135,17 +142,22 @@ class HomeFragment : Fragment(), OnItemClickListener {
             loadData(RefreshState.REFRESH)
         }
 
-        Log.d("TAG","Home Fragment onViewCreated networking")
     }
 
     private fun addListObserver() {
 
         // 观察是否到达最后一页
         homeViewModel.isLastPage.observe(viewLifecycleOwner)  { isLastPage ->
-            if (isLastPage) {
-                adapter.showNoMoreData()
-            } else {
-                adapter.hideNoMoreData()
+
+        }
+
+        homeViewModel.isLoading.observe(viewLifecycleOwner) {
+            if (it == false) {
+                binding.refreshLayout.finishRefresh()
+                binding.refreshLayout.finishLoadMore()
+                if (homeViewModel.isLastPage.value == true) {
+                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
+                }
             }
         }
 
@@ -167,7 +179,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 }
 
                 is UiState.Success -> {
-                    binding.swipeRefreshLayout.isRefreshing = false
                     showSuccess()
                     if (homeViewModel.refreshState.value == RefreshState.REFRESH) {
                         adapter.refreshItem(it.data)
@@ -183,9 +194,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     private fun refreshData() {
-        binding.swipeRefreshLayout.isRefreshing = true
         loadData(RefreshState.REFRESH)
-        binding.swipeRefreshLayout.isRefreshing = false
     }
 
     fun loadMoreData() {
@@ -235,19 +244,19 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private fun showLoading() {
         binding.progressBar.visibility = View.VISIBLE
         binding.errorView.visibility = View.GONE
-        binding.swipeRefreshLayout.visibility = View.GONE
+        binding.refreshLayout.visibility = View.GONE
     }
 
     private fun showSuccess() {
         binding.progressBar.visibility = View.GONE
         binding.errorView.visibility = View.GONE
-        binding.swipeRefreshLayout.visibility = View.VISIBLE
+        binding.refreshLayout.visibility = View.VISIBLE
     }
 
     private fun showError(error: String? = null) {
         binding.progressBar.visibility = View.GONE
         binding.errorView.visibility = View.VISIBLE
-        binding.swipeRefreshLayout.visibility = View.GONE
+        binding.refreshLayout.visibility = View.GONE
         error?.let {
             binding.errorView.text = error
         }

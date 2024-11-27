@@ -28,13 +28,9 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableLiveData(false)
     private val _changedModel = MutableLiveData<HomeListModel?>()
     private val _errorMsg = MutableLiveData<String>()
-    private val _isRefreshing = MutableLiveData(false)
     private var _refreshState = MutableLiveData<RefreshState>()
     private var _isFirstLoading = MutableLiveData(true)
     private val _uiState = MutableLiveData<UiState<List<HomeListModel>>>()
-
-//    private val _keyword = MutableLiveData<String>()
-//    private val _cityName = MutableLiveData<String>()
 
     val uiState: LiveData<UiState<List<HomeListModel>>> get() = _uiState
 
@@ -43,7 +39,6 @@ class HomeViewModel : ViewModel() {
     val isLoading: LiveData<Boolean> get() = _isLoading
     val changeModel: LiveData<HomeListModel?> get() = _changedModel
     val errorMsg: LiveData<String> get() = _errorMsg
-    val isRefreshing: LiveData<Boolean> get() = _isRefreshing
     val isFirstLoading: LiveData<Boolean> get() = _isFirstLoading
     val refreshState: LiveData<RefreshState> get() = _refreshState
     var searchKeyword: String? = null
@@ -75,6 +70,7 @@ class HomeViewModel : ViewModel() {
                 dic["size"] = 10
                 dic["order"] = 0
                 val response = appService.getTopicList(dic).awaitResp()
+                _isFirstLoading.value = false
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
@@ -112,10 +108,6 @@ class HomeViewModel : ViewModel() {
                 }
             }finally {
                 _isLoading.value = false
-                _isRefreshing.value = false
-                if (_isFirstLoading.value == true && _uiState.value is UiState.Success) {
-                    _isFirstLoading.value = false
-                }
             }
         }
     }
@@ -181,7 +173,6 @@ class HomeViewModel : ViewModel() {
                 }
             }finally {
                 _isLoading.value = false
-                _isRefreshing.value = false
                 if (_isFirstLoading.value == true && _uiState.value is UiState.Success) {
                     _isFirstLoading.value = false
                 }
@@ -215,6 +206,7 @@ class HomeViewModel : ViewModel() {
                 dic["size"] = 10
                 Log.d("TAG","dic is $dic")
                 val response = appService.localTopicList(dic).awaitResp()
+                _isFirstLoading.value = false
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
@@ -252,10 +244,6 @@ class HomeViewModel : ViewModel() {
                 }
             }finally {
                 _isLoading.value = false
-                _isRefreshing.value = false
-                if (_isFirstLoading.value == true && _uiState.value is UiState.Success) {
-                    _isFirstLoading.value = false
-                }
             }
         }
     }
