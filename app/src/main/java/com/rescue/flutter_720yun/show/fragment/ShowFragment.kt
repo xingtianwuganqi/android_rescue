@@ -10,73 +10,104 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
 import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
+import com.rescue.flutter_720yun.util.RefreshState
+import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.toastString
 
 class ShowFragment : Fragment() {
 
     private var _binding: FragmentShowBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-
-    private var number: Int = 0
-
-    // 创建livedata
-    val liveData = MutableLiveData<String>()
-    val liveMapData: LiveData<Pair<Int, String>> = liveData.map {
-        Pair<Int, String>(it.hashCode(), it)
+    private val viewModel by lazy {
+        ViewModelProvider(this)[ShowViewModel::class.java]
     }
 
-    val liveMapData2: LiveData<String> = liveData.map {
-        "liveMapData2 ${it.takeLast(6)}"
-    }
-
-    val liveTwo = MutableLiveData<String>().apply {
-        value = "666"
-    }
-
-    val liveOne = MutableLiveData<String>().apply {
-        value = "999"
-    }
-
-
-    val multiLiveData: MediatorLiveData<String> = MediatorLiveData()
-
-    // switchMap 通过条件，控制选择数据元666 or 888
-    val switchLiveData: LiveData<String> = liveMapData.switchMap {
-        if (it.second.takeLast(1).toInt() % 2 == 0) liveTwo else liveOne
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val showViewModel =
-            ViewModelProvider(this).get(ShowViewModel::class.java)
-
         _binding = FragmentShowBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        val textView: TextView = binding.textDashboard
-        showViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        Log.d("TAG","Show Fragment onCreateView networking")
 
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModelAddObserver()
+        if (viewModel.uiState.value !is UiState.Success) {
+            viewModel.showPageListNetworking(RefreshState.REFRESH)
+        }
     }
 
+    private fun viewModelAddObserver() {
+        viewModel.uiState.observe(viewLifecycleOwner) {
+            when (it) {
+                is UiState.FirstLoading -> {
+                    showLoading()
+                }
+
+                is UiState.Success -> {
+                    showSuccess()
+                    val list = it.data
+//                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
+//                        adapter.refreshItem(list)
+//                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
+//                        adapter.addItems(list)
+//                    }
+                }
+
+                is UiState.Error -> {
+                    showError(it.message ?: "")
+                }
+            }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            if (it == false) {
+                binding.refreshLayout.finishRefresh()
+                binding.refreshLayout.finishLoadMore()
+                if (viewModel.isLastPage.value == true) {
+                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
+                }
+            }
+        }
+
+        viewModel.errorMsg.observe(viewLifecycleOwner) {
+            it?.toastString()
+        }
+
+        viewModel.changeModel.observe(viewLifecycleOwner) {
+//            adapter.uploadItem(it)
+        }
+    }
+
+    private fun showLoading() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.errorView.visibility = View.GONE
+        binding.refreshLayout.visibility = View.GONE
+    }
+
+    private fun showSuccess() {
+        binding.progressBar.visibility = View.GONE
+        binding.errorView.visibility = View.GONE
+        binding.refreshLayout.visibility = View.VISIBLE
+    }
+
+    private fun showError(error: String) {
+        binding.progressBar.visibility = View.GONE
+        binding.errorView.visibility = View.VISIBLE
+        binding.refreshLayout.visibility = View.GONE
+        binding.errorView.text = error
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
