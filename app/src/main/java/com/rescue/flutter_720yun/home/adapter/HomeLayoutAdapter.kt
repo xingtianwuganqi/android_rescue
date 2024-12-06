@@ -7,7 +7,7 @@ import com.rescue.flutter_720yun.home.fragment.HomeFragment
 import com.rescue.flutter_720yun.home.fragment.LocalListFragment
 
 class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-    private val fragments = listOf(HomeFragment(), LocalListFragment(), FindPetFragment())
+    private val fragments = listOf(HomeFragment(), LocalListFragment()) //, FindPetFragment()
 
     override fun getItemCount(): Int = fragments.size
 
