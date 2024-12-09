@@ -10,6 +10,7 @@ import com.rescue.flutter_720yun.home.models.FindPetModel
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.ShowService
 import com.rescue.flutter_720yun.network.awaitResp
+import com.rescue.flutter_720yun.show.models.ShowPageModel
 import com.rescue.flutter_720yun.util.CommonViewModelInterface
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
@@ -26,8 +27,8 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
     private var _isFirstLoading = MutableLiveData(true)
     private var _isLastPage = MutableLiveData(false)
     private var _refreshState = MutableLiveData<RefreshState>()
-    private var _uiState = MutableLiveData<UiState<List<FindPetModel>>>()
-    private var _changeModel = MutableLiveData<FindPetModel>()
+    private var _uiState = MutableLiveData<UiState<List<ShowPageModel>>>()
+    private var _changeModel = MutableLiveData<ShowPageModel>()
     private var _errorMsg = MutableLiveData<String?>()
 
     override val isLoading: LiveData<Boolean>
@@ -42,9 +43,9 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
     override val refreshState: LiveData<RefreshState>
         get() = _refreshState
 
-    val uiState: LiveData<UiState<List<FindPetModel>>> get() = _uiState
+    val uiState: LiveData<UiState<List<ShowPageModel>>> get() = _uiState
 
-    val changeModel: LiveData<FindPetModel> get() = _changeModel
+    val changeModel: LiveData<ShowPageModel> get() = _changeModel
     val errorMsg: LiveData<String?> get() = _errorMsg
 
     fun showPageListNetworking(refresh: RefreshState) {
@@ -73,7 +74,7 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
-                            val homeList = convertAnyToList(response.data, FindPetModel::class.java)
+                            val homeList = convertAnyToList(response.data, ShowPageModel::class.java)
                             (homeList ?: emptyList())
                         }
                         is Map<*, *> -> {

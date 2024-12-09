@@ -14,11 +14,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
+import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
 import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.MaterialHeader
 
 class ShowFragment : Fragment() {
 
@@ -27,7 +31,7 @@ class ShowFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProvider(this)[ShowViewModel::class.java]
     }
-
+    private lateinit var adapter: ShowPageListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +50,19 @@ class ShowFragment : Fragment() {
         if (viewModel.uiState.value !is UiState.Success) {
             viewModel.showPageListNetworking(RefreshState.REFRESH)
         }
+
+        binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
+        binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
+        binding.refreshLayout.setOnRefreshListener {
+            viewModel.showPageListNetworking(RefreshState.REFRESH)
+        }
+        binding.refreshLayout.setOnLoadMoreListener {
+            viewModel.showPageListNetworking(RefreshState.MORE)
+        }
+
+        binding.showList.layoutManager = LinearLayoutManager(context)
+        adapter = ShowPageListAdapter(mutableListOf())
+        binding.showList.adapter = adapter
     }
 
     private fun viewModelAddObserver() {
@@ -58,11 +75,11 @@ class ShowFragment : Fragment() {
                 is UiState.Success -> {
                     showSuccess()
                     val list = it.data
-//                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
-//                        adapter.refreshItem(list)
-//                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
-//                        adapter.addItems(list)
-//                    }
+                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
+                        adapter.refreshItem(list)
+                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
+                        adapter.addItems(list)
+                    }
                 }
 
                 is UiState.Error -> {

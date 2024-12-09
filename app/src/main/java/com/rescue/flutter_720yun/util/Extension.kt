@@ -16,6 +16,7 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.activity.LoginActivity
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.show.models.ShowPageModel
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.Locale
@@ -63,6 +64,10 @@ fun HomeListModel.getImages(): List<String>? {
     }else{
         this.imgs
     }
+}
+
+fun ShowPageModel.getImages(): List<String>? {
+    return this.imgs
 }
 
 fun <T> convertAnyToList(anyObject: Any, clazz: Class<T>): List<T>? {
