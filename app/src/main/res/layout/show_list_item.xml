@@ -68,20 +68,20 @@
         app:layout_constraintTop_toBottomOf="@id/head_img"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="10dp"
         />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
+    <com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
+        android:id="@+id/viewpager_pager_indicator"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tabIndicatorColor="@color/color_system"
-        app:tabIndicatorHeight="4dp"
-        app:tabGravity="center"
-        app:tabMode="fixed"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:dotColor="@color/color_desc"
+        app:selectedDotColor="@color/color_system"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/viewPager2"
-        />
+        android:layout_marginBottom="10dp"
+    />
 
     <!-- 宽度设置为0dp，表示使用约束 -->
     <!-- 高度设置为0dp -->
@@ -94,7 +94,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/viewPager2"
         android:layout_marginBottom="15dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:textColor="@color/color_content"
@@ -103,7 +103,9 @@
         app:readMoreOverflow="ellipsis"
         app:readMoreText="@string/read_all"
         app:readMoreTextColor="@color/color_system"
-        app:readMoreToggleArea="none"
+        app:readMoreToggleArea="all"
+        app:readLessText="@string/read_close"
+        app:readLessTextColor="@color/color_system"
         />
 
     <TextView
@@ -165,7 +167,6 @@
             android:textSize="@dimen/address_font"
             android:backgroundTint="@android:color/transparent"
             />
-        <!--            style="@style/Widget.MaterialComponents.Button.TextButton"-->
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.TextButton"

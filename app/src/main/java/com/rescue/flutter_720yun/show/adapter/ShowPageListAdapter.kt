@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.makeramen.roundedimageview.RoundedImageView
+import com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.show.models.ShowPageModel
@@ -28,8 +29,7 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
         val viewPager: ViewPager2 = view.findViewById(R.id.viewPager2)
         val content: ReadMoreTextView = view.findViewById(R.id.content)
         val comment: TextView = view.findViewById(R.id.comment)
-        var tabLayout: TabLayout = view.findViewById(R.id.tabLayout)
-
+        var indicator: IndefinitePagerIndicator = view.findViewById(R.id.viewpager_pager_indicator)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,12 +59,12 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
         }?.let { ImagePagerAdapter(it) }
 
         holder.viewPager.adapter = adapter
-        // 将 TabLayout 和 ViewPager2 绑定
-        TabLayoutMediator(holder.tabLayout, holder.viewPager) { tab, position ->
-            // Tab 名称可以是任意的，在此示例中使用位置作为名称
-            tab.text = " "
-        }.attach()
-
+        holder.indicator.attachToViewPager2(holder.viewPager)
+        if ((images?.size ?: 0) > 1) {
+            holder.indicator.visibility = View.VISIBLE
+        }else{
+            holder.indicator.visibility = View.GONE
+        }
         holder.content.text = item.instruction
     }
 

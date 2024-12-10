@@ -19,7 +19,7 @@ import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
 
 class ShowViewModel : ViewModel(), CommonViewModelInterface {
-    val appService = ServiceCreator.create<ShowService>()
+    private val appService = ServiceCreator.create<ShowService>()
 
     private var page: Int = 1
 

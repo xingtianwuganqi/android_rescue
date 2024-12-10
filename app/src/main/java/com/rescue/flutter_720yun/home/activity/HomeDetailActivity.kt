@@ -39,6 +39,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         setContentLayout(R.layout.activity_home_detail)
         _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
         setupToolbar("详情")
+
         viewModel = ViewModelProvider(this)[HomeDetailViewModel::class.java]
 
         topicId = intent.getIntExtra("topic_id", 1)

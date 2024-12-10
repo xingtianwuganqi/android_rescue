@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.leanback)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -81,6 +82,6 @@ dependencies {
     implementation("io.github.scwang90:refresh-layout-kernel:3.0.0-alpha") //核心必须依赖
     implementation("io.github.scwang90:refresh-header-material:3.0.0-alpha") //谷歌刷新头
     implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")    //经典加载
-
+    implementation("com.github.rbro112:Android-Indefinite-Pager-Indicator:1.5")
 }
 
