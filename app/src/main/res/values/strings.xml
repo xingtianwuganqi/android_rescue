@@ -104,4 +104,7 @@
     <string name="drawer_recommend">推荐给朋友</string>
 
 
+    <string name="show_release_add">添加话题 ></string>
+    <string name="show_topic_desc">宠物睡姿</string>
+
 </resources>

@@ -26,6 +26,7 @@ data class ShowPageModel(
 data class GambitListModel(
     var descript: String?,
     var id: Int?,
+    @Transient
     var selected: Boolean = false
 ): Parcelable
 
@@ -61,3 +62,17 @@ data class ReplyListModel(
 ): Parcelable
 
 
+/*
+    var descript: String?
+    var id: Int?
+    var selected: Bool = false
+     */
+//@Parcelize
+//data class GambitModel(
+//    val descript: String?,
+//    val review_type: Int?,
+//    val id: Int?,
+//    val create_time: String?,
+//    @Transient
+//    val selected: Boolean?
+//): Parcelable

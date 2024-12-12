@@ -26,6 +26,9 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <activity
+            android:name=".show.activity.GambitListActivity"
+            android:exported="false" />
+        <activity
             android:name=".show.activity.ShowReleaseActivity"
             android:exported="false" />
         <activity

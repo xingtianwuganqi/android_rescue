@@ -1,11 +1,15 @@
 package com.rescue.flutter_720yun.show.fragment
 
+import android.app.Activity
+import android.app.Instrumentation.ActivityResult
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -16,6 +20,8 @@ import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
+import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
 import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
 import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
 import com.rescue.flutter_720yun.util.RefreshState
@@ -32,6 +38,27 @@ class ShowFragment : Fragment() {
         ViewModelProvider(this)[ShowViewModel::class.java]
     }
     private lateinit var adapter: ShowPageListAdapter
+
+    private val releaseLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("TAG", "反向传值了")
+//            val data: Intent? = result.data
+//            val resultData = data?.getParcelableExtra<HomeListModel>("result_model")
+//            Log.d("TAG", "data is $data")
+//            Log.d("TAG", "resultData is $resultData")
+//            Log.d("TAG", "result data is ${resultData?.topic_id}")
+//            uploadItem(resultData)
+            val data: Intent? = result.data
+            val resultValue = data?.getIntExtra("result_value", 0)
+            if (resultValue == 1) {
+                // 刷新列表
+
+            }
+        }
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,9 +90,28 @@ class ShowFragment : Fragment() {
         binding.showList.layoutManager = LinearLayoutManager(context)
         adapter = ShowPageListAdapter(mutableListOf())
         binding.showList.adapter = adapter
+
+        binding.tip.setOnClickListener {
+            activity?.let {
+                val intent = Intent(it, ShowReleaseActivity::class.java)
+                releaseLauncher.launch(intent)
+            }
+
+        }
     }
 
     private fun viewModelAddObserver() {
+
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            if (it == false) {
+                binding.refreshLayout.finishRefresh()
+                binding.refreshLayout.finishLoadMore()
+                if (viewModel.isLastPage.value == true) {
+                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
+                }
+            }
+        }
+
         viewModel.uiState.observe(viewLifecycleOwner) {
             when (it) {
                 is UiState.FirstLoading -> {
