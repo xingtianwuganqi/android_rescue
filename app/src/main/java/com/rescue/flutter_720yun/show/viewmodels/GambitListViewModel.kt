@@ -40,6 +40,7 @@ class GambitListViewModel: ViewModel(), CommonViewModelInterface {
         get() = _refreshState
 
     val uiState: LiveData<UiState<List<GambitListModel>>> get() = _uiState
+    var selectModel: GambitListModel? = null
 
     fun gambitListNetworking() {
         viewModelScope.launch {

@@ -30,12 +30,10 @@
             android:exported="false" />
         <activity
             android:name=".show.activity.ShowReleaseActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".home.activity.FindPetDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".home.activity.FindPetActivity"
             android:exported="false" />
         <activity
             android:name=".home.activity.CitySelectActivity"
