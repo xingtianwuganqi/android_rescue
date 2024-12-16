@@ -106,5 +106,5 @@
 
     <string name="show_release_add">添加话题 ></string>
     <string name="show_topic_desc">宠物睡姿</string>
-
+    <string name="show_input_desc">请输入简要说明</string>
 </resources>
