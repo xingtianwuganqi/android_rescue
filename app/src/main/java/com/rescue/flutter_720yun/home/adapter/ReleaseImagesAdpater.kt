@@ -77,7 +77,7 @@ class ReleaseImagesAdapter(val list: MutableList<CoachReleasePhoto>): RecyclerVi
     fun refreshItems(values: List<CoachReleasePhoto>) {
         list.clear()
         list.addAll(values)
-        notifyItemRangeChanged(0, values.size)
+        notifyDataSetChanged()
     }
 }
 

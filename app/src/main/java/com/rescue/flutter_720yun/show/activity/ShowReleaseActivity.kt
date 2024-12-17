@@ -20,6 +20,7 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.SelectMimeType
 import com.luck.picture.lib.engine.CompressFileEngine
 import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityShowReleaseBinding
@@ -108,25 +109,8 @@ class ShowReleaseActivity : BaseActivity(), ReleaseImageClickListener {
             .setImageEngine(GlideEngine.createGlideEngine())
             .setMaxSelectNum(allowSize)
             .isDisplayCamera(false)
-            .setCompressEngine(CompressFileEngine { context, source, call ->
-                Luban.with(context).load(source).ignoreBy(50).setCompressListener(object :
-                    OnNewCompressListener {
-                    override fun onStart() {
-
-                    }
-
-                    override fun onSuccess(source: String?, compressFile: File?) {
-                        call?.onCallback(source, compressFile?.absolutePath)
-                    }
-
-                    override fun onError(source: String?, e: Throwable?) {
-                        call?.onCallback(source, null)
-                    }
-                }).launch()
-            })
             .setCropEngine { fragment, srcUri, destinationUri, dataSource, requestCode ->
                 val ucrop = UCrop.of(srcUri, destinationUri, dataSource)
-
                 ucrop.setImageEngine(object : UCropImageEngine {
                     override fun loadImage(context: Context?, url: String?, imageView: ImageView?) {
                         if (context != null) {
@@ -166,42 +150,61 @@ class ShowReleaseActivity : BaseActivity(), ReleaseImageClickListener {
                         }
                     }
                 })
-                ucrop.withOptions(UCrop.Options())
+                val options = UCrop.Options()
+                options.isForbidSkipMultipleCrop(true) //多图裁剪时是否支持跳过
+                options.isCropDragSmoothToCenter(true) // 图片是否跟随裁剪框居中
+                options.setHideBottomControls(true)
+                options.setCircleDimmedLayer(false)
+                ucrop.withOptions(options)
                 ucrop.withAspectRatio(1F, 1F)
-                ucrop.start(this, requestCode)
+                ucrop.start(fragment.requireActivity(), fragment, requestCode)
             }
-            .forResult(PictureConfig.CHOOSE_REQUEST) // 设置回调
+            .setCompressEngine(CompressFileEngine { context, source, call ->
+                Luban.with(context).load(source).ignoreBy(50).setCompressListener(object :
+                    OnNewCompressListener {
+                    override fun onStart() {
 
-//            .forResult(object : OnResultCallbackListener<LocalMedia> {
-//                override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
-//
-//                    val photos = result?.map {
-//                        CoachReleasePhoto(
-//                            false,
-//                            "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
-//                            "${dateFormatter("yyyy-MM")}/preview/${randomString(8)}.jpeg",
-//                            it,
-//                            null,
-//                        )
-//                    }
-//                    if (photos != null) {
-//                        viewModel.releaseInfo.photos.addAll(0, photos)
-//                        if (viewModel.releaseInfo.photos.filter {
-//                                !it.isAdd
-//                            }.size == 6) {
-//                            viewModel.releaseInfo.photos = viewModel.releaseInfo.photos.filter {
-//                                !it.isAdd
-//                            }.toMutableList()
-//                        }
-//                        adapter.refreshItems(viewModel.releaseInfo.photos.toList())
-//                    }
-//                }
-//
-//                override fun onCancel() {
-//
-//                }
-//
-//            })
+                    }
+
+                    override fun onSuccess(source: String?, compressFile: File?) {
+                        call?.onCallback(source, compressFile?.absolutePath)
+                    }
+
+                    override fun onError(source: String?, e: Throwable?) {
+                        call?.onCallback(source, null)
+                    }
+                }).launch()
+            })
+            .forResult(object : OnResultCallbackListener<LocalMedia> {
+                override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
+
+                    val photos = result?.map {
+                        CoachReleasePhoto(
+                            false,
+                            "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
+                            "${dateFormatter("yyyy-MM")}/preview/${randomString(8)}.jpeg",
+                            it,
+                            null,
+                        )
+                    }
+                    if (photos != null) {
+                        viewModel.releaseInfo.photos.addAll(0, photos)
+                        if (viewModel.releaseInfo.photos.filter {
+                                !it.isAdd
+                            }.size == 6) {
+                            viewModel.releaseInfo.photos = viewModel.releaseInfo.photos.filter {
+                                !it.isAdd
+                            }.toMutableList()
+                        }
+                        adapter.refreshItems(viewModel.releaseInfo.photos.toList())
+                    }
+                }
+
+                override fun onCancel() {
+
+                }
+
+            })
     }
 
     @Deprecated("Deprecated in Java")
