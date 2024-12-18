@@ -218,6 +218,8 @@ class ShowReleaseActivity : BaseActivity(), ReleaseImageClickListener {
                     }
                     300 -> {
                         BaseApplication.context.resources.getString(R.string.show_upload_error).toastString()
+                    }else ->{
+
                     }
 
                 }

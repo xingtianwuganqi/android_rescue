@@ -245,7 +245,9 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                         intent.putExtra("type", "checkPhone")
                         startActivity(intent)
                     }
-                    else -> {
+                    300 -> {
+                        BaseApplication.context.resources.getString(R.string.show_upload_error).toastString()
+                    }else ->{
 
                     }
 
