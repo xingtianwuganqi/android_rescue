@@ -56,7 +56,6 @@ class ReleaseTopicViewModel: ViewModel() {
                 null,
                 null,
                 null,
-                null
             ),
         ),
         null,

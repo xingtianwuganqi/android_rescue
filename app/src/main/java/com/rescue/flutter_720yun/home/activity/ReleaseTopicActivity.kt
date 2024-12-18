@@ -37,14 +37,13 @@ import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.fragment.LocationSheetFragment
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.util.LoadingDialog
+import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
 import com.rescue.flutter_720yun.util.toastString
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
-import android.os.Handler
-import android.widget.Button
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -179,7 +178,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         LoadingDialog.show(this)
         // 发布
         if (viewModel.uploadToken.value != null) {
-            viewModel.releaseTopicNetworking()
+            viewModel.imageUpload(viewModel.uploadToken.value!!)
         }else{
             viewModel.getUploadTokenNetworking()
         }
@@ -277,6 +276,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                 Log.d("TAG","${BaseApplication.context.resources.getString(R.string.release_success)}")
                 GlobalScope.launch(Dispatchers.Main) {
                     delay(2000)
+                    sendResultAndFinish()
                     finish()
                 }
             }else{
@@ -327,7 +327,6 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                         CoachReleasePhoto(
                             false,
                             "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
-                            "${dateFormatter("yyyy-MM")}/preview/${randomString(8)}.jpeg",
                              it,
                             null,
                         )
@@ -366,11 +365,16 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                 null,
                 null,
                 null,
-                null
                 )
             )
         }
         imagesAdapter.refreshItems(viewModel.releaseInfo.photos.toList())
+    }
+
+    private fun sendResultAndFinish() {
+        val intent = Intent()
+        intent.putExtra("published", true)
+        setResult(Activity.RESULT_OK, intent)
     }
 
     override fun onDestroy() {

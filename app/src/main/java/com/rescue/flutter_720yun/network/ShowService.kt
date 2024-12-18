@@ -18,4 +18,9 @@ interface ShowService {
     @POST("api/v1/gambitlist/")
     fun gambitList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v1/releaseshowinfo/")
+    fun releaseShowInfo(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<BaseResponse<Any>>
 }

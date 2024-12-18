@@ -54,6 +54,20 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
+    private val releaseLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("TAG", "反向传值了")
+            val data: Intent? = result.data
+            val resultValue = data?.getBooleanExtra("published", false)
+            if (resultValue == true) {
+                // 刷新列表
+                refreshData()
+            }
+        }
+    }
+
 
     companion object {
         fun newInstance(pageType: String): HomeFragment {
@@ -117,7 +131,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             activity?.let { it1 ->
                 lazyLogin(it1) {
                     val intent = Intent(activity, ReleaseTopicActivity::class.java)
-                    startActivity(intent)
+                    releaseLauncher.launch(intent)
                 }
             }
         }

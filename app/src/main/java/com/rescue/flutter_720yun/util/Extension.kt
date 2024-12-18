@@ -134,17 +134,31 @@ fun lazyLogin(activity: Context, callback: () -> Unit) {
 }
 
 
-var params = mutableMapOf<String, Any?>(
+var params = mapOf<String, Any?>(
     "appType" to "android",
     "appVersion" to "1.0.2",
     "androidVersion" to "8"
 )
 
 val paramDic get() = if (UserManager.isLogin) {
-    params["token"] = UserManager.token
-    params
+    // 深拷贝
+    val deepCopiedParams = params.mapValues {
+        when (it.value) {
+            is MutableList<*> -> (it.value as MutableList<*>).toMutableList() // 深拷贝 List
+            else -> it.value
+        }
+    }.toMutableMap()
+    deepCopiedParams["token"] = UserManager.token
+    deepCopiedParams
 }else{
-    params
+    // 深拷贝
+    val deepCopiedParams = params.mapValues {
+        when (it.value) {
+            is MutableList<*> -> (it.value as MutableList<*>).toMutableList() // 深拷贝 List
+            else -> it.value
+        }
+    }.toMutableMap()
+    deepCopiedParams
 }
 
 // 时间格式

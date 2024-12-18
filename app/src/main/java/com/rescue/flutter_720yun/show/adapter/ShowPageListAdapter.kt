@@ -71,7 +71,7 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
     fun refreshItem(newList: List<ShowPageModel>) {
         list.clear()
         list.addAll(newList)
-        notifyItemRangeChanged(0, newList.size) // 刷新一个范围内的项。
+        notifyDataSetChanged()
     }
 
     fun addItems(newList: List<ShowPageModel>) {

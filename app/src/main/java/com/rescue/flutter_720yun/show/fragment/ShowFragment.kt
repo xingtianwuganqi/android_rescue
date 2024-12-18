@@ -44,20 +44,13 @@ class ShowFragment : Fragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             Log.d("TAG", "反向传值了")
-//            val data: Intent? = result.data
-//            val resultData = data?.getParcelableExtra<HomeListModel>("result_model")
-//            Log.d("TAG", "data is $data")
-//            Log.d("TAG", "resultData is $resultData")
-//            Log.d("TAG", "result data is ${resultData?.topic_id}")
-//            uploadItem(resultData)
             val data: Intent? = result.data
-            val resultValue = data?.getIntExtra("result_value", 0)
-            if (resultValue == 1) {
+            val resultValue = data?.getBooleanExtra("published", false)
+            if (resultValue == true) {
                 // 刷新列表
-
+                viewModel.showPageListNetworking(RefreshState.REFRESH)
             }
         }
-
     }
 
     override fun onCreateView(

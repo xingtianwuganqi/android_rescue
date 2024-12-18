@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.show.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -69,6 +70,7 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
                 val dic = paramDic
                 dic["page"] = page
                 dic["size"] = 10
+                Log.d("TAG","dic is $dic")
                 val response = appService.showPageList(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {
