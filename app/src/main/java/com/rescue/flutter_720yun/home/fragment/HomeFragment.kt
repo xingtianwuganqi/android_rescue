@@ -136,21 +136,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
             }
         }
 
-//        recyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-//                val totalItemCount = layoutManager.itemCount
-//                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-//
-//                if (!homeViewModel.isLoading.value!! &&
-//                    !homeViewModel.isLastPage.value!! &&
-//                    lastVisibleItem + 1 >= totalItemCount) {
-//                    loadMoreData()
-//                }
-//            }
-//        })
-
         addListObserver()
         if (homeViewModel.uiState.value !is UiState.Success) {
             loadData(RefreshState.REFRESH)
