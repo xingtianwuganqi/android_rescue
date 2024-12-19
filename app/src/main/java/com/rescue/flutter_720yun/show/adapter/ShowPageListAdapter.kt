@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.makeramen.roundedimageview.RoundedImageView
@@ -30,6 +31,7 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
         val content: ReadMoreTextView = view.findViewById(R.id.content)
         val comment: TextView = view.findViewById(R.id.comment)
         var indicator: IndefinitePagerIndicator = view.findViewById(R.id.viewpager_pager_indicator)
+        val gambitButton: MaterialButton = view.findViewById(R.id.gambit_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,6 +54,12 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
         }
         holder.timeText.text = item.create_time
         holder.nickName.text = item.user?.username
+        if (item.gambit_type != null) {
+            holder.gambitButton.visibility = View.VISIBLE
+            holder.gambitButton.text = item.gambit_type?.descript
+        }else{
+            holder.gambitButton.visibility = View.GONE
+        }
 
         val images = item.getImages()
         val adapter = images?.map {

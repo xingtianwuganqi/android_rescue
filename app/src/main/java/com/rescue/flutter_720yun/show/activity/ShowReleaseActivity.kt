@@ -162,6 +162,14 @@ class ShowReleaseActivity : BaseActivity(), ReleaseImageClickListener {
             gambitLauncher.launch(intent)
         }
 
+        binding.gambitButton.setOnClickListener {
+            val intent = Intent(this, GambitListActivity::class.java)
+            viewModel.gambitModel?.let {
+                intent.putParcelableArrayListExtra("gambit_arr", arrayListOf(it))
+            }
+            gambitLauncher.launch(intent)
+        }
+
         binding.contentEdit.addTextChangedListener(
             beforeTextChanged = { text, start, count, after ->
 
