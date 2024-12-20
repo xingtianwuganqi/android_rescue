@@ -1,9 +1,10 @@
-package com.rescue.flutter_720yun.home.adapter
+package com.rescue.flutter_720yun.message.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.BaseApplication
@@ -21,6 +22,7 @@ class MessageListAdapter(private val list: List<MessageListModel>): RecyclerView
         val iconImage: ImageView = view.findViewById(R.id.icon_image)
         val title: TextView = view.findViewById(R.id.title)
         val rightIcon: ImageView = view.findViewById(R.id.right_icon)
+        val content_layout: LinearLayout = view.findViewById(R.id.content_layout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -41,15 +43,7 @@ class MessageListAdapter(private val list: List<MessageListModel>): RecyclerView
         }
         holder.title.text = item.title
 
-        holder.iconImage.setOnClickListener {
-            clickListener?.itemClick(position)
-        }
-
-        holder.title.setOnClickListener {
-            clickListener?.itemClick(position)
-        }
-
-        holder.rightIcon.setOnClickListener {
+        holder.content_layout.setOnClickListener {
             clickListener?.itemClick(position)
         }
     }

@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.message.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -68,6 +69,7 @@ class MessageSingleViewModel: ViewModel(), CommonViewModelInterface {
                 dic["page"] = page
                 dic["size"] = 10
                 dic["msg_type"] = messageType
+                Log.d("TAG","Message dic is $dic")
                 val response = appService.authMessageSingleList(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {

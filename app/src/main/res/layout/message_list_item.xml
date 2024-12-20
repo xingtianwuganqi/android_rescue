@@ -10,20 +10,22 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
+
         <ImageView
             android:id="@+id/icon_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:layout_marginLeft="15dp"/>
+            android:layout_marginStart="15dp"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:textColor="@color/color_content"
             android:textSize="@dimen/content_font"
-            android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_gravity="center"
@@ -33,8 +35,9 @@
             android:id="@+id/right_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:layout_gravity="center"
+            android:contentDescription="@null"
             android:src="@drawable/icon_message_right"
             />
     </LinearLayout>
@@ -43,7 +46,7 @@
         android:id="@+id/lineView"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_marginLeft="65dp"
+        android:layout_marginStart="65dp"
         android:background="@color/color_eee"/>
 
 </LinearLayout>

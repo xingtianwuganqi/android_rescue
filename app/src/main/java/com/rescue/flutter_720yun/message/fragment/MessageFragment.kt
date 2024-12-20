@@ -1,24 +1,41 @@
 package com.rescue.flutter_720yun.message.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.message.activity.MessageSystemListActivity
-import com.rescue.flutter_720yun.home.adapter.MessageListAdapter
-import com.rescue.flutter_720yun.home.adapter.MessageListItemClickListener
+import com.rescue.flutter_720yun.message.adapter.MessageListAdapter
+import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.databinding.FragmentMessageBinding
+import com.rescue.flutter_720yun.message.activity.MessageSingleActivity
 import com.rescue.flutter_720yun.message.viewmodels.MessageViewModel
 
 class MessageFragment : Fragment(), MessageListItemClickListener {
     private var rootView : View? = null
     private var _binding: FragmentMessageBinding? = null
     private val binding get() = _binding!!
+
+
+    var messageLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val resultData = data?.getStringExtra("message_result")
+            // 更新result
+            if (resultData == "1") {
+
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,12 +62,10 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
         if (position == 0) { // 系统消息
             val intent = Intent(activity, MessageSystemListActivity::class.java)
             startActivity(intent)
-        }else if (position == 1) {
-
-        }else if (position == 2) {
-
-        }else if (position == 3) {
-
+        }else {
+            val intent = Intent(activity, MessageSingleActivity::class.java)
+            intent.putExtra("messageType", position)
+            messageLauncher.launch(intent)
         }
     }
 

@@ -17,7 +17,7 @@ class MessageSingleListModel(
     val msg_id: Int?,
     val from_info: UserInfo?,
     val to_info: UserInfo?,
-    var is_read: Int?,
+    var is_read: Boolean?,
     val topicInfo: HomeListModel?,
     val showInfo: ShowPageModel?,
     val replyInfo: ReplyListModel?,

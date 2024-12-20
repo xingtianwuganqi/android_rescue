@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityMessageSingleBinding
 import com.rescue.flutter_720yun.home.activity.FindPetDetailActivity
 import com.rescue.flutter_720yun.home.adapter.FindPetListAdapter
+import com.rescue.flutter_720yun.message.adapter.MessageSingleItemAdapter
 import com.rescue.flutter_720yun.message.viewmodels.MessageSingleViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
@@ -29,12 +31,27 @@ class MessageSingleActivity : BaseActivity() {
     }
     private var messageType: Int = 0
 
+    lateinit var adapter: MessageSingleItemAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_message_single)
         _binding = ActivityMessageSingleBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
         messageType = intent.getIntExtra("messageType", 0)
+        if (messageType == 1) {
+            setupToolbar("点赞")
+        }else if (messageType == 2) {
+            setupToolbar("收藏")
+        }else if (messageType == 3) {
+            setupToolbar("评论")
+        }
+
+        addViewAction()
+        addViewModelObserver()
+        if (viewModel.uiState.value !is UiState.Success) {
+            viewModel.loadMessageListNetworking(RefreshState.REFRESH, messageType)
+        }
     }
 
     override fun addViewAction() {
@@ -48,10 +65,9 @@ class MessageSingleActivity : BaseActivity() {
             viewModel.loadMessageListNetworking(RefreshState.MORE, messageType)
         }
 
-
-//        adapter = FindPetListAdapter(mutableListOf(), this)
-//        binding.findList.layoutManager = LinearLayoutManager(activity)
-//        binding.findList.adapter = adapter
+        adapter = MessageSingleItemAdapter(mutableListOf())
+        binding.recyclerview.layoutManager = LinearLayoutManager(this)
+        binding.recyclerview.adapter = adapter
     }
 
     override fun addViewModelObserver() {
@@ -65,11 +81,11 @@ class MessageSingleActivity : BaseActivity() {
                 is UiState.Success -> {
                     showSuccess()
                     val list = it.data
-//                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
-//                        adapter.refreshItem(list)
-//                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
-//                        adapter.addItems(list)
-//                    }
+                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
+                        adapter.refreshItem(list)
+                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
+                        adapter.addItems(list)
+                    }
                 }
 
                 is UiState.Error -> {
@@ -88,5 +104,10 @@ class MessageSingleActivity : BaseActivity() {
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
