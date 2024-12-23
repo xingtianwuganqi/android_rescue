@@ -14,6 +14,7 @@ import com.rescue.flutter_720yun.databinding.ActivityMessageSingleBinding
 import com.rescue.flutter_720yun.databinding.MessageSingleItemBinding
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.message.models.MessageSingleListModel
+import com.rescue.flutter_720yun.util.formatTime
 import com.rescue.flutter_720yun.util.toImgUrl
 
 class MessageSingleItemAdapter(var list: MutableList<MessageSingleListModel>): RecyclerView.Adapter<MessageSingleItemAdapter.ViewHolder>() {
@@ -27,7 +28,7 @@ class MessageSingleItemAdapter(var list: MutableList<MessageSingleListModel>): R
 
             }
             binding.nickName.text = item.from_info?.username
-            binding.timeText.text = item.create_time
+            binding.timeText.text = item.create_time?.formatTime()
             item.topicInfo?.imgs?.first()?.let {
                 Glide.with(binding.root).load(it.toImgUrl())
                     .placeholder(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
@@ -78,7 +79,7 @@ class MessageSingleItemAdapter(var list: MutableList<MessageSingleListModel>): R
     }
 
     fun uploadItem(item: MessageSingleListModel) {
-        val position = list.indexOfFirst { it.msg_id == item.msg_id }
+        val position = list.indexOfFirst { it.id == item.id }
         list[position] = item
         notifyItemChanged(position)
     }

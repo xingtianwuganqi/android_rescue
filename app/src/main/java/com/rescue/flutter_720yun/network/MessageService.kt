@@ -10,4 +10,8 @@ interface MessageService {
     @FormUrlEncoded
     @POST("api/v1/authmessage/")
     fun authMessageSingleList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v1/systemnotification/")
+    fun systemMessageList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

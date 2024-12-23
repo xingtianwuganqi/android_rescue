@@ -17,6 +17,7 @@ import com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.show.models.ShowPageModel
+import com.rescue.flutter_720yun.util.formatTime
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.toImgUrl
 import com.webtoonscorp.android.readmore.ReadMoreTextView
@@ -52,7 +53,7 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
                 .placeholder(R.drawable.icon_eee)
                 .into(holder.roundedImage)
         }
-        holder.timeText.text = item.create_time
+        holder.timeText.text = item.create_time?.formatTime()
         holder.nickName.text = item.user?.username
         if (item.gambit_type != null) {
             holder.gambitButton.visibility = View.VISIBLE

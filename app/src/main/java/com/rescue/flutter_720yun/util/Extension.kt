@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -48,6 +50,32 @@ fun String.toImgUrl(): String {
         "http://img.rxswift.cn/${this}"
     }
 }
+
+fun String.formatTime(): String {
+    // 解析服务器返回的 ISO 时间
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+    val outputFormatFull = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+    val outputFormatYearless = SimpleDateFormat("MM.dd HH:mm", Locale.getDefault())
+
+    return try {
+        val date = inputFormat.parse(this) ?: return this
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val calendar = Calendar.getInstance().apply { time = date }
+        val year = calendar.get(Calendar.YEAR)
+
+        // 如果是今年，则返回没有年份的格式，否则返回完整格式
+        if (year == currentYear) {
+            outputFormatYearless.format(date)
+        } else {
+            outputFormatFull.format(date)
+        }
+    } catch (e: Exception) {
+        // 如果解析失败，返回原始字符串
+        this
+    }
+}
+
+
 
 fun String.toastString() {
     Toast.makeText(BaseApplication.context, this, Toast.LENGTH_SHORT).show()

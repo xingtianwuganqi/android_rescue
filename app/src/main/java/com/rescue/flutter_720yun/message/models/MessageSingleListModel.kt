@@ -27,21 +27,27 @@ class MessageSingleListModel(
     val reply_id: Int?
 ): Parcelable
 
+@Parcelize
+class MessageSystemListModel(
+    val id: Int?,
+    val create_time: String?,
+    val content: String?,
+    val msg_type: Int?,
+    val user_id: Int?,
+    val timeStr: String?
+): Parcelable
+
 /*
-struct MessageListModel: HandyJSON {
-    var id: Int?
+struct SystemMsgModel: HandyJSON {
     var create_time: String?
+    var content: String?
     var msg_type: Int?
-    var msg_id: Int?
-    var from_info: UserInfoModel?
-    var to_info: UserInfoModel?
-    var is_read: Int?
-    var topicInfo: HomePageModel?
-    var showInfo: ShowPageModel?
-    var replyInfo: ReplyListModel?
-    var commentInfo: CommentListModel?
-    var findInfo: FindPetListModel?
-    var reply_type: Int?
-    var reply_id: Int?
+    var user_id: Int?
+    var timeStr: String?
+    var id: Int?
+
+    mutating func didFinishMapping() {
+        timeStr = Tool.shared.timeTDate(time: create_time ?? "")
+    }
 }
  */

@@ -20,6 +20,7 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.FindPetModel
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.TagInfoModel
+import com.rescue.flutter_720yun.util.formatTime
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.timeToStr
 import com.rescue.flutter_720yun.util.toImgUrl
@@ -125,7 +126,7 @@ class FindPetListViewHolder(view: View): ViewHolder(view) {
                 .into(imageView)
         }
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-        timeText.text = "${item?.create_time?.timeToStr()}•${item?.address}"
+        timeText.text = "${item?.create_time?.formatTime()}•${item?.address}"
 
         content.text = item?.desc
 

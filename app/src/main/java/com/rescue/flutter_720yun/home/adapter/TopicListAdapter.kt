@@ -22,6 +22,7 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.TagInfoModel
+import com.rescue.flutter_720yun.util.formatTime
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.timeToStr
 import com.rescue.flutter_720yun.util.toImgUrl
@@ -87,7 +88,7 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 .into(imgView)
         }
         imgView.scaleType = ImageView.ScaleType.CENTER_CROP
-        timeText.text = "${item?.create_time?.timeToStr()}•${item?.address_info}"
+        timeText.text = "${item?.create_time?.formatTime()}•${item?.address_info}"
 
         content.text = item?.content
 

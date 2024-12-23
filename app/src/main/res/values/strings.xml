@@ -92,6 +92,7 @@
     <string name="release_topic_limit">0/1000</string>
 
     <string name="message_system">系统消息</string>
+    <string name="message_title">公告</string>
 
     <string name="drawer_footer">浏览记录</string>
     <string name="drawer_collect">我的收藏</string>
