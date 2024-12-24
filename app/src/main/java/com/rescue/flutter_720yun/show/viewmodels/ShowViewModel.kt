@@ -49,6 +49,8 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
     val changeModel: LiveData<ShowPageModel> get() = _changeModel
     val errorMsg: LiveData<String?> get() = _errorMsg
 
+    var showId: Int? = null
+
     fun showPageListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
             try {
@@ -70,6 +72,9 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
                 val dic = paramDic
                 dic["page"] = page
                 dic["size"] = 10
+                if (showId != null) {
+                    dic["show_id"] = showId
+                }
                 Log.d("TAG","dic is $dic")
                 val response = appService.showPageList(dic).awaitResp()
                 _isFirstLoading.value = false
@@ -115,4 +120,56 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
         }
     }
 
+
+    fun showLikeNetworking(model: ShowPageModel) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                val dic = paramDic
+                dic["like_mark"] = if (model.liked == true) 0 else 1
+                dic["show_id"] = model.show_id
+                val response = appService.showInfoLikeNetworking(dic).awaitResp()
+                if (response.code == 200) {
+                    model.liked = !(model.liked ?: false)
+                    _changeModel.value = model
+                }else{
+                    val errorMessage = BaseApplication.context.resources.getString(R.string.like_error)
+                    _errorMsg.value = errorMessage
+                }
+            }catch (e: Exception) {
+                val errorMessage = BaseApplication.context.resources.getString(R.string.network_request_error)
+                _errorMsg.value = errorMessage
+            }finally {
+
+            }
+        }
+    }
+
+    fun showCollectionNetworking(model: ShowPageModel) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                val dic = paramDic
+                dic["collect_mark"] = if (model.collectioned == true) 0 else 1
+                dic["show_id"] = model.show_id
+                val response = appService.showInfoCollectionNetworking(dic).awaitResp()
+                if (response.code == 200) {
+                    model.collectioned = !(model.collectioned ?: false)
+                    _changeModel.value = model
+                }else{
+                    val errorMessage = BaseApplication.context.resources.getString(R.string.collect_error)
+                    _errorMsg.value = errorMessage
+                }
+            }catch (e: Exception) {
+                val errorMessage = BaseApplication.context.resources.getString(R.string.network_request_error)
+                _errorMsg.value = errorMessage
+            }finally {
+
+            }
+        }
+    }
 }

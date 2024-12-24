@@ -22,7 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
+import com.rescue.flutter_720yun.show.adapter.ShowItemClickListener
 import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
+import com.rescue.flutter_720yun.show.models.ShowPageModel
 import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
@@ -30,7 +32,7 @@ import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 
-class ShowFragment : Fragment() {
+class ShowFragment : Fragment(), ShowItemClickListener {
 
     private var _binding: FragmentShowBinding? = null
     private val binding get() = _binding!!
@@ -38,6 +40,7 @@ class ShowFragment : Fragment() {
         ViewModelProvider(this)[ShowViewModel::class.java]
     }
     private lateinit var adapter: ShowPageListAdapter
+
 
     private val releaseLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -50,6 +53,13 @@ class ShowFragment : Fragment() {
                 // 刷新列表
                 viewModel.showPageListNetworking(RefreshState.REFRESH)
             }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            viewModel.showId = arguments?.getInt("show_id")
         }
     }
 
@@ -72,16 +82,22 @@ class ShowFragment : Fragment() {
         }
 
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
-        binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
         binding.refreshLayout.setOnRefreshListener {
             viewModel.showPageListNetworking(RefreshState.REFRESH)
         }
-        binding.refreshLayout.setOnLoadMoreListener {
-            viewModel.showPageListNetworking(RefreshState.MORE)
+        if (viewModel.showId == null) {
+            binding.refreshFooter.visibility = View.VISIBLE
+            binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
+
+            binding.refreshLayout.setOnLoadMoreListener {
+                viewModel.showPageListNetworking(RefreshState.MORE)
+            }
+        }else{
+            binding.refreshFooter.visibility = View.GONE
         }
 
         binding.showList.layoutManager = LinearLayoutManager(context)
-        adapter = ShowPageListAdapter(mutableListOf())
+        adapter = ShowPageListAdapter(mutableListOf(), this)
         binding.showList.adapter = adapter
 
         binding.tip.setOnClickListener {
@@ -142,7 +158,7 @@ class ShowFragment : Fragment() {
         }
 
         viewModel.changeModel.observe(viewLifecycleOwner) {
-//            adapter.uploadItem(it)
+            adapter.uploadItem(it)
         }
     }
 
@@ -163,6 +179,31 @@ class ShowFragment : Fragment() {
         binding.errorView.visibility = View.VISIBLE
         binding.refreshLayout.visibility = View.GONE
         binding.errorView.text = error
+    }
+    companion object {
+        fun newInstance(showId: Int): ShowFragment {
+            val args = Bundle()
+            args.putInt("show_id", showId)
+            val fragment = ShowFragment()
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun likeClick(item: ShowPageModel) {
+        viewModel.showLikeNetworking(item)
+    }
+
+    override fun collectionClick(item: ShowPageModel) {
+        viewModel.showCollectionNetworking(item)
+    }
+
+    override fun commentClick(item: ShowPageModel) {
+
+    }
+
+    override fun moreClick(item: ShowPageModel) {
+
     }
 
     override fun onDestroyView() {

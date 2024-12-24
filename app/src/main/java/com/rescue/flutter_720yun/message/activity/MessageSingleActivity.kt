@@ -13,9 +13,11 @@ import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityMessageSingleBinding
 import com.rescue.flutter_720yun.home.activity.FindPetDetailActivity
+import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.home.adapter.FindPetListAdapter
 import com.rescue.flutter_720yun.message.adapter.MessageSingleItemAdapter
 import com.rescue.flutter_720yun.message.viewmodels.MessageSingleViewModel
+import com.rescue.flutter_720yun.show.activity.ShowDetailActivity
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.scwang.smart.refresh.footer.ClassicsFooter
@@ -65,7 +67,26 @@ class MessageSingleActivity : BaseActivity() {
             viewModel.loadMessageListNetworking(RefreshState.MORE, messageType)
         }
 
-        adapter = MessageSingleItemAdapter(mutableListOf())
+        adapter = MessageSingleItemAdapter(mutableListOf()) { item ->
+            /*
+             if model.msg_type == 1 || model.msg_type == 2 || model.msg_type == 3 || model.msg_type == 4 {
+                self.naviService.navigatorSubject.onNext(NavigatorItem.topicDetail(topicId: model.topicInfo?.topic_id ?? 0, model: nil, changeBlock: nil))
+            }else{
+                self.naviService.navigatorSubject.onNext(NavigatorItem.showInfoPage(type: .showInfoList, gambitId: nil, showId: model.showInfo?.show_id))
+            }
+             */
+            if (item.msg_type ==1 || item.msg_type == 2 || item.msg_type == 3 || item.msg_type == 4) {
+                val intent = Intent(this, HomeDetailActivity::class.java)
+                intent.putExtra("topic_id", item.topicInfo?.topic_id)
+                startActivity(intent)
+            }else if (item.msg_type == 5 || item.msg_type == 6 || item.msg_type == 7 || item.msg_type == 8){
+                val intent = Intent(this, ShowDetailActivity::class.java)
+                intent.putExtra("show_id", item.showInfo?.show_id)
+                startActivity(intent)
+            }else if (item.msg_type == 10 || item.msg_type == 11 || item.msg_type == 12 || item.msg_type == 13) {
+                // 找宠
+            }
+        }
         binding.recyclerview.layoutManager = LinearLayoutManager(this)
         binding.recyclerview.adapter = adapter
     }

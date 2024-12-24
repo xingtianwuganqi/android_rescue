@@ -1,17 +1,17 @@
 package com.rescue.flutter_720yun.show.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.makeramen.roundedimageview.RoundedImageView
 import com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
 import com.rescue.flutter_720yun.BaseApplication
@@ -22,7 +22,16 @@ import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.toImgUrl
 import com.webtoonscorp.android.readmore.ReadMoreTextView
 
-class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Adapter<ShowPageListAdapter.ViewHolder>() {
+
+
+interface ShowItemClickListener{
+    fun likeClick(item: ShowPageModel)
+    fun collectionClick(item: ShowPageModel)
+    fun commentClick(item: ShowPageModel)
+    fun moreClick(item: ShowPageModel)
+}
+
+class ShowPageListAdapter(val list: MutableList<ShowPageModel>, val listener: ShowItemClickListener): RecyclerView.Adapter<ShowPageListAdapter.ViewHolder>() {
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val roundedImage: RoundedImageView = view.findViewById(R.id.head_img)
         val nickName: TextView = view.findViewById(R.id.nick_name)
@@ -33,6 +42,9 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
         val comment: TextView = view.findViewById(R.id.comment)
         var indicator: IndefinitePagerIndicator = view.findViewById(R.id.viewpager_pager_indicator)
         val gambitButton: MaterialButton = view.findViewById(R.id.gambit_button)
+        val likeButton: MaterialButton = view.findViewById(R.id.like_button)
+        val collectionButton: MaterialButton = view.findViewById(R.id.collect_button)
+        val commentButton: MaterialButton = view.findViewById(R.id.comment_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -57,7 +69,7 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
         holder.nickName.text = item.user?.username
         if (item.gambit_type != null) {
             holder.gambitButton.visibility = View.VISIBLE
-            holder.gambitButton.text = item.gambit_type?.descript
+            holder.gambitButton.text = item.gambit_type.descript
         }else{
             holder.gambitButton.visibility = View.GONE
         }
@@ -75,6 +87,44 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
             holder.indicator.visibility = View.GONE
         }
         holder.content.text = item.instruction
+
+
+        if (item.liked == true) {
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_se)
+            // 设置新图标
+            holder.likeButton.icon = newIcon
+        }else{
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_zan_un)
+            // 设置新图标
+            holder.likeButton.icon = newIcon
+        }
+
+
+        if (item.collectioned == true) {
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_se)
+            // 设置新图标
+            holder.collectionButton.icon = newIcon
+        }else{
+            // 获取 drawable 资源（图标）
+            val newIcon: Drawable? = ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_collection_un)
+            // 设置新图标
+            holder.collectionButton.icon = newIcon
+        }
+
+        holder.likeButton.setOnClickListener {
+            listener.likeClick(item)
+        }
+
+        holder.collectionButton.setOnClickListener {
+            listener.collectionClick(item)
+        }
+
+        holder.commentButton.setOnClickListener {
+            listener.commentClick(item)
+        }
     }
 
     fun refreshItem(newList: List<ShowPageModel>) {
@@ -113,6 +163,7 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>): RecyclerView.Ad
             val imageUrl = imageUrls[position]
             Glide.with(holder.itemView.context)
                 .load(imageUrl)
+                .placeholder(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
                 .into(holder.imageView)
         }
 
