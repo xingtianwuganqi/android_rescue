@@ -133,6 +133,12 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             likeBtn.icon = newIcon
         }
 
+        if (item?.commNum != 0) {
+            commentBtn.text = "${item?.commNum}"
+        }else{
+            val commonText = ContextCompat.getString(BaseApplication.context, R.string.home_common)
+            commentBtn.text = commonText
+        }
 
         if (item?.collectioned == true) {
             // 获取 drawable 资源（图标）

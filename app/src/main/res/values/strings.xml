@@ -112,4 +112,7 @@
     <string name="show_image_desc">请上传图片</string>
     <string name="show_release_limit">0/200</string>
     <string name="show_upload_error">图片上传发生错误</string>
+
+    <string name="comment_placeholder">请输入评论</string>
+    <string name="comment_send">发布</string>
 </resources>

@@ -8,11 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.message.models.MessageSingleListModel
-import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.MessageService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
-import com.rescue.flutter_720yun.show.models.ShowPageModel
+import com.rescue.flutter_720yun.show.models.CommentListModel
 import com.rescue.flutter_720yun.util.CommonViewModelInterface
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
@@ -20,16 +19,15 @@ import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
 
-class MessageSingleViewModel: ViewModel(), CommonViewModelInterface {
+class CommentListViewModel: ViewModel(), CommonViewModelInterface {
 
     private val appService = ServiceCreator.create<MessageService>()
-
     private val _isLoading = MutableLiveData(false)
     private val _isFirstLoading = MutableLiveData(true)
     private val _isLastPage = MutableLiveData(false)
     private val _refreshState = MutableLiveData<RefreshState>()
-    private val _uiState = MutableLiveData<UiState<List<MessageSingleListModel>>>()
-
+    private val _uiState = MutableLiveData<UiState<List<CommentListModel>>>()
+    private val _errorMsg = MutableLiveData<String>()
 
     override val isLoading: LiveData<Boolean>
         get() = _isLoading
@@ -44,10 +42,14 @@ class MessageSingleViewModel: ViewModel(), CommonViewModelInterface {
         get() = _refreshState
 
     val uiState get() = _uiState
+    val errorMsg get() = _errorMsg
 
     private var page: Int = 1
 
-    fun loadMessageListNetworking(refresh: RefreshState, messageType: Int) {
+    var topicType: Int? = null
+    var topicId: Int? = null
+
+    fun commentListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
             try {
                 if (_isLoading.value == true) {
@@ -68,14 +70,15 @@ class MessageSingleViewModel: ViewModel(), CommonViewModelInterface {
                 val dic = paramDic
                 dic["page"] = page
                 dic["size"] = 10
-                dic["msg_type"] = messageType
+                dic["topic_type"] = topicType
+                dic["topic_id"] = topicId
                 Log.d("TAG","Message dic is $dic")
-                val response = appService.authMessageSingleList(dic).awaitResp()
+                val response = appService.commentList(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
-                            val homeList = convertAnyToList(response.data, MessageSingleListModel::class.java)
+                            val homeList = convertAnyToList(response.data, CommentListModel::class.java)
                             (homeList ?: emptyList())
                         }
                         is Map<*, *> -> {

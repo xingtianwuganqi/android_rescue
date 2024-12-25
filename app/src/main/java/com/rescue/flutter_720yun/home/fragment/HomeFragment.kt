@@ -22,6 +22,7 @@ import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
 import com.rescue.flutter_720yun.home.adapter.OnItemClickListener
+import com.rescue.flutter_720yun.message.activity.CommentListActivity
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
@@ -329,7 +330,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     override fun commentClick(model: HomeListModel?) {
         if (UserManager.isLogin) {
-
+            val intent = Intent(activity, CommentListActivity::class.java)
+            startActivity(intent)
         }else{
             val intent = Intent(activity, LoginActivity::class.java)
             startActivity(intent)

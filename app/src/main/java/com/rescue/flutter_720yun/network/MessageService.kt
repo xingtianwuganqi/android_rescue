@@ -14,4 +14,9 @@ interface MessageService {
     @FormUrlEncoded
     @POST("api/v1/systemnotification/")
     fun systemMessageList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 评论列表
+    @FormUrlEncoded
+    @POST("api/v1/commentlist/")
+    fun commentList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }
