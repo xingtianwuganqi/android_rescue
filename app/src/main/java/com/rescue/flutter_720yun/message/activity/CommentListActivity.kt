@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.message.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -63,11 +64,11 @@ class CommentListActivity : BaseActivity() {
         viewModel.uiState.observe(this) {
             when(it) {
                 is UiState.FirstLoading -> {
-                    showLoading()
+                    newShowLoading()
                 }
 
                 is UiState.Success -> {
-                    showSuccess()
+                    newShowData()
                     val list = it.data
 //                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
 //                        adapter.refreshItem(list)
@@ -77,7 +78,7 @@ class CommentListActivity : BaseActivity() {
                 }
 
                 is UiState.Error -> {
-                    showError(it.message ?: "")
+                    newShowError(it.message ?: "")
                 }
             }
         }
@@ -99,6 +100,26 @@ class CommentListActivity : BaseActivity() {
 //        viewModel.changeModel.observe(this) {
 //            adapter.uploadItem(it)
 //        }
+    }
+
+
+    fun newShowLoading() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.errorMessage.visibility = View.GONE
+        binding.refreshLayout.visibility = View.GONE
+    }
+
+    fun newShowData() {
+        binding.progressBar.visibility = View.GONE
+        binding.errorMessage.visibility = View.GONE
+        binding.refreshLayout.visibility = View.VISIBLE
+    }
+
+    fun newShowError(message: String) {
+        binding.progressBar.visibility = View.GONE
+        binding.errorMessage.visibility = View.VISIBLE
+        binding.refreshLayout.visibility = View.GONE
+        binding.errorMessage.text = message
     }
 
     override fun onDestroy() {
