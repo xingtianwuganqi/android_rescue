@@ -19,4 +19,6 @@ interface MessageService {
     @FormUrlEncoded
     @POST("api/v1/commentlist/")
     fun commentList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    
 }

@@ -39,7 +39,7 @@ class CommentListViewHolder(var binding: CommentListItemBinding): RecyclerView.V
                 binding.nickName.text = userName
             }
 
-            
+
         }
     }
 }
