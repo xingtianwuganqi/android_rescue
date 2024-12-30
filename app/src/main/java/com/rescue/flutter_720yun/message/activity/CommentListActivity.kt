@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityCommentListBinding
+import com.rescue.flutter_720yun.message.adapter.CommentListAdapter
 import com.rescue.flutter_720yun.message.viewmodels.CommentListViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
@@ -24,6 +26,8 @@ class CommentListActivity : BaseActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[CommentListViewModel::class.java]
     }
+
+    private lateinit var adapter: CommentListAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +61,11 @@ class CommentListActivity : BaseActivity() {
         binding.refreshLayout.setOnLoadMoreListener {
             viewModel.commentListNetworking(RefreshState.MORE)
         }
+
+        adapter = CommentListAdapter(mutableListOf())
+        binding.recyclerview.layoutManager = LinearLayoutManager(this)
+        binding.recyclerview.adapter = adapter
+
     }
 
     override fun addViewModelObserver() {
@@ -70,11 +79,11 @@ class CommentListActivity : BaseActivity() {
                 is UiState.Success -> {
                     newShowData()
                     val list = it.data
-//                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
-//                        adapter.refreshItem(list)
-//                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
-//                        adapter.addItems(list)
-//                    }
+                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
+                        adapter.refreshItem(list)
+                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
+                        adapter.addItems(list)
+                    }
                 }
 
                 is UiState.Error -> {

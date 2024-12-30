@@ -35,6 +35,17 @@ data class UserInfo(
 ): Parcelable
 
 @Parcelize
+data class UserInfoModel(
+    val id: Int?,
+    val avator: String?,
+    val username: String?,
+    val phone_number: String?,
+    val email: String?,
+    val create_time: String?,
+    val wx_id: String?,
+): Parcelable
+
+@Parcelize
 data class TagInfoModel(
     val id: Int?,
     val tag_name: String?,

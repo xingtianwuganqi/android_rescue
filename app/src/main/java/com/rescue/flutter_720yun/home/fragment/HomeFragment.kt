@@ -331,6 +331,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
     override fun commentClick(model: HomeListModel?) {
         if (UserManager.isLogin) {
             val intent = Intent(activity, CommentListActivity::class.java)
+            intent.putExtra("topicId", model?.topic_id)
+            intent.putExtra("topicType", 1)
             startActivity(intent)
         }else{
             val intent = Intent(activity, LoginActivity::class.java)

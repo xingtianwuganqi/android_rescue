@@ -2,6 +2,7 @@ package com.rescue.flutter_720yun.show.models
 
 import android.os.Parcelable
 import com.rescue.flutter_720yun.home.models.UserInfo
+import com.rescue.flutter_720yun.home.models.UserInfoModel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -39,10 +40,11 @@ data class CommentListModel(
     var topic_type : Int?, // 秀宠1，后面加领养的回复
     var content : String?,
     var from_uid : Int?,
-    var replys: List<ReplyListModel>,
+    var to_uid: Int?,
+    var replys: List<ReplyListModel>?,
     var isOpend: Boolean?, // 回复是否折叠，true 是全部展示,false 时展示折叠cell
     var showReply: List<ReplyListModel>?,
-    var userInfo: UserInfo?,
+    var userInfo: UserInfoModel?,
     var reply_count: Int?,
     var next_page: Int = 2
 ): Parcelable
