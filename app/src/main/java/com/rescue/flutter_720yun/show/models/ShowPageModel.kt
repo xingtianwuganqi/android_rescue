@@ -63,10 +63,17 @@ data class ReplyListModel(
     var create_time: String?
 ): Parcelable
 
-
 @Parcelize
 data class ShowReleaseModel(
     var instruction: String?,
     val images: String?,
     var gambit_id: Int?
+): Parcelable
+
+
+
+@Parcelize
+data class CommentItemModel(
+    var commentItem: CommentListModel?,
+    var replyItem: ReplyListModel?
 ): Parcelable

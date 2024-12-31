@@ -13,7 +13,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_frame">
+        app:layout_constraintBottom_toTopOf="@id/bottom_frame"
+        android:layout_marginBottom="65dp">
 
         <TextView
             android:id="@+id/error_message"
@@ -70,7 +71,6 @@
             android:layout_weight="1"
             android:layout_height="40dp"
             android:layout_marginStart="15dp"
-            android:layout_marginEnd="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             android:layout_gravity="center"
@@ -98,9 +98,9 @@
             android:insetLeft="0dp"
             android:insetBottom="0dp"
             android:insetTop="0dp"
-            android:layout_marginEnd="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
+            android:backgroundTint="@android:color/transparent"
             />
     </LinearLayout>
 

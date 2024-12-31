@@ -11,6 +11,7 @@ import com.rescue.flutter_720yun.message.models.MessageSingleListModel
 import com.rescue.flutter_720yun.network.MessageService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
+import com.rescue.flutter_720yun.show.models.CommentItemModel
 import com.rescue.flutter_720yun.show.models.CommentListModel
 import com.rescue.flutter_720yun.util.CommonViewModelInterface
 import com.rescue.flutter_720yun.util.RefreshState
@@ -26,7 +27,7 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
     private val _isFirstLoading = MutableLiveData(true)
     private val _isLastPage = MutableLiveData(false)
     private val _refreshState = MutableLiveData<RefreshState>()
-    private val _uiState = MutableLiveData<UiState<List<CommentListModel>>>()
+    private val _uiState = MutableLiveData<UiState<List<CommentItemModel>>>()
     private val _errorMsg = MutableLiveData<String>()
 
     override val isLoading: LiveData<Boolean>
@@ -89,8 +90,9 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                         }
                     }
                     if (items.isNotEmpty()) {
+                        val newValue = setCommentList(items)
                         page += 1
-                        _uiState.value = UiState.Success(items)
+                        _uiState.value = UiState.Success(newValue)
                     }else{
                         if (page == 1) {
                             val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
@@ -115,5 +117,24 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                 _isLoading.value = false
             }
         }
+    }
+
+    private fun setCommentList(commentList: List<CommentListModel>): List<CommentItemModel> {
+        val items = mutableListOf<CommentItemModel>()
+        for (i in commentList) {
+            val commentModel = CommentItemModel(commentItem = i, replyItem = null)
+            items.add(commentModel)
+            if ((i.replys?.size ?: 0) > 0) {
+                i.replys?.let {
+                    for (j in it) {
+                        val replyModel = CommentItemModel(commentItem = null, replyItem = j)
+                        items.add(replyModel)
+                    }
+                }
+            }else{
+                continue
+            }
+        }
+        return items
     }
 }
