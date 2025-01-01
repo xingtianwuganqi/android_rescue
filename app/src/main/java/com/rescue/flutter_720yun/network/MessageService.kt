@@ -20,5 +20,13 @@ interface MessageService {
     @POST("api/v1/commentlist/")
     fun commentList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 
-    
+    // 发表评论
+    @FormUrlEncoded
+    @POST("api/v1/commentaction/")
+    fun commentAction(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 发表回复
+    @FormUrlEncoded
+    @POST("api/v1/replycomment/")
+    fun replyComment(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

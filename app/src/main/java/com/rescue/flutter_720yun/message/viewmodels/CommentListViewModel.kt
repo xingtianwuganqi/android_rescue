@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.message.viewmodels
 
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,9 +14,11 @@ import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.show.models.CommentItemModel
 import com.rescue.flutter_720yun.show.models.CommentListModel
+import com.rescue.flutter_720yun.show.models.ReplyListModel
 import com.rescue.flutter_720yun.util.CommonViewModelInterface
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
@@ -49,6 +52,14 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
 
     var topicType: Int? = null
     var topicId: Int? = null
+    // 这个帖子的userId
+    var toUid: Int? = null
+
+    // 当前要回复的回复
+    var currentCommentModel: CommentListModel? = null
+
+    // 当前要回复的评论
+    var currentReplyModel: ReplyListModel? = null
 
     fun commentListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
@@ -122,19 +133,88 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
     private fun setCommentList(commentList: List<CommentListModel>): List<CommentItemModel> {
         val items = mutableListOf<CommentItemModel>()
         for (i in commentList) {
-            val commentModel = CommentItemModel(commentItem = i, replyItem = null)
+            val commentModel = CommentItemModel(type = 1, commentItem = i, replyItem = null)
             items.add(commentModel)
-            if ((i.replys?.size ?: 0) > 0) {
+            val replySize = i.replys?.size ?: 0
+            if (replySize > 0) {
                 i.replys?.let {
                     for (j in it) {
-                        val replyModel = CommentItemModel(commentItem = null, replyItem = j)
+                        val replyModel = CommentItemModel(type = 2,commentItem = null, replyItem = j)
                         items.add(replyModel)
                     }
+                }
+                if (replySize < (i.reply_count ?: 0)) {
+                    val replyBottomModel = CommentItemModel(type = 3,i,null)
+                    items.add(replyBottomModel)
+                }else{
+                    val replyBottomModel = CommentItemModel(4,i,null)
+                    items.add(replyBottomModel)
                 }
             }else{
                 continue
             }
         }
         return items
+    }
+
+
+    fun commentActionNetworking(topicId: Int, topicType: Int, content: String, toUid: Int) {
+        viewModelScope.launch {
+            try {
+                if (isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                val dic = paramDic
+                dic["topic_id"] = topicId
+                dic["topic_type"] = topicType
+                dic["content"] = content
+                dic["from_uid"] = UserManager.userId
+                dic["to_uid"] = toUid
+                val response = appService.commentAction(dic).awaitResp()
+                Log.d("TAG","${response.data}")
+                if (response.code == 200) {
+
+                }else{
+                    _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.comment_fail)
+                }
+
+            }catch (e: Exception) {
+                _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun replyActionNetworking(topicId: Int, topicType: Int, content: String, toUid: Int, commentId: Int, replyType: Int) {
+        viewModelScope.launch {
+            try {
+                if (isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                val dic = paramDic
+                dic["topic_id"] = topicId
+                dic["topic_type"] = topicType
+                dic["content"] = content
+                dic["from_uid"] = UserManager.userId
+                dic["to_uid"] = toUid
+                dic["comment_id"] = commentId
+                dic["reply_type"] = replyType
+                val response = appService.replyComment(dic).awaitResp()
+                Log.d("TAG","${response.data}")
+                if (response.code == 200) {
+
+                }else{
+                    _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.comment_fail)
+                }
+
+            }catch (e: Exception) {
+                _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+            }finally {
+                _isLoading.value = false
+            }
+        }
     }
 }

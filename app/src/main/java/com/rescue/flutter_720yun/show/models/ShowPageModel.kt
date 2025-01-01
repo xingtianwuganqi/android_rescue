@@ -74,6 +74,7 @@ data class ShowReleaseModel(
 
 @Parcelize
 data class CommentItemModel(
+    var type: Int?, // 1.评论 2.回复 3.加载更多评论 4.暂无更多评论
     var commentItem: CommentListModel?,
     var replyItem: ReplyListModel?
 ): Parcelable

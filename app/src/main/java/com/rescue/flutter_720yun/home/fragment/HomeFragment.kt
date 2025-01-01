@@ -333,6 +333,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             val intent = Intent(activity, CommentListActivity::class.java)
             intent.putExtra("topicId", model?.topic_id)
             intent.putExtra("topicType", 1)
+            intent.putExtra("toUid", model?.userInfo?.id)
             startActivity(intent)
         }else{
             val intent = Intent(activity, LoginActivity::class.java)

@@ -116,4 +116,5 @@
     <string name="comment_placeholder">请输入评论</string>
     <string name="comment_send">发布</string>
     <string name="comment_reply">回复</string>
+    <string name="comment_fail">评论失败</string>
 </resources>
