@@ -101,6 +101,14 @@ class CommentListAdapter(val list: MutableList<CommentItemModel>, val listener: 
         notifyItemRangeInserted(startPosition, newList.size)
     }
 
+    fun insertItem(item: CommentItemModel) {
+        val position = list.indexOfFirst {
+            it.commentItem != null && item.replyItem?.comment_id == it.commentItem?.comment_id
+        }
+        list.add(position + 1, item)
+        notifyItemRangeInserted(position, 1)
+    }
+
     fun uploadItem(item: CommentItemModel) {
         if (item.commentItem != null) {
             val position = list.indexOfFirst { it.commentItem?.comment_id == item.commentItem?.comment_id }

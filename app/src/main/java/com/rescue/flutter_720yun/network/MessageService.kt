@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.network
 
 import com.rescue.flutter_720yun.home.models.BaseResponse
+import com.rescue.flutter_720yun.show.models.CommentListModel
+import com.rescue.flutter_720yun.show.models.ReplyListModel
 import retrofit2.Call
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
@@ -23,10 +25,10 @@ interface MessageService {
     // 发表评论
     @FormUrlEncoded
     @POST("api/v1/commentaction/")
-    fun commentAction(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+    fun commentAction(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<CommentListModel>>
 
     // 发表回复
     @FormUrlEncoded
     @POST("api/v1/replycomment/")
-    fun replyComment(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+    fun replyComment(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<ReplyListModel>>
 }

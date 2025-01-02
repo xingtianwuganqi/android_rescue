@@ -23,6 +23,8 @@ import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
+import java.util.Timer
+import java.util.TimerTask
 
 
 class CommentListActivity : BaseActivity(), CommentClickListener {
@@ -84,22 +86,18 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
                     }else{
                         binding.commentEdit.hint = resources.getString(R.string.comment_placeholder)
                     }
-                }else{
-                    viewModel.currentCommentModel = null
-                    viewModel.currentReplyModel = null
-                    binding.commentEdit.hint = resources.getString(R.string.comment_placeholder)
                 }
+//                else{
+//                    viewModel.currentCommentModel = null
+//                    viewModel.currentReplyModel = null
+//                    binding.commentEdit.hint = resources.getString(R.string.comment_placeholder)
+//                }
             }
         })
 
 
 
         binding.commentPublish.setOnClickListener {
-            // 使EditText失去焦点
-            binding.commentEdit.clearFocus();
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            // 隐藏软键盘
-            imm.hideSoftInputFromWindow(binding.commentEdit.windowToken, 0);
             if (binding.commentEdit.text.trim().isNotEmpty()) {
                 // 判断是评论还是回复
                 if (viewModel.currentCommentModel != null && viewModel.currentReplyModel == null) {
@@ -108,9 +106,10 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
                             viewModel.topicId ?: 0,
                             viewModel.topicType ?: 0,
                             it.toString(),
-                            viewModel.currentReplyModel?.from_uid ?: 0,
+                            viewModel.currentCommentModel?.from_uid ?: 0,
                             viewModel.currentCommentModel?.comment_id ?: 0,
-                            1
+                            1,
+                            viewModel.currentCommentModel?.comment_id ?: 0
                         )
                     }
                 } else if (viewModel.currentCommentModel == null && viewModel.currentReplyModel != null) {
@@ -121,7 +120,8 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
                             it.toString(),
                             viewModel.currentReplyModel?.from_uid ?: 0,
                             viewModel.currentReplyModel?.comment_id ?: 0,
-                            2
+                            2,
+                            viewModel.currentReplyModel?.reply_id ?: 0
                         )
                     }
 
@@ -139,6 +139,15 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
             }else{
                 ContextCompat.getString(this, R.string.comment_placeholder).toastString()
             }
+
+
+            // 使EditText失去焦点
+            binding.commentEdit.clearFocus();
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            // 隐藏软键盘
+            imm.hideSoftInputFromWindow(binding.commentEdit.windowToken, 0);
+
+            binding.commentEdit.text = null
         }
 
         val rootView: View = this.window.decorView
@@ -206,6 +215,12 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
 
         viewModel.errorMsg.observe(this) {
             it?.toastString()
+        }
+
+        viewModel.appendReply.observe(this) { item ->
+            item?.let {
+                adapter.insertItem(it)
+            }
         }
 
 //        viewModel.changeModel.observe(this) {

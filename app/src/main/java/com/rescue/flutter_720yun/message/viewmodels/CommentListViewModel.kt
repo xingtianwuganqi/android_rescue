@@ -32,6 +32,7 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
     private val _refreshState = MutableLiveData<RefreshState>()
     private val _uiState = MutableLiveData<UiState<List<CommentItemModel>>>()
     private val _errorMsg = MutableLiveData<String>()
+    private var _appendReply = MutableLiveData<CommentItemModel?>()
 
     override val isLoading: LiveData<Boolean>
         get() = _isLoading
@@ -44,6 +45,8 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
 
     override val refreshState: LiveData<RefreshState>
         get() = _refreshState
+
+    val appendReply: LiveData<CommentItemModel?> get() = _appendReply;
 
     val uiState get() = _uiState
     val errorMsg get() = _errorMsg
@@ -143,13 +146,14 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                         items.add(replyModel)
                     }
                 }
-                if (replySize < (i.reply_count ?: 0)) {
+                if (replySize > (i.reply_count ?: 0)) {
                     val replyBottomModel = CommentItemModel(type = 3,i,null)
                     items.add(replyBottomModel)
-                }else{
-                    val replyBottomModel = CommentItemModel(4,i,null)
-                    items.add(replyBottomModel)
                 }
+//                else if (replySize == (i.reply_count ?: 0)){
+//                    val replyBottomModel = CommentItemModel(4,i,null)
+//                    items.add(replyBottomModel)
+//                }
             }else{
                 continue
             }
@@ -174,7 +178,16 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                 val response = appService.commentAction(dic).awaitResp()
                 Log.d("TAG","${response.data}")
                 if (response.code == 200) {
-
+                    if (_uiState.value is UiState.Success) {
+                        val data = (_uiState.value as UiState.Success<List<CommentItemModel>>).data.toMutableList()
+                        val commentModel = CommentItemModel(
+                            1,
+                            response.data,
+                            null
+                        )
+                        data.add(0,commentModel)
+                        _uiState.value = UiState.Success(data)
+                    }
                 }else{
                     _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.comment_fail)
                 }
@@ -187,7 +200,7 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
         }
     }
 
-    fun replyActionNetworking(topicId: Int, topicType: Int, content: String, toUid: Int, commentId: Int, replyType: Int) {
+    fun replyActionNetworking(topicId: Int, topicType: Int, content: String, toUid: Int, commentId: Int, replyType: Int, replyId: Int) {
         viewModelScope.launch {
             try {
                 if (isLoading.value == true) {
@@ -202,10 +215,19 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                 dic["to_uid"] = toUid
                 dic["comment_id"] = commentId
                 dic["reply_type"] = replyType
+                dic["reply_id"] = replyId
+                Log.d("TAG", "$dic")
                 val response = appService.replyComment(dic).awaitResp()
                 Log.d("TAG","${response.data}")
                 if (response.code == 200) {
-
+                    if (_uiState.value is UiState.Success) {
+                        val replyModel = CommentItemModel(
+                            2,
+                            null,
+                            response.data
+                        )
+                        _appendReply.value = replyModel
+                    }
                 }else{
                     _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.comment_fail)
                 }
