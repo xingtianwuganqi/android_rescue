@@ -32,7 +32,6 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
     private val _refreshState = MutableLiveData<RefreshState>()
     private val _uiState = MutableLiveData<UiState<List<CommentItemModel>>>()
     private val _errorMsg = MutableLiveData<String>()
-    private var _appendReply = MutableLiveData<CommentItemModel?>()
 
     override val isLoading: LiveData<Boolean>
         get() = _isLoading
@@ -46,7 +45,6 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
     override val refreshState: LiveData<RefreshState>
         get() = _refreshState
 
-    val appendReply: LiveData<CommentItemModel?> get() = _appendReply;
 
     val uiState get() = _uiState
     val errorMsg get() = _errorMsg
@@ -63,6 +61,9 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
 
     // 当前要回复的评论
     var currentReplyModel: ReplyListModel? = null
+
+    // 存储所有的数据源
+    private var dataSource: MutableList<CommentListModel> = mutableListOf()
 
     fun commentListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
@@ -103,18 +104,30 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                             emptyList()
                         }
                     }
-                    if (items.isNotEmpty()) {
-                        val newValue = setCommentList(items)
-                        page += 1
-                        _uiState.value = UiState.Success(newValue)
-                    }else{
-                        if (page == 1) {
-                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
+
+                    if (page == 1) {
+                        if (items.isNotEmpty()) {
+                            dataSource = items.toMutableList()
+                            val newValue = setCommentList(dataSource)
+                            _uiState.value = UiState.Success(newValue)
+                            page += 1
+                        }else {
+                            val noMoreData =
+                                BaseApplication.context.resources.getString(R.string.no_data)
                             _uiState.value = UiState.Error(noMoreData)
-                        }else{
+                        }
+                    }else {
+                        if (items.isNotEmpty()) {
+                            dataSource.addAll(items)
+                            val newValue = setCommentList(dataSource)
+                            _uiState.value = UiState.Success(newValue)
+                            page += 1
+                        }else {
                             _isLastPage.value = true
                         }
+
                     }
+
                 }else{
                     if (page == 1) {
                         val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
@@ -146,14 +159,10 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                         items.add(replyModel)
                     }
                 }
-                if (replySize > (i.reply_count ?: 0)) {
+                if (replySize < (i.reply_count ?: 0)) {
                     val replyBottomModel = CommentItemModel(type = 3,i,null)
                     items.add(replyBottomModel)
                 }
-//                else if (replySize == (i.reply_count ?: 0)){
-//                    val replyBottomModel = CommentItemModel(4,i,null)
-//                    items.add(replyBottomModel)
-//                }
             }else{
                 continue
             }
@@ -179,13 +188,8 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                 Log.d("TAG","${response.data}")
                 if (response.code == 200) {
                     if (_uiState.value is UiState.Success) {
-                        val data = (_uiState.value as UiState.Success<List<CommentItemModel>>).data.toMutableList()
-                        val commentModel = CommentItemModel(
-                            1,
-                            response.data,
-                            null
-                        )
-                        data.add(0,commentModel)
+                        dataSource.add(0, response.data)
+                        val data = setCommentList(dataSource)
                         _uiState.value = UiState.Success(data)
                     }
                 }else{
@@ -221,17 +225,72 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                 Log.d("TAG","${response.data}")
                 if (response.code == 200) {
                     if (_uiState.value is UiState.Success) {
-                        val replyModel = CommentItemModel(
-                            2,
-                            null,
-                            response.data
-                        )
-                        _appendReply.value = replyModel
+
+                        dataSource.forEach { item ->
+                            if (item.comment_id == response.data.comment_id) {
+                                val newReplys: MutableList<ReplyListModel> = mutableListOf()
+                                newReplys.add(response.data)
+                                newReplys.addAll(item.replys ?: mutableListOf())
+                                item.replys = newReplys
+                                item.reply_count = item.reply_count?.plus(1)
+                            }
+                        }
+                        val data = setCommentList(dataSource)
+                        _uiState.value = UiState.Success(data)
                     }
                 }else{
                     _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.comment_fail)
                 }
 
+            }catch (e: Exception) {
+                _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadMoreReplyNetworking(commentId: Int, page: Int) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                val dic = paramDic
+                dic["comment_id"] = commentId
+                dic["page"] = page
+                Log.d("TAG","load more dis is $dic")
+                val response = appService.loadMoreReply(dic).awaitResp()
+                if (response.code == 200) {
+                    val items = when (response.data) {
+                        is List<*> -> {
+                            val homeList = convertAnyToList(response.data, ReplyListModel::class.java)
+                            (homeList ?: emptyList())
+                        }
+                        is Map<*, *> -> {
+                            emptyList()
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            emptyList()
+                        }
+                    }
+                    if (items.isNotEmpty()) {
+                        dataSource.forEach { item ->
+                            if (item.comment_id == commentId) {
+                                val newReplys: MutableList<ReplyListModel> = mutableListOf()
+                                newReplys.addAll(item.replys ?: mutableListOf())
+                                newReplys.addAll(items)
+                                item.replys = newReplys
+                                item.next_page += 1
+                            }
+                        }
+                        val data = setCommentList(dataSource)
+                        _uiState.value = UiState.Success(data)
+                    }
+                }else{
+                    _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+                }
             }catch (e: Exception) {
                 _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
             }finally {

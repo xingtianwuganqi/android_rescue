@@ -95,19 +95,21 @@ class CommentListAdapter(val list: MutableList<CommentItemModel>, val listener: 
         notifyDataSetChanged()
     }
 
-    fun addItems(newList: List<CommentItemModel>) {
-        val startPosition = list.size
-        list.addAll(newList)
-        notifyItemRangeInserted(startPosition, newList.size)
-    }
-
-    fun insertItem(item: CommentItemModel) {
-        val position = list.indexOfFirst {
-            it.commentItem != null && item.replyItem?.comment_id == it.commentItem?.comment_id
-        }
-        list.add(position + 1, item)
-        notifyItemRangeInserted(position, 1)
-    }
+//    fun addItems(newList: List<CommentItemModel>) {
+//        val startPosition = list.size
+//        list.addAll(newList)
+//        notifyItemRangeInserted(startPosition, newList.size)
+//    }
+//
+//    fun insertItem(item: CommentItemModel) {
+//        val position = list.indexOfFirst {
+//            it.commentItem != null && item.replyItem?.comment_id == it.commentItem?.comment_id
+//        }
+//        list[position].commentItem?.reply_count = list[position].commentItem?.reply_count?.plus(1)
+//        notifyItemChanged(position)
+//        list.add(position + 1, item)
+//        notifyItemRangeInserted(position, 1)
+//    }
 
     fun uploadItem(item: CommentItemModel) {
         if (item.commentItem != null) {

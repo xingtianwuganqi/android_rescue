@@ -31,4 +31,9 @@ interface MessageService {
     @FormUrlEncoded
     @POST("api/v1/replycomment/")
     fun replyComment(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<ReplyListModel>>
+
+    // 加载更多回复
+    @FormUrlEncoded
+    @POST("api/v1/replypageinfo/")
+    fun loadMoreReply(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

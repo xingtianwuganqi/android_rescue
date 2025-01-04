@@ -36,18 +36,3 @@ class MessageSystemListModel(
     val user_id: Int?,
     val timeStr: String?
 ): Parcelable
-
-/*
-struct SystemMsgModel: HandyJSON {
-    var create_time: String?
-    var content: String?
-    var msg_type: Int?
-    var user_id: Int?
-    var timeStr: String?
-    var id: Int?
-
-    mutating func didFinishMapping() {
-        timeStr = Tool.shared.timeTDate(time: create_time ?? "")
-    }
-}
- */

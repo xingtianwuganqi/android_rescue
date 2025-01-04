@@ -34,18 +34,18 @@ data class GambitListModel(
 
 @Parcelize
 data class CommentListModel(
-    var comment_id: Int?,
-    var create_time : String?,
-    var topic_id : Int?,
-    var topic_type : Int?, // 秀宠1，后面加领养的回复
-    var content : String?,
-    var from_uid : Int?,
-    var to_uid: Int?,
-    var replys: List<ReplyListModel>?,
-    var isOpend: Boolean?, // 回复是否折叠，true 是全部展示,false 时展示折叠cell
-    var showReply: List<ReplyListModel>?,
-    var userInfo: UserInfoModel?,
-    var reply_count: Int?,
+    var comment_id: Int? = null,
+    var create_time : String? = null,
+    var topic_id : Int? = null,
+    var topic_type : Int? = null, // 秀宠1，后面加领养的回复
+    var content : String? = null,
+    var from_uid : Int? = null,
+    var to_uid: Int? = null,
+    var replys: List<ReplyListModel>? = null,
+    var isOpend: Boolean? = null, // 回复是否折叠，true 是全部展示,false 时展示折叠cell
+    var showReply: List<ReplyListModel>? = null,
+    var userInfo: UserInfoModel? = null,
+    var reply_count: Int? = null,
     var next_page: Int = 2
 ): Parcelable
 

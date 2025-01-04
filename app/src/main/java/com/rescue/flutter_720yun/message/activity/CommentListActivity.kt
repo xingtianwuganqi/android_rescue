@@ -190,11 +190,8 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
                 is UiState.Success -> {
                     newShowData()
                     val list = it.data
-                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
-                        adapter.refreshItem(list)
-                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
-                        adapter.addItems(list)
-                    }
+                    adapter.refreshItem(list)
+
                 }
 
                 is UiState.Error -> {
@@ -217,11 +214,11 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
             it?.toastString()
         }
 
-        viewModel.appendReply.observe(this) { item ->
-            item?.let {
-                adapter.insertItem(it)
-            }
-        }
+//        viewModel.appendReply.observe(this) { item ->
+//            item?.let {
+//                adapter.insertItem(it)
+//            }
+//        }
 
 //        viewModel.changeModel.observe(this) {
 //            adapter.uploadItem(it)
@@ -243,7 +240,9 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
     }
 
     override fun loadMoreReplys(item: CommentListModel) {
-
+        item.comment_id?.let {
+            viewModel.loadMoreReplyNetworking(it, item.next_page)
+        }
     }
 
     private fun newShowLoading() {
