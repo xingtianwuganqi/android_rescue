@@ -21,6 +21,7 @@ import androidx.lifecycle.switchMap
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.message.activity.CommentListActivity
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
 import com.rescue.flutter_720yun.show.adapter.ShowItemClickListener
 import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
@@ -28,6 +29,7 @@ import com.rescue.flutter_720yun.show.models.ShowPageModel
 import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
@@ -199,7 +201,15 @@ class ShowFragment : Fragment(), ShowItemClickListener {
     }
 
     override fun commentClick(item: ShowPageModel) {
+        if (UserManager.isLogin) {
+            val intent = Intent(activity, CommentListActivity::class.java)
+            intent.putExtra("topicId", item.show_id)
+            intent.putExtra("topicType", 2)
+            intent.putExtra("toUid", item.user?.id)
+            startActivity(intent)
+        }else{
 
+        }
     }
 
     override fun moreClick(item: ShowPageModel) {

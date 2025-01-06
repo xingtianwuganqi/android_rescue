@@ -114,6 +114,12 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>, val listener: Sh
             holder.collectionButton.icon = newIcon
         }
 
+        if ((item.commNum ?: 0) > 0) {
+            holder.commentButton.text = "${item.commNum}"
+        }else{
+            holder.commentButton.text = ContextCompat.getString(BaseApplication.context, R.string.comment_action)
+        }
+
         holder.likeButton.setOnClickListener {
             listener.likeClick(item)
         }

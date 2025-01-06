@@ -187,11 +187,9 @@ class CommentListViewModel: ViewModel(), CommonViewModelInterface {
                 val response = appService.commentAction(dic).awaitResp()
                 Log.d("TAG","${response.data}")
                 if (response.code == 200) {
-                    if (_uiState.value is UiState.Success) {
-                        dataSource.add(0, response.data)
-                        val data = setCommentList(dataSource)
-                        _uiState.value = UiState.Success(data)
-                    }
+                    dataSource.add(0, response.data)
+                    val data = setCommentList(dataSource)
+                    _uiState.value = UiState.Success(data)
                 }else{
                     _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.comment_fail)
                 }
