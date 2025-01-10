@@ -1,29 +1,29 @@
 package com.rescue.flutter_720yun.user.fragment
 
 import android.os.Bundle
-import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.tabs.TabLayoutMediator
 import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.databinding.FragmentUserBinding
-import com.rescue.flutter_720yun.user.adapter.UserTopViewPageAdapter
-import com.rescue.flutter_720yun.user.viewmodels.UserViewModel
+import com.rescue.flutter_720yun.databinding.FragmentUserTopicBinding
+import com.rescue.flutter_720yun.user.viewmodels.UserTopicViewModel
 
-class UserFragment : Fragment() {
-    private var _binding: FragmentUserBinding? = null
+class UserTopicFragment : Fragment() {
+
+    private var _binding: FragmentUserTopicBinding? = null
     private val binding get() = _binding!!
+
     private val viewModel by lazy {
-        ViewModelProvider(this)[UserViewModel::class.java]
+        ViewModelProvider(this)[UserTopicViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             viewModel.userId = it.getInt("userId")
+            viewModel.from = it.getInt("from")
         }
     }
 
@@ -31,26 +31,27 @@ class UserFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentUserBinding.inflate(inflater, container, false)
+        _binding = FragmentUserTopicBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = UserTopViewPageAdapter(this, viewModel.userId ?: 0)
-        binding.viewPager.adapter = adapter
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = "Page $position"
-        }.attach()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(userId: Int) =
-            UserFragment().apply {
+        fun newInstance(userId: Int, from: Int) =
+            UserTopicFragment().apply {
                 arguments = Bundle().apply {
                     putInt("userId", userId)
+                    putInt("from", from)
                 }
             }
     }
