@@ -12,6 +12,7 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentUserBinding
 import com.rescue.flutter_720yun.user.adapter.UserTopViewPageAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserViewModel
+import com.rescue.flutter_720yun.util.UserManager
 
 class UserFragment : Fragment() {
     private var _binding: FragmentUserBinding? = null
@@ -24,6 +25,9 @@ class UserFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             viewModel.userId = it.getInt("userId")
+        }
+        if (UserManager.isLogin && viewModel.userId == null) {
+            viewModel.userId = UserManager.userId
         }
     }
 
