@@ -11,29 +11,44 @@ import com.rescue.flutter_720yun.databinding.UserTopicItemBinding
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
 import com.rescue.flutter_720yun.show.models.CommentItemModel
+import com.rescue.flutter_720yun.show.models.ShowPageModel
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.toImgUrl
 
-class UserTopicListAdapter(var list: MutableList<HomeListModel>,
-                           val clickListener: (HomeListModel) -> Unit
-): RecyclerView.Adapter<UserTopicListAdapter.ViewHolder>() {
+class UserTopicListAdapter<T>(var list: MutableList<T>,
+                           val clickListener: (T) -> Unit
+): RecyclerView.Adapter<UserTopicListAdapter<T>.ViewHolder>() {
 
     inner class ViewHolder(var binding: UserTopicItemBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HomeListModel){
-            Glide.with(BaseApplication.context).load(item.getImages()?.first()?.toImgUrl())
-                .placeholder(R.drawable.icon_eee)
-                .into(binding.topicImage)
+        fun bind(item: T){
+            if (item is HomeListModel) {
+                Glide.with(BaseApplication.context).load(item.getImages()?.first()?.toImgUrl())
+                    .placeholder(R.drawable.icon_eee)
+                    .into(binding.topicImage)
 
-            Glide.with(BaseApplication.context).load(item.userInfo?.avator?.toImgUrl())
-                .placeholder(R.drawable.icon_eee)
-                .into(binding.headImg)
+                Glide.with(BaseApplication.context).load(item.userInfo?.avator?.toImgUrl())
+                    .placeholder(R.drawable.icon_eee)
+                    .into(binding.headImg)
 
-            binding.content.text = item.content
+                binding.content.text = item.content
+            }else if (item is ShowPageModel) {
+                Glide.with(BaseApplication.context).load(item.getImages()?.first()?.toImgUrl())
+                    .placeholder(R.drawable.icon_eee)
+                    .into(binding.topicImage)
+
+                Glide.with(BaseApplication.context).load(item.user?.avator?.toImgUrl())
+                    .placeholder(R.drawable.icon_eee)
+                    .into(binding.headImg)
+
+                binding.content.text = item.instruction
+            }
 
             binding.imgBack.setOnClickListener {
                 clickListener(item)
             }
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -47,16 +62,18 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
-        holder.bind(item)
+        if (item is HomeListModel) {
+            holder.bind(item)
+        }
     }
 
-    fun refreshItem(items: List<HomeListModel>) {
+    fun refreshItem(items: List<T>) {
         list.clear()
         list.addAll(items)
         notifyDataSetChanged()
     }
 
-    fun addItems(newList: List<HomeListModel>) {
+    fun addItems(newList: List<T>) {
         val startPosition = list.size
         list.addAll(newList)
         notifyItemRangeInserted(startPosition, newList.size)

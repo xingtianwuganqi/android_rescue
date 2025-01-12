@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.reflect.TypeToken
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
@@ -22,7 +23,7 @@ import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
 
-class UserTopicViewModel: ViewModel(), CommonViewModelInterface {
+class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
 
     val appService = ServiceCreator.create<UserService>()
 
@@ -30,7 +31,7 @@ class UserTopicViewModel: ViewModel(), CommonViewModelInterface {
     private val _isFirstLoading = MutableLiveData(false)
     private val _isLastPage = MutableLiveData(false)
     private val _refreshState = MutableLiveData<RefreshState>()
-    private val _uiState = MutableLiveData<UiState<List<HomeListModel>>>()
+    private val _uiState = MutableLiveData<UiState<List<T>>>()
     private val _errorMsg = MutableLiveData<String>()
 
     override val isLoading: LiveData<Boolean>
@@ -45,7 +46,7 @@ class UserTopicViewModel: ViewModel(), CommonViewModelInterface {
     override val refreshState: LiveData<RefreshState>
         get() = _refreshState
 
-    val uiState: LiveData<UiState<List<HomeListModel>>> get() = _uiState
+    val uiState: LiveData<UiState<List<T>>> get() = _uiState
     val errorMsg: LiveData<String> get() = _errorMsg
 
     var userId: Int? = null
@@ -81,8 +82,11 @@ class UserTopicViewModel: ViewModel(), CommonViewModelInterface {
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
-                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
+                            val type = object : TypeToken<T>() {}.type
+                            val homeList =
+                                convertAnyToList(response.data, type::class.java)
                             (homeList ?: emptyList())
+
                         }
                         is Map<*, *> -> {
                             emptyList()
@@ -92,21 +96,31 @@ class UserTopicViewModel: ViewModel(), CommonViewModelInterface {
                         }
                     }
                     if (items.isNotEmpty()) {
-                        _uiState.value = UiState.Success(items)
+                        _uiState.value = UiState.Success(items as List<T>)
+                        page += 1
                     }else{
-                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                        _uiState.value = UiState.Error(noMoreData)
+                        if (page == 1) {
+                            val noMoreData =
+                                BaseApplication.context.resources.getString(R.string.no_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }
                     }
                 }else{
+                    if (page == 1) {
+                        val noMoreData =
+                            BaseApplication.context.resources.getString(R.string.no_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
+                }
+            }catch (e: Exception) {
+                if (page == 1) {
                     val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
                     _uiState.value = UiState.Error(noMoreData)
                 }
-            }catch (e: Exception) {
-                val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                _uiState.value = UiState.Error(noMoreData)
             }finally {
                 _isLoading.value = false
             }
         }
     }
+
 }

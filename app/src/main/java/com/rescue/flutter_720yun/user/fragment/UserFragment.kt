@@ -45,7 +45,10 @@ class UserFragment : Fragment() {
         binding.viewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = "Page $position"
+            when(position) {
+                0 -> tab.text = "领养"
+                1 -> tab.text = "秀宠"
+            }
         }.attach()
     }
 

@@ -21,12 +21,12 @@ import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 
-class UserTopicFragment : Fragment() {
+class UserTopicFragment<T> : Fragment() {
 
     private var _binding: FragmentUserTopicBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: UserTopicListAdapter
+    private lateinit var adapter: UserTopicListAdapter<T>
 
     private val viewModel by lazy {
         ViewModelProvider(this)[UserTopicViewModel::class.java]
@@ -108,7 +108,7 @@ class UserTopicFragment : Fragment() {
             }
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) {
+        viewModel.isLastPage.observe(viewLifecycleOwner) {
             if (it == false) {
                 binding.refreshLayout.finishRefresh()
                 binding.refreshLayout.finishLoadMore()

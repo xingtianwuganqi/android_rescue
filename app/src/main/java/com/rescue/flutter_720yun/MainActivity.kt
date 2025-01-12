@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                     searchBtn.visibility = View.GONE
                 }
 
-                R.id.navigation_message -> {
+                R.id.navigation_user -> {
                     supportActionBar?.title = "我的"
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     searchBtn.visibility = View.GONE

@@ -21,11 +21,46 @@
             app:titleEnabled="true">
 <!--            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"-->
 
-            <ImageView
-                android:id="@+id/banner"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:background="@color/color_desc" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/color_system"
+                >
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="25dp"
+                    app:riv_corner_radius="30dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_eee"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:text="@string/login_action"
+                    />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null"
+                    android:src="@drawable/icon_message_right"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_gravity="center"
+                    android:background="#00000000"
+                    />
+            </LinearLayout>
 
 
 <!--            <androidx.appcompat.widget.Toolbar-->
@@ -40,11 +75,20 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/color_eee"
+            android:layout_height="50dp"
+            android:background="@color/white"
             app:tabMode="scrollable"
+            app:tabGravity="fill"
+            app:tabTextAppearance="@style/CustomTabTextAppearance"
+            app:tabSelectedTextColor="@color/color_title"
+            app:tabTextColor="@color/color_desc"
+            app:tabIndicatorColor="@color/color_system"
+            app:tabIndicatorHeight="3dp"
+            app:tabRippleColor="@android:color/transparent"
             />
-<!--        设置了layout_scrollFlags="scroll"就会被滚动出屏幕-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+
+        <!--        设置了layout_scrollFlags="scroll"就会被滚动出屏幕-->
         <!--            app:layout_scrollFlags="scroll"-->
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -54,6 +98,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/color_eee"
         />
 
 <!--    <LinearLayout-->
