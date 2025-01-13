@@ -5,14 +5,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentUserBinding
 import com.rescue.flutter_720yun.user.adapter.UserTopViewPageAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserViewModel
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.toImgUrl
 
 class UserFragment : Fragment() {
     private var _binding: FragmentUserBinding? = null
@@ -43,6 +47,26 @@ class UserFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = UserTopViewPageAdapter(this, viewModel.userId ?: 0)
         binding.viewPager.adapter = adapter
+
+        if (UserManager.isLogin) {
+            viewModel.userIdGetUserInfoNetworking()
+        }else{
+            binding.username.text = resources.getString(R.string.user_login)
+            binding.headImg.setImageDrawable(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
+            binding.rightButton.visibility = View.GONE
+        }
+
+        binding.backLayout.setOnClickListener {
+
+        }
+
+        viewModel.userInfo.observe(viewLifecycleOwner) {
+            binding.username.text = it.username
+            Glide.with(this)
+                .load(it.avator?.toImgUrl())
+                .placeholder(R.drawable.icon_eee).into(binding.headImg)
+            binding.rightButton.visibility = View.VISIBLE
+        }
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when(position) {

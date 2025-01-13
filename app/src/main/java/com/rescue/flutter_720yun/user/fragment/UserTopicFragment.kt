@@ -11,8 +11,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentUserTopicBinding
+import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
 import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
+import com.rescue.flutter_720yun.show.models.ShowPageModel
+import com.rescue.flutter_720yun.user.adapter.UserShowListAdapter
 import com.rescue.flutter_720yun.user.adapter.UserTopicListAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserTopicViewModel
 import com.rescue.flutter_720yun.util.RefreshState
@@ -21,12 +24,13 @@ import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 
-class UserTopicFragment<T> : Fragment() {
+class UserTopicFragment: Fragment() {
 
     private var _binding: FragmentUserTopicBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: UserTopicListAdapter<T>
+    private lateinit var adapter: UserTopicListAdapter
+    private lateinit var showAdapter: UserShowListAdapter
 
     private val viewModel by lazy {
         ViewModelProvider(this)[UserTopicViewModel::class.java]
@@ -54,24 +58,32 @@ class UserTopicFragment<T> : Fragment() {
         addViewModelObserver()
 
         if (viewModel.uiState.value !is UiState.Success) {
-            viewModel.loadUserTopicListNetworking(RefreshState.REFRESH)
+            viewModel.loadDataNetworking(RefreshState.REFRESH)
         }
 
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
         binding.refreshLayout.setOnRefreshListener {
-            viewModel.loadUserTopicListNetworking(RefreshState.REFRESH)
+            viewModel.loadDataNetworking(RefreshState.REFRESH)
         }
         binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
 
         binding.refreshLayout.setOnLoadMoreListener {
-            viewModel.loadUserTopicListNetworking(RefreshState.MORE)
+            viewModel.loadDataNetworking(RefreshState.MORE)
         }
 
-        binding.recyclerview.layoutManager = GridLayoutManager(context, 2)
-        adapter = UserTopicListAdapter(mutableListOf(), { item ->
+        if (viewModel.from == 0) {
+            binding.recyclerview.layoutManager = GridLayoutManager(context, 2)
+            adapter = UserTopicListAdapter(mutableListOf(), { item ->
 
-        })
-        binding.recyclerview.adapter = adapter
+            })
+            binding.recyclerview.adapter = adapter
+        }else{
+            binding.recyclerview.layoutManager = GridLayoutManager(context, 2)
+            showAdapter = UserShowListAdapter(mutableListOf(), { item ->
+
+            })
+            binding.recyclerview.adapter = showAdapter
+        }
 
     }
 
@@ -96,9 +108,29 @@ class UserTopicFragment<T> : Fragment() {
                     showSuccess()
                     val list = it.data
                     if (viewModel.refreshState.value == RefreshState.REFRESH) {
-                        adapter.refreshItem(list)
+                        if (list.first() is HomeListModel) {
+                            val items = list.map {
+                                it as HomeListModel
+                            }
+                            adapter.refreshItem(items)
+                        }else if (list.first() is ShowPageModel) {
+                            val items = list.map {
+                                it as ShowPageModel
+                            }
+                            showAdapter.refreshItem(items)
+                        }
                     }else if (viewModel.refreshState.value == RefreshState.MORE) {
-                        adapter.addItems(list)
+                        if (list.first() is HomeListModel) {
+                            val items = list.map {
+                                it as HomeListModel
+                            }
+                            adapter.addItems(items)
+                        }else if (list.first() is ShowPageModel) {
+                            val items = list.map {
+                                it as ShowPageModel
+                            }
+                            showAdapter.addItems(items)
+                        }
                     }
                 }
 

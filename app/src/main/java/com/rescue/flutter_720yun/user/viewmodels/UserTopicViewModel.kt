@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingSource
 import com.google.gson.reflect.TypeToken
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
@@ -31,7 +32,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
     private val _isFirstLoading = MutableLiveData(false)
     private val _isLastPage = MutableLiveData(false)
     private val _refreshState = MutableLiveData<RefreshState>()
-    private val _uiState = MutableLiveData<UiState<List<T>>>()
+    private val _uiState = MutableLiveData<UiState<List<Any>>>()
     private val _errorMsg = MutableLiveData<String>()
 
     override val isLoading: LiveData<Boolean>
@@ -46,13 +47,21 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
     override val refreshState: LiveData<RefreshState>
         get() = _refreshState
 
-    val uiState: LiveData<UiState<List<T>>> get() = _uiState
+    val uiState: LiveData<UiState<List<Any>>> get() = _uiState
     val errorMsg: LiveData<String> get() = _errorMsg
 
     var userId: Int? = null
 
     var from: Int? = null // 0: 帖子，1:秀宠
     var page: Int = 1
+
+    fun loadDataNetworking(refresh: RefreshState) {
+        if (from == 0) {
+            loadUserTopicListNetworking(refresh)
+        }else{
+            loadUserShowListNetworking(refresh)
+        }
+    }
 
     fun loadUserTopicListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
@@ -82,9 +91,8 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
                 if (response.code == 200) {
                     val items = when (response.data) {
                         is List<*> -> {
-                            val type = object : TypeToken<T>() {}.type
-                            val homeList =
-                                convertAnyToList(response.data, type::class.java)
+                            val homeList = convertAnyToList(response.data,
+                                    HomeListModel::class.java)
                             (homeList ?: emptyList())
 
                         }
@@ -96,7 +104,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
                         }
                     }
                     if (items.isNotEmpty()) {
-                        _uiState.value = UiState.Success(items as List<T>)
+                        _uiState.value = UiState.Success(items)
                         page += 1
                     }else{
                         if (page == 1) {
@@ -123,4 +131,71 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
         }
     }
 
+
+    fun loadUserShowListNetworking(refresh: RefreshState) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                if (refresh == RefreshState.REFRESH) {
+                    page = 1
+                    _isLastPage.value = false
+                }
+                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+                    return@launch
+                }
+                if (_isFirstLoading.value == true) {
+                    _uiState.value = UiState.FirstLoading
+                }
+                _isLoading.value = true
+                _refreshState.value = refresh
+                val dic = paramDic
+                dic["page"] = page
+                dic["size"] = 10
+                dic["userId"] = userId
+                Log.d("TAG","$dic")
+                val response = appService.userShowPublishNetworking(dic).awaitResp()
+                _isFirstLoading.value = false
+                if (response.code == 200) {
+                    val items = when (response.data) {
+                        is List<*> -> {
+                            val homeList = convertAnyToList(response.data,
+                                ShowPageModel::class.java)
+                            (homeList ?: emptyList())
+                        }
+                        is Map<*, *> -> {
+                            emptyList()
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            emptyList()
+                        }
+                    }
+                    if (items.isNotEmpty()) {
+                        _uiState.value = UiState.Success(items)
+                        page += 1
+                    }else{
+                        if (page == 1) {
+                            val noMoreData =
+                                BaseApplication.context.resources.getString(R.string.no_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }
+                    }
+                }else{
+                    if (page == 1) {
+                        val noMoreData =
+                            BaseApplication.context.resources.getString(R.string.no_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
+                }
+            }catch (e: Exception) {
+                if (page == 1) {
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
+                    _uiState.value = UiState.Error(noMoreData)
+                }
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }

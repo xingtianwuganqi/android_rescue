@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.network
 
 import com.rescue.flutter_720yun.home.models.BaseResponse
+import com.rescue.flutter_720yun.home.models.UserInfoModel
 import retrofit2.Call
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
@@ -12,4 +13,14 @@ interface UserService {
     @POST("api/v2/getuserpublish/")
     fun userPublishNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v2/getusershowpublish/")
+    fun userShowPublishNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v2/useridgetuserinfo/")
+    fun userIdGetUserInfo(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<BaseResponse<UserInfoModel>>
 }

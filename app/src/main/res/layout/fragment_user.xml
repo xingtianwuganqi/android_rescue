@@ -22,12 +22,14 @@
 <!--            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"-->
 
             <LinearLayout
+                android:id="@+id/back_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/color_system"
                 >
                 <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/head_img"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="25dp"
@@ -39,6 +41,7 @@
                     />
 
                 <TextView
+                    android:id="@+id/username"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -51,6 +54,7 @@
                     />
 
                 <ImageButton
+                    android:id="@+id/right_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@null"
