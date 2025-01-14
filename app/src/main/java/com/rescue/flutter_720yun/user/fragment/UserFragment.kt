@@ -21,6 +21,7 @@ import com.rescue.flutter_720yun.user.activity.UserInfoEditActivity
 import com.rescue.flutter_720yun.user.adapter.UserTopViewPageAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserViewModel
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toImgUrl
 
 class UserFragment : Fragment() {
@@ -70,8 +71,10 @@ class UserFragment : Fragment() {
         }
 
         binding.backLayout.setOnClickListener {
-            val intent = Intent(activity, UserInfoEditActivity::class.java)
-            editActivityLauncher.launch(intent)
+            lazyLogin(requireActivity()) {
+                val intent = Intent(activity, UserInfoEditActivity::class.java)
+                editActivityLauncher.launch(intent)
+            }
         }
 
         viewModel.userInfo.observe(viewLifecycleOwner) {
