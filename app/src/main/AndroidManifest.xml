@@ -26,9 +26,14 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <activity
+            android:name=".user.activity.UserSettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.activity.UserInfoEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".message.activity.CommentListActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".show.activity.ShowDetailActivity"
             android:exported="false" />

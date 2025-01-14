@@ -119,4 +119,9 @@
     <string name="comment_fail">评论失败</string>
 
     <string name="user_login">登录/注册</string>
+    <string name="user_edit">编辑个人信息</string>
+    <string name="user_setting">设置</string>
+    <string name="user_nickname">昵称</string>
+    <string name="user_edit_nickname">请输入昵称</string>
+    <string name="user_edit_image">点击修改头像</string>
 </resources>
