@@ -35,7 +35,7 @@ class UserFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-
+            viewModel.userIdGetUserInfoNetworking()
         }
     }
 
@@ -73,7 +73,11 @@ class UserFragment : Fragment() {
         binding.backLayout.setOnClickListener {
             lazyLogin(requireActivity()) {
                 val intent = Intent(activity, UserInfoEditActivity::class.java)
-                editActivityLauncher.launch(intent)
+                viewModel.userInfo.value?.let {
+                    intent.putParcelableArrayListExtra("userInfo", arrayListOf(it))
+                    editActivityLauncher.launch(intent)
+                }
+
             }
         }
 
