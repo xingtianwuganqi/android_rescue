@@ -92,7 +92,8 @@ class MainActivity : AppCompatActivity() {
 
                 else -> {
                     supportActionBar?.title = ""
-                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    supportActionBar?.setHomeAsUpIndicator(R.drawable.icon_mi_setting)
                     searchBtn.visibility = View.GONE
                 }
             }

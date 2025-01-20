@@ -37,8 +37,8 @@ data class UserInfo(
 @Parcelize
 data class UserInfoModel(
     val id: Int?,
-    val avator: String?,
-    val username: String?,
+    var avator: String?,
+    var username: String?,
     val phone_number: String?,
     val email: String?,
     val create_time: String?,

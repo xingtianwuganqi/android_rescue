@@ -35,7 +35,13 @@ class UserFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.userIdGetUserInfoNetworking()
+            val data: Intent? = result.data
+            val resultValue = data?.getBooleanExtra("published", false)
+            if (resultValue == true) {
+                // 刷新
+                viewModel.userIdGetUserInfoNetworking()
+            }
+
         }
     }
 

@@ -71,4 +71,8 @@ interface HomeService {
     @POST("api/v2/findpet/list")
     fun findPetList(@FieldMap(encoded = false) dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v1/updateuserinfo/")
+    fun uploadUserInfo(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }
