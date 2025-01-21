@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +25,7 @@ import com.rescue.flutter_720yun.home.adapter.DrawerListAdapter
 import com.rescue.flutter_720yun.databinding.ActivityMainBinding
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.MainViewModel
+import com.rescue.flutter_720yun.user.activity.UserSettingActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -69,6 +71,9 @@ class MainActivity : AppCompatActivity() {
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                     supportActionBar?.setHomeAsUpIndicator(R.drawable.icon_draw_more)
                     searchBtn.visibility = View.VISIBLE
+                    binding.searchButton.setImageDrawable(
+                        ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_draw_search)
+                    )
                 }
 
                 R.id.navigation_show -> {
@@ -86,14 +91,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_user -> {
                     supportActionBar?.title = "我的"
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                    searchBtn.visibility = View.GONE
+                    searchBtn.visibility = View.VISIBLE
+                    binding.searchButton.setImageDrawable(
+                        ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_draw_setting)
+                    )
                 }
 
 
                 else -> {
                     supportActionBar?.title = ""
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                    supportActionBar?.setHomeAsUpIndicator(R.drawable.icon_mi_setting)
+                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     searchBtn.visibility = View.GONE
                 }
             }
@@ -103,8 +110,13 @@ class MainActivity : AppCompatActivity() {
 
         // 搜索添加点击
         binding.searchButton.setOnClickListener{
-            val intent = Intent(this, SearchActivity::class.java)
-            startActivity(intent)
+            if (supportActionBar?.title == "首页") {
+                val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
+            }else if (supportActionBar?.title == "我的"){
+                val intent = Intent(this, UserSettingActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         addViewModelObserver()
