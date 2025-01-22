@@ -127,5 +127,13 @@
     <string name="save">保存</string>
     <string name="save_success">保存成功</string>
     <string name="save_fail">保存失败</string>
-
+    <string name="user_change_password">修改密码</string>
+    <string name="user_suggestion">意见反馈</string>
+    <string name="user_black">黑名单</string>
+    <string name="user_account">账号安全</string>
+    <string name="user_suggestion_title">请输入您的建议</string>
+    <string name="user_suggestion_desc">您的意见对我们非常重要</string>
+    <string name="user_suggestion_phone">请输入您的联系方式</string>
+    <string name="user_phone_input">请输入联系方式</string>
+    <string name="user_push">提交</string>
 </resources>

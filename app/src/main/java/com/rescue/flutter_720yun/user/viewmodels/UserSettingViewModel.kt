@@ -11,13 +11,13 @@ class UserSettingViewModel: ViewModel() {
 
     private val _messageList = MutableLiveData<List<MessageListModel>>().apply {
         value = listOf(
-            MessageListModel("icon_message_sys",
-                BaseApplication.context.resources.getString(R.string.message_system)),
-            MessageListModel("icon_message_like", BaseApplication.context.resources.getString(R.string.like_action)),
-            MessageListModel("icon_message_collect",
-                BaseApplication.context.resources.getString(R.string.collection_action)),
-            MessageListModel("icon_message_com",
-                BaseApplication.context.resources.getString(R.string.comment_action)),
+            MessageListModel("icon_setting_pswd",
+                BaseApplication.context.resources.getString(R.string.user_change_password)),
+            MessageListModel("icon_setting_fk", BaseApplication.context.resources.getString(R.string.user_suggestion)),
+            MessageListModel("icon_me_black",
+                BaseApplication.context.resources.getString(R.string.user_black)),
+            MessageListModel("icon_acc_sec",
+                BaseApplication.context.resources.getString(R.string.user_account)),
         )
     }
     val messageList: LiveData<List<MessageListModel>> = _messageList
