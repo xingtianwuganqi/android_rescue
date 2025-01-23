@@ -53,7 +53,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
     var userId: Int? = null
 
     var from: Int? = null // 0: 帖子，1:秀宠
-    var page: Int = 1
+    private var page: Int = 1
 
     fun loadDataNetworking(refresh: RefreshState) {
         if (from == 0) {
@@ -63,7 +63,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
         }
     }
 
-    fun loadUserTopicListNetworking(refresh: RefreshState) {
+    private fun loadUserTopicListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
             try {
                 if (_isLoading.value == true) {
@@ -132,7 +132,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
     }
 
 
-    fun loadUserShowListNetworking(refresh: RefreshState) {
+    private fun loadUserShowListNetworking(refresh: RefreshState) {
         viewModelScope.launch {
             try {
                 if (_isLoading.value == true) {

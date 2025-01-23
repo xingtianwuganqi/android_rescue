@@ -54,7 +54,8 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
     override fun itemClick(position: Int) {
         when (position) {
             0 -> {
-
+                val intent = Intent(this, UserChangePasswordActivity::class.java)
+                startActivity(intent)
             }
 
             1 -> {

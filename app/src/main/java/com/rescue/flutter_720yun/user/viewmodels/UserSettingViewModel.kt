@@ -14,8 +14,8 @@ class UserSettingViewModel: ViewModel() {
             MessageListModel("icon_setting_pswd",
                 BaseApplication.context.resources.getString(R.string.user_change_password)),
             MessageListModel("icon_setting_fk", BaseApplication.context.resources.getString(R.string.user_suggestion)),
-            MessageListModel("icon_me_black",
-                BaseApplication.context.resources.getString(R.string.user_black)),
+//            MessageListModel("icon_me_black",
+//                BaseApplication.context.resources.getString(R.string.user_black)),
             MessageListModel("icon_acc_sec",
                 BaseApplication.context.resources.getString(R.string.user_account)),
         )

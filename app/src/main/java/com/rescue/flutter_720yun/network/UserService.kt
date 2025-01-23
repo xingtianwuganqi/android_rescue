@@ -23,4 +23,8 @@ interface UserService {
     @POST("api/v2/useridgetuserinfo/")
     fun userIdGetUserInfo(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<UserInfoModel>>
+
+    @FormUrlEncoded
+    @POST("api/v1/suggestion/")
+    fun suggestionNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

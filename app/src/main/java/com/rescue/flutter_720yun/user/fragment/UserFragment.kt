@@ -69,7 +69,9 @@ class UserFragment : Fragment() {
         binding.viewPager.adapter = adapter
 
         if (UserManager.isLogin) {
-            viewModel.userIdGetUserInfoNetworking()
+            if (viewModel.userInfo.value == null) {
+                viewModel.userIdGetUserInfoNetworking()
+            }
         }else{
             binding.username.text = resources.getString(R.string.user_login)
             binding.headImg.setImageDrawable(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
