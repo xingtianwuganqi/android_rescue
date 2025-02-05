@@ -10,7 +10,7 @@ import com.rescue.flutter_720yun.R
 
 class UserAccountSafeActivity : BaseActivity() {
 
-    
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

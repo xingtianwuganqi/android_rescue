@@ -138,4 +138,7 @@
     <string name="user_push">提交</string>
     <string name="push_success">提交成功</string>
     <string name="push_fail">提交失败，请重试</string>
+    <string name="user_origin_password">请输入原密码</string>
+    <string name="user_new_password">请输入新密码（不少于6位）</string>
+    <string name="user_confirm_password">请确认新密码</string>
 </resources>
