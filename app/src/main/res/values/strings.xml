@@ -141,4 +141,9 @@
     <string name="user_origin_password">请输入原密码</string>
     <string name="user_new_password">请输入新密码（不少于6位）</string>
     <string name="user_confirm_password">请确认新密码</string>
+    <string name="user_confirm_error">确认密码与新密码不一致</string>
+    <string name="user_password_equal">新密码与原密码相同</string>
+    <string name="change_password_success">密码修改成功</string>
+    <string name="change_password_fail">密码修改失败</string>
+
 </resources>

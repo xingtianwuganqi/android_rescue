@@ -27,4 +27,8 @@ interface UserService {
     @FormUrlEncoded
     @POST("api/v1/suggestion/")
     fun suggestionNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("api/v1/updatetokenpassword/")
+    fun changePasswordNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }
