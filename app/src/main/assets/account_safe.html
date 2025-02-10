@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号隐私与安全</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .content h2 {
+            color: #333;
+        }
+        .content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .content ul li {
+            margin: 10px 0;
+        }
+        .content p {
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+<!--            padding: 10px 20px;-->
+            font-size: 16px;
+            color: #FFA500;
+            background-color: transparent;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:focus, .btn:active {
+            outline: none;
+            background-color: transparent;
+        }
+    </style>
+    <script>
+        function handleLogout() {
+            AccountSafeClickInterface.accountSafeClick();
+        }
+    </script>
+</head>
+<body>
+<div class="content">
+    <h2>真命天喵致力于保护您的隐私与账号安全</h2>
+    <p>一、真命天喵申请的系统权限</p>
+    <ul>
+        <li>1、相册权限。用户上传宠物图片或者用户头像。</li>
+        <li>2、位置权限。方便在同城中推荐附近的宠物。</li>
+    </ul>
+    <p>二、保护您的隐私与账号安全</p>
+    <ul>
+        <li>1、个人密码加密后存储，防止明文存储出现泄漏。</li>
+        <li>2、帖子中预留的联系方式可通过完成领养或删除帖子防止其他人获取。</li>
+    </ul>
+    <p>三、安全删除账号</p>
+    <ul>
+        <li>1、账号删除后，您的个人信息及操作记录（发帖记录、浏览记录、收藏、评论、回复）等数据将会全部删除。</li>
+        <li>2、账号删除后您的手机号仍可安全注册。</li>
+    </ul>
+    <a href="javascript:void(0);"  class="btn" onclick="handleLogout()">注销账号 -></a>
+</div>
+</body>
+</html>
