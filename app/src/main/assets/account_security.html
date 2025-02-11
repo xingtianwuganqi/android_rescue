@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号安全</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: white;
+            position: relative;
+            border-bottom: 1px solid #eee;
+        }
+
+        .back-button {
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .banner {
+            background-color: #ffa500;
+            color: white;
+            padding: 20px 16px;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 16px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .item {
+            margin-bottom: 12px;
+            color: #333;
+<!--            padding-left: 20px;-->
+            position: relative;
+        }
+
+<!--        .item::before {-->
+<!--            content: "";-->
+<!--            position: absolute;-->
+<!--            left: 0;-->
+<!--            top: 10px;-->
+<!--            width: 4px;-->
+<!--            height: 4px;-->
+<!--            background-color: #333;-->
+<!--            border-radius: 50%;-->
+<!--        }-->
+
+        .delete-link {
+            color: #ffa500;
+            text-decoration: none;
+            display: block;
+            margin-top: 16px;
+        }
+
+        .delete-link:hover {
+            color: #ff8c00;
+        }
+
+        .delete-link:focus, .delete-link:active {
+            outline: none;
+            background-color: transparent;
+        }
+    </style>
+    <script>
+        function handleLogout() {
+            AccountSafeClickInterface.accountSafeClick();
+        }
+    </script>
+</head>
+<body>
+<!--<header class="header">-->
+<!--    <a href="#" class="back-button">←</a>-->
+<!--    <h1 class="title">账号安全</h1>-->
+<!--</header>-->
+
+<div class="banner">
+    真命天喵致力于保护您的隐私与账号安全
+</div>
+
+<div class="content">
+    <section class="section">
+        <h2 class="section-title">一、真命天喵申请的系统权限</h2>
+        <p class="item">1、相册权限。用户上传宠物图片或者用户头像。</p>
+        <p class="item">2、位置权限。方便在同城中推荐附近的宠物。</p>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">二、保护您的隐私与账号安全</h2>
+        <p class="item">1、个人密码加密后存储，防止明文存储出现泄漏。</p>
+        <p class="item">2、帖子中预留的联系方式可通过完成领养或删除帖子防止其他人获取。</p>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">三、安全删除账号</h2>
+        <p class="item">1、账号删除后，您的个人信息及操作记录（发帖记录、浏览记录、收藏、评论、回复）等数据将会全部删除。</p>
+        <p class="item">2、账号删除后您的手机号仍可安全注册。</p>
+<!--        <a href="#" class="delete-link">注销账号 -></a>-->
+        <a href="javascript:void(0);"  class="delete-link" onclick="handleLogout()">注销账号 -></a>
+    </section>
+</div>
+</body>
+</html>

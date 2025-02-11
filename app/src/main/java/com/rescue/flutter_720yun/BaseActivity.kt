@@ -52,6 +52,10 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
+    open fun finishAllActivity() {
+        ActivityController.finishAll()
+    }
+
     fun showLoading() {
         baseBinding.progressBar.visibility = View.VISIBLE
         baseBinding.errorView.visibility = View.GONE

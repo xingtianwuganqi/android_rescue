@@ -145,5 +145,9 @@
     <string name="user_password_equal">新密码与原密码相同</string>
     <string name="change_password_success">密码修改成功</string>
     <string name="change_password_fail">密码修改失败</string>
-
+    <string name="remind_desc">提示</string>
+    <string name="confirm">确认</string>
+    <string name="user_account_logout">账号注销后无法恢复，确认注销吗?</string>
+    <string name="user_logout_success">注销成功</string>
+    <string name="user_logout_fail">注销失败</string>
 </resources>

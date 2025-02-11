@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注销账号</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 16px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .back-button {
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .warning-box {
+            background-color: #fff1f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .warning-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .warning-icon {
+            color: #ff4d4f;
+            margin-right: 8px;
+        }
+
+        .warning-text {
+            color: #ff4d4f;
+            font-size: 16px;
+        }
+
+        .content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .condition-list {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        .condition-item {
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .result-text {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .confirm-button {
+            background-color: #ffa500;
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            margin-top: 24px;
+            cursor: pointer;
+        }
+
+        .confirm-button:hover {
+            background-color: #ff9000;
+        }
+
+        .confirm-button:focus, .confirm-button:active {
+            outline: none;
+            border: none;
+        }
+    </style>
+    <script>
+        function onConfirmLogout() {
+            // 调用 Android 原生方法，执行注销操作
+            AccountDeleteClickInterface.onConfirmLogout();  // 调用 AndroidInterface 中的 onConfirmLogout 方法
+        }
+    </script>
+</head>
+<body>
+<!--<div class="header">-->
+<!--    <a href="#" class="back-button">←</a>-->
+<!--    <h1 class="title">注销账号</h1>-->
+<!--</div>-->
+
+<div class="warning-box">
+    <div class="warning-title">
+        <span class="warning-icon">⚠️</span>
+        <span class="warning-text">注销账号</span>
+    </div>
+    <div class="warning-text">无法恢复，请谨慎操作</div>
+</div>
+
+<div class="content">
+    <h2 class="section-title">一、注销账号需要满足以下条件：</h2>
+    <ul class="condition-list">
+        <li class="condition-item">1、该账号必须先绑定手机号码。</li>
+        <li class="condition-item">2、账号状态正常。</li>
+    </ul>
+
+    <h2 class="section-title">二、账号注销后您将无法找回本账号，及账号相关的任何内容与信息，包括但不限于：</h2>
+    <p class="result-text">账号内的个人资料，发帖记录，浏览记录，收藏，评论，回复等操作的内容</p>
+
+    <button class="confirm-button" onclick="onConfirmLogout()">我理解并同意，仍要注销</button>
+</div>
+</body>
+</html>

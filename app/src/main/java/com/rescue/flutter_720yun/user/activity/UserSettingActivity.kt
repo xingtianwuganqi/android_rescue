@@ -65,7 +65,7 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
 
             2 -> {
                 val intent = Intent(this, UserAccountSafeActivity::class.java)
-                intent.putExtra("localUrl","file:///android_asset/account_safe.html")
+                intent.putExtra("localUrl","file:///android_asset/account_security.html")
                 startActivity(intent)
             }
         }
