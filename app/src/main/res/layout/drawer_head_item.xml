@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/head_back"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/head_img"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         app:riv_corner_radius="30dp"
         app:riv_mutate_background="true"
         app:riv_tile_mode="repeat"
@@ -16,6 +17,7 @@
         android:layout_width="60dp"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
         android:layout_gravity="center"/>
 
     <TextView

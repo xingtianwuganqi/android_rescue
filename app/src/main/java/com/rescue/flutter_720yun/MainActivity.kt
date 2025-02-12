@@ -23,12 +23,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.home.activity.SearchActivity
 import com.rescue.flutter_720yun.home.adapter.DrawerListAdapter
 import com.rescue.flutter_720yun.databinding.ActivityMainBinding
+import com.rescue.flutter_720yun.home.adapter.DrawerListClickListener
+import com.rescue.flutter_720yun.home.models.DrawerListModel
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.MainViewModel
+import com.rescue.flutter_720yun.user.activity.UserCollectionActivity
 import com.rescue.flutter_720yun.user.activity.UserSettingActivity
+import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
@@ -125,6 +129,7 @@ class MainActivity : AppCompatActivity() {
     private fun addViewModelObserver() {
         viewModel.drawerList.observe(this) {
             val adapter = DrawerListAdapter(it)
+            adapter.setListener(this)
             binding.drawerRecyclerview.layoutManager = LinearLayoutManager(this)
             binding.drawerRecyclerview.adapter = adapter
         }
@@ -142,6 +147,37 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         ActivityController.removeActivity(this)
     }
+
+    override fun clickHeader() {
+
+    }
+
+    override fun clickItem(item: DrawerListModel) {
+        if (item.name == resources.getString(R.string.drawer_footer)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_collect)) {
+            val intent = Intent(this, UserCollectionActivity::class.java)
+            startActivity(intent)
+        }else if (item.name == resources.getString(R.string.drawer_black)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_rescue)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_upload)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_agreement)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_privacy)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_about)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_help)) {
+
+        }else if (item.name == resources.getString(R.string.drawer_recommend)) {
+
+        }
+    }
+
+
 }
 
 

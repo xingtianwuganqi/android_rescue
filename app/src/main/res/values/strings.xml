@@ -150,4 +150,5 @@
     <string name="user_account_logout">账号注销后无法恢复，确认注销吗?</string>
     <string name="user_logout_success">注销成功</string>
     <string name="user_logout_fail">注销失败</string>
+    <string name="user_collection">我的收藏</string>
 </resources>
