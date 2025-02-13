@@ -210,6 +210,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
                     homeViewModel.localListNetworking(it, RefreshState.MORE)
                 }
             }
+            "3" -> {
+                homeViewModel.loadUserCollection(RefreshState.MORE)
+            }
         }
 
     }
@@ -228,6 +231,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 homeViewModel.cityName?.let {
                     homeViewModel.localListNetworking(it, RefreshState.REFRESH)
                 }
+            }
+            "3" -> {
+                homeViewModel.loadUserCollection(RefreshState.REFRESH)
             }
         }
     }

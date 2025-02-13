@@ -34,4 +34,8 @@ interface ShowService {
     @POST("api/v1/showcollectionaction/")
     fun showInfoCollectionNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
     ): Call<BaseResponse<CollectionActionModel>>
+
+    @FormUrlEncoded
+    @POST("api/v1/authcollectionshowinfo/")
+    fun userShowCollectionList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

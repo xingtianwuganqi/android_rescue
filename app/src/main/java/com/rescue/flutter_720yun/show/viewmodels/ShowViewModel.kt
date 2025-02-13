@@ -12,6 +12,7 @@ import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.ShowService
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.show.models.ShowPageModel
+import com.rescue.flutter_720yun.show.models.UserShowCollectionModel
 import com.rescue.flutter_720yun.util.CommonViewModelInterface
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
@@ -83,6 +84,75 @@ class ShowViewModel : ViewModel(), CommonViewModelInterface {
                         is List<*> -> {
                             val homeList = convertAnyToList(response.data, ShowPageModel::class.java)
                             (homeList ?: emptyList())
+                        }
+                        is Map<*, *> -> {
+                            emptyList()
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            emptyList()
+                        }
+                    }
+                    if (items.isNotEmpty()) {
+                        page += 1
+                        _uiState.value = UiState.Success(items)
+                    }else{
+                        if (page == 1) {
+                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }else{
+                            _isLastPage.value = true
+                        }
+                    }
+                }else{
+                    if (page == 1) {
+                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
+                }
+
+            }catch (_: Exception) {
+                if (page == 1) {
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
+                    _uiState.value = UiState.Error(noMoreData)
+                }
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun userShowCollectionList(refresh: RefreshState) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                if (refresh == RefreshState.REFRESH) {
+                    page = 1
+                    _isLastPage.value = false
+                }
+                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+                    return@launch
+                }
+                if (_isFirstLoading.value == true) {
+                    _uiState.value = UiState.FirstLoading
+                }
+                _isLoading.value = true
+                _refreshState.value = refresh
+                val dic = paramDic
+                dic["page"] = page
+                dic["size"] = 10
+                Log.d("TAG","dic is $dic")
+                val response = appService.userShowCollectionList(dic).awaitResp()
+                _isFirstLoading.value = false
+                if (response.code == 200) {
+                    val items = when (response.data) {
+                        is List<*> -> {
+                            val showCollectionList = convertAnyToList(response.data, UserShowCollectionModel::class.java)
+                            val models = showCollectionList?.map {
+                                it.showInfo!!
+                            }
+                            models ?: emptyList()
                         }
                         is Map<*, *> -> {
                             emptyList()

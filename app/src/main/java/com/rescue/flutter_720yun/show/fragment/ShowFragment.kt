@@ -53,7 +53,7 @@ class ShowFragment : Fragment(), ShowItemClickListener {
             val resultValue = data?.getBooleanExtra("published", false)
             if (resultValue == true) {
                 // 刷新列表
-                viewModel.showPageListNetworking(RefreshState.REFRESH)
+                loadData(RefreshState.REFRESH)
             }
         }
     }
@@ -80,19 +80,20 @@ class ShowFragment : Fragment(), ShowItemClickListener {
         super.onViewCreated(view, savedInstanceState)
         viewModelAddObserver()
         if (viewModel.uiState.value !is UiState.Success) {
-            viewModel.showPageListNetworking(RefreshState.REFRESH)
+            loadData(RefreshState.REFRESH)
         }
+
 
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
         binding.refreshLayout.setOnRefreshListener {
-            viewModel.showPageListNetworking(RefreshState.REFRESH)
+            loadData(RefreshState.REFRESH)
         }
-        if (viewModel.showId == null) {
+        if (viewModel.showId == null || viewModel.showId == -1) {
             binding.refreshFooter.visibility = View.VISIBLE
             binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
 
             binding.refreshLayout.setOnLoadMoreListener {
-                viewModel.showPageListNetworking(RefreshState.MORE)
+                loadData(RefreshState.MORE)
             }
         }else{
             binding.refreshFooter.visibility = View.GONE
@@ -162,6 +163,15 @@ class ShowFragment : Fragment(), ShowItemClickListener {
         viewModel.changeModel.observe(viewLifecycleOwner) {
             adapter.uploadItem(it)
         }
+    }
+
+    private fun loadData(refreshState: RefreshState) {
+        if (viewModel.showId == -1) {
+            viewModel.userShowCollectionList(refreshState)
+        }else{
+            viewModel.showPageListNetworking(refreshState)
+        }
+
     }
 
     private fun showLoading() {

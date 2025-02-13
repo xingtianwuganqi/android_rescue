@@ -6,9 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingSource
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.home.models.UserCollectionModel
 import com.rescue.flutter_720yun.network.AppService
 import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
@@ -248,6 +250,77 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+
+    // 用户收藏
+    fun loadUserCollection(refresh: RefreshState) {
+        viewModelScope.launch {
+            try {
+                if (_isLoading.value == true) {
+                    return@launch
+                }
+                _isLoading.value = true
+                if (refresh == RefreshState.REFRESH) {
+                    page = 1
+                    _isLastPage.value = false
+                }
+                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
+                    return@launch
+                }
+                if (_isFirstLoading.value == true) {
+                    _uiState.value = UiState.FirstLoading
+                }
+                _refreshState.value = refresh
+
+                val dic = paramDic
+                dic["page"] = page
+                dic["size"] = 10
+                Log.d("TAG","dic is $dic")
+                val response = appService.userCollectionList(dic).awaitResp()
+                _isFirstLoading.value = false
+                if (response.code == 200) {
+                    val items = when (response.data) {
+                        is List<*> -> {
+                            val collectionList = convertAnyToList(response.data, UserCollectionModel::class.java)
+                            val models = collectionList?.map {
+                                it.topicInfo!!
+                            }
+                            models ?: emptyList()
+                        }
+                        is Map<*, *> -> {
+                            emptyList()
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            emptyList()
+                        }
+                    }
+                    if (items.isNotEmpty()) {
+                        page += 1
+                        _uiState.value = UiState.Success(items)
+                    }else{
+                        if (page == 1) {
+                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                            _uiState.value = UiState.Error(noMoreData)
+                        }else{
+                            _isLastPage.value = true
+                        }
+                    }
+                }else{
+                    if (page == 1) {
+                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                        _uiState.value = UiState.Error(noMoreData)
+                    }
+                }
+            }catch (e: Exception) {
+                if (page == 1) {
+                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
+                    _uiState.value = UiState.Error(noMoreData)
+                }
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     fun likeActionNetworking(model: HomeListModel?) {
         viewModelScope.launch {
             if (_isLoading.value == true) {
@@ -301,4 +374,5 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
 }

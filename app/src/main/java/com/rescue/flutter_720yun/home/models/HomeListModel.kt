@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.home.models
 
 import android.os.Parcelable
+import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
 import kotlinx.parcelize.Parcelize
 
 data class BaseResponse<T> (
@@ -116,4 +117,12 @@ data class DrawerListModel(
     val icon: String,
     val name: String,
     val number: Int?
+): Parcelable
+
+
+@Parcelize
+data class UserCollectionModel(
+    val collection_id: Int?,
+    val topic_id: Int?,
+    val topicInfo: HomeListModel?
 ): Parcelable

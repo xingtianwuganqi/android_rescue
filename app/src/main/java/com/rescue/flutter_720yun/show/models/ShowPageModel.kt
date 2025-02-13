@@ -78,3 +78,11 @@ data class CommentItemModel(
     var commentItem: CommentListModel?,
     var replyItem: ReplyListModel?
 ): Parcelable
+
+
+@Parcelize
+data class UserShowCollectionModel(
+    val showcollect_id: Int?,
+    val topic_id: Int?,
+    val showInfo: ShowPageModel?
+): Parcelable

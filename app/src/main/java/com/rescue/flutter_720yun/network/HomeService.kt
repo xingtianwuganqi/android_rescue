@@ -75,4 +75,9 @@ interface HomeService {
     @FormUrlEncoded
     @POST("api/v1/updateuserinfo/")
     fun uploadUserInfo(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 用户收藏列表
+    @FormUrlEncoded
+    @POST("/api/v1/authcollection/")
+    fun userCollectionList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }
