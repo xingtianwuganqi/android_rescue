@@ -35,4 +35,8 @@ interface UserService {
     @FormUrlEncoded
     @POST("/api/v2/login/user/delete")
     fun deleteAccount(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("/api/topic/black/list/")
+    fun blackList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

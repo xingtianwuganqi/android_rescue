@@ -27,6 +27,7 @@ import com.rescue.flutter_720yun.home.adapter.DrawerListClickListener
 import com.rescue.flutter_720yun.home.models.DrawerListModel
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.MainViewModel
+import com.rescue.flutter_720yun.user.activity.BlackListActivity
 import com.rescue.flutter_720yun.user.activity.UserCollectionActivity
 import com.rescue.flutter_720yun.user.activity.UserSettingActivity
 import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
@@ -159,7 +160,8 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
             val intent = Intent(this, UserCollectionActivity::class.java)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_black)) {
-
+            val intent = Intent(this, BlackListActivity::class.java)
+            startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_rescue)) {
 
         }else if (item.name == resources.getString(R.string.drawer_upload)) {

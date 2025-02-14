@@ -12,7 +12,11 @@ import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityBlackListBinding
 import com.rescue.flutter_720yun.home.adapter.HomeListAdapter
+import com.rescue.flutter_720yun.user.adapter.BlackListAdapter
 import com.rescue.flutter_720yun.user.viewmodels.BlackListViewModel
+import com.rescue.flutter_720yun.util.RefreshState
+import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 
@@ -23,10 +27,20 @@ class BlackListActivity : BaseActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[BlackListViewModel::class.java]
     }
+    private lateinit var adapter: BlackListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentLayout(R.layout.activity_black_list)
+        setupToolbar(resources.getString(R.string.user_black))
+        _binding = ActivityBlackListBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
+        addViewAction()
+        addViewModelObserver()
+
+        if (viewModel.uiState.value !is UiState.Success) {
+            viewModel.blackListNetworking(RefreshState.REFRESH)
+        }
     }
 
     override fun addViewAction() {
@@ -37,16 +51,68 @@ class BlackListActivity : BaseActivity() {
         binding.refreshLayout.setRefreshHeader(MaterialHeader(this))
         binding.refreshLayout.setRefreshFooter(ClassicsFooter(this))
         binding.refreshLayout.setOnRefreshListener {
-
+            viewModel.blackListNetworking(RefreshState.REFRESH)
         }
         binding.refreshLayout.setOnLoadMoreListener {
-
+            viewModel.blackListNetworking(RefreshState.MORE)
         }
+
+        binding.recyclerview.layoutManager = LinearLayoutManager(this)
+        adapter = BlackListAdapter(mutableListOf())
+        binding.recyclerview.adapter = adapter
     }
 
     override fun addViewModelObserver() {
         super.addViewModelObserver()
+        viewModel.isLoading.observe(this) {
+            if (it == false) {
+                binding.refreshLayout.finishRefresh()
+                binding.refreshLayout.finishLoadMore()
+                if (viewModel.isLastPage.value == true) {
+                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
+                }
+            }
+        }
 
+        viewModel.uiState.observe(this) {
+            when (it) {
+                is UiState.FirstLoading -> {
+                    showLoading()
+                }
+
+                is UiState.Success -> {
+                    showSuccess()
+                    val list = it.data
+                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
+                        adapter.refreshItem(list)
+                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
+                        adapter.addItems(list)
+                    }
+                }
+
+                is UiState.Error -> {
+                    showError(it.message ?: "")
+                }
+            }
+        }
+
+        viewModel.isLoading.observe(this) {
+            if (it == false) {
+                binding.refreshLayout.finishRefresh()
+                binding.refreshLayout.finishLoadMore()
+                if (viewModel.isLastPage.value == true) {
+                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
+                }
+            }
+        }
+
+        viewModel.errorMsg.observe(this) {
+            it?.toastString()
+        }
+
+//        viewModel.changeModel.observe(this) {
+//            adapter.uploadItem(it)
+//        }
     }
 
     override fun onDestroy() {
