@@ -1,8 +1,18 @@
 package com.rescue.flutter_720yun.user.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +39,14 @@ class BlackListActivity : BaseActivity() {
     }
     private lateinit var adapter: BlackListAdapter
 
+    var detailLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_black_list)
@@ -41,6 +59,46 @@ class BlackListActivity : BaseActivity() {
         if (viewModel.uiState.value !is UiState.Success) {
             viewModel.blackListNetworking(RefreshState.REFRESH)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val menuItem = menu?.findItem(R.id.action_publish)
+        menuItem?.title = resources.getString(R.string.user_report)
+        // 检查 menuItem 是否不为空
+        menuItem?.let {
+            val spanString = SpannableString(it.title) // 确保 title 不为空
+
+            // 设置颜色和大小
+            val color = ContextCompat.getColor(this, R.color.color_system)
+            spanString.setSpan(ForegroundColorSpan(color), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            spanString.setSpan(AbsoluteSizeSpan(16, true), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+
+            // 设置带格式的标题
+            it.title = spanString
+        }
+
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_publish -> {
+                openReportPage()
+                true
+            }else ->{
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    private fun openReportPage() {
+        val intent = Intent(this, BlackDetailActivity::class.java)
+        detailLauncher.launch(intent)
     }
 
     override fun addViewAction() {
