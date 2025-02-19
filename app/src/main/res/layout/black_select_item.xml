@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/title_text"
@@ -19,24 +18,18 @@
             android:textColor="@color/color_content"
             android:textSize="@dimen/content_font"/>
 
-        <EditText
-            android:id="@+id/edit_desc"
+        <View
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_height="match_parent"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints="@string/user_nickname"
-            android:textColorHint="@color/color_desc"
-            android:selectAllOnFocus="true"
-            android:hint="@string/user_nickname"
-            android:singleLine="true"
-            android:gravity="end"
+            android:textOn="@string/user_resque"
+            android:textOff="@string/user_sender"
             android:layout_gravity="center"
-            android:textSize="@dimen/content_font"
-            android:inputType="textMultiLine"
-            android:imeOptions="flagNoEnterAction"
-            android:theme="@style/EditTextStyle"
-            android:background="@null"
-            android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
             />
     </LinearLayout>
