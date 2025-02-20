@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="56dp"
         android:orientation="horizontal"
         >
 
@@ -29,7 +29,7 @@
             android:selectAllOnFocus="true"
             android:hint="@string/user_nickname"
             android:singleLine="true"
-            android:gravity="end"
+            android:textDirection="rtl"
             android:layout_gravity="center"
             android:textSize="@dimen/content_font"
             android:inputType="textMultiLine"

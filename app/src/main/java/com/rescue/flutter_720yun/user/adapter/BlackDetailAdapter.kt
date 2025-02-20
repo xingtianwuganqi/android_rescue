@@ -1,20 +1,26 @@
 package com.rescue.flutter_720yun.user.adapter
 
+import android.content.Context
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.BlackDescItemBinding
+import com.rescue.flutter_720yun.databinding.BlackImagesItemBinding
 import com.rescue.flutter_720yun.databinding.BlackInputItemBinding
 import com.rescue.flutter_720yun.databinding.BlackSelectItemBinding
+import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
+import com.rescue.flutter_720yun.home.adapter.ReleaseImagesAdapter
+import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.user.models.BlackDetailModel
 import com.rescue.flutter_720yun.user.models.BlackListModel
 
-class BlackDetailAdapter(val list: MutableList<BlackDetailModel>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BlackDetailAdapter(val list: MutableList<BlackDetailModel>, val listener: ReleaseImageClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val INPUT = 0
@@ -56,11 +62,11 @@ class BlackDetailAdapter(val list: MutableList<BlackDetailModel>): RecyclerView.
                return BlackDetailDescViewHolder(binding)
            }
            else -> {
-               val binding = BlackDescItemBinding.inflate(
+               val binding = BlackImagesItemBinding.inflate(
                    LayoutInflater.from(parent.context),
                    parent,
                    false)
-               return BlackDetailDescViewHolder(binding)
+               return BlackDetailImageViewHolder(binding, parent.context, listener)
            }
        }
     }
@@ -80,6 +86,10 @@ class BlackDetailAdapter(val list: MutableList<BlackDetailModel>): RecyclerView.
             }
 
             is BlackDetailDescViewHolder -> {
+                holder.bind(item)
+            }
+
+            is BlackDetailImageViewHolder -> {
                 holder.bind(item)
             }
         }
@@ -120,3 +130,29 @@ class BlackDetailDescViewHolder(val binding: BlackDescItemBinding): RecyclerView
         }
     }
 }
+
+
+class BlackDetailImageViewHolder(val binding: BlackImagesItemBinding, val context: Context, val listener: ReleaseImageClickListener): RecyclerView.ViewHolder(binding.root),
+    ReleaseImageClickListener {
+
+    private val adapter = ReleaseImagesAdapter(mutableListOf())
+
+    fun bind(item: BlackDetailModel) {
+        binding.titleText.text = item.title
+        binding.recyclerview.adapter = adapter
+        val gridManager = GridLayoutManager(context, 3)
+        binding.recyclerview.layoutManager = gridManager
+        adapter.refreshItems((item.photos ?: mutableListOf()).toList())
+        adapter.setClickListener(this)
+    }
+
+    override fun addImageClick() {
+        this.listener.addImageClick()
+    }
+
+    override fun deleteImageClick(item: CoachReleasePhoto) {
+        this.listener.deleteImageClick(item)
+    }
+}
+
+
