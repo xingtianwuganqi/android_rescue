@@ -5,13 +5,10 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.luck.picture.lib.basic.PictureSelector
@@ -22,18 +19,19 @@ import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityBlackDetailBinding
-import com.rescue.flutter_720yun.databinding.ActivityBlackListBinding
 import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.user.adapter.BlackDetailAdapter
+import com.rescue.flutter_720yun.user.models.ReleaseReportInfoModel
 import com.rescue.flutter_720yun.user.viewmodels.BlackDetailViewModel
-import com.rescue.flutter_720yun.user.viewmodels.BlackListViewModel
 import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
+import com.rescue.flutter_720yun.util.toastString
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
+import java.util.ArrayList
 
 class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
 
@@ -92,7 +90,7 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
                 }).launch()
             })
             .forResult(object : OnResultCallbackListener<LocalMedia>{
-                override fun onResult(result: java.util.ArrayList<LocalMedia>?) {
+                override fun onResult(result: ArrayList<LocalMedia>?) {
 
                     val photos = result?.map {
                         CoachReleasePhoto(
@@ -159,7 +157,45 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
 
     // 先上传图片，再提交
     private fun startPush() {
+        if (viewModel.dataModels.value?.get(0)?.desc == null) {
+            viewModel.dataModels.value?.get(0)?.placeholder?.toastString()
+            return
+        }
 
+        if (viewModel.dataModels.value?.get(3)?.desc == null) {
+            viewModel.dataModels.value?.get(3)?.placeholder?.toastString()
+            return
+        }
+
+        if (viewModel.dataModels.value?.get(4)?.desc == null) {
+            viewModel.dataModels.value?.get(4)?.placeholder?.toastString()
+            return
+        }
+
+        if (viewModel.dataModels.value?.get(5)?.photos?.none {
+                !it.isAdd
+            } == true) {
+            viewModel.dataModels.value?.get(5)?.placeholder?.toastString()
+            return
+        }
+        val model = viewModel.dataModels.value?.get(5)?.photos?.filter {
+            !it.isAdd
+        }?.map {
+            it.photoKey
+        }?.let {
+            ReleaseReportInfoModel(
+                viewModel.dataModels.value?.get(0)?.desc ?: "",
+                wx_num = viewModel.dataModels.value?.get(1)?.desc ?: "",
+                name = viewModel.dataModels.value?.get(2)?.desc ?: "",
+                black_type = viewModel.dataModels.value?.get(3)?.desc ?: "",
+                desc = viewModel.dataModels.value?.get(4)?.desc ?: "",
+                photos = it.joinToString(","),
+            )
+        }
+        Log.d("model is ","$model")
+        if (model != null) {
+            viewModel.releaseReportNetworking(model)
+        }
     }
 
     override fun deleteImageClick(item: CoachReleasePhoto) {

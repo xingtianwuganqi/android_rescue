@@ -5,6 +5,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -106,8 +107,23 @@ class BlackDetailInputViewHolder(val binding: BlackInputItemBinding): RecyclerVi
     fun bind(item: BlackDetailModel) {
         binding.titleText.text = item.title
         binding.editDesc.hint = item.placeholder
+
         if (item.desc != null) {
             binding.editDesc.setText((item.desc ?: ""))
+            binding.editDesc.isEnabled = false
+        }else{
+            binding.editDesc.isEnabled = true
+            binding.editDesc.addTextChangedListener(
+                beforeTextChanged = { _, _, _, _, ->
+
+                },
+                onTextChanged = { _, _, _, _, ->
+
+                },
+                afterTextChanged = { text ->
+                    item.desc = text.toString()
+                }
+            )
         }
     }
 }
@@ -127,6 +143,20 @@ class BlackDetailDescViewHolder(val binding: BlackDescItemBinding): RecyclerView
         binding.editDesc.hint = item.placeholder
         if (item.desc != null) {
             binding.editDesc.setText((item.desc ?: ""))
+            binding.editDesc.isEnabled = false
+        }else{
+            binding.editDesc.isEnabled = true
+            binding.editDesc.addTextChangedListener(
+                beforeTextChanged = { _, _, _, _, ->
+
+                },
+                onTextChanged = { _, _, _, _, ->
+
+                },
+                afterTextChanged = { text ->
+                    item.desc = text.toString()
+                }
+            )
         }
     }
 }

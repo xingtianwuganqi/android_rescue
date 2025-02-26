@@ -26,3 +26,23 @@ data class BlackDetailModel(
     var photos: MutableList<CoachReleasePhoto>?,
     var isMust: Boolean
 ): Parcelable
+
+/*
+struct ReleaseReportInfo {
+    var phone: String?
+    var wx_num: String?
+    var name: String?
+    var black_type: Int = 1
+    var desc: String?
+    var photos: [ReleasePhotoModel] = []
+}
+ */
+@Parcelize
+data class ReleaseReportInfoModel(
+    val phone: String?,
+    val wx_num: String?,
+    val name: String?,
+    val black_type: String?,
+    val desc: String?,
+    val photos: String
+): Parcelable

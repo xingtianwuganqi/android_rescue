@@ -155,4 +155,16 @@
     <string name="user_input">请输入</string>
     <string name="user_resque">领养人</string>
     <string name="user_sender">送养人</string>
+    <string name="black_phone">手机号</string>
+    <string name="black_phone_placeholder">请输入失信人手机号</string>
+    <string name="black_wx">微信号</string>
+    <string name="black_wx_placeholder">请输入失信人微信号</string>
+    <string name="black_wx_nickname">微信昵称</string>
+    <string name="black_nickname_placeholder">请输入失信人微信昵称</string>
+    <string name="black_id">身份</string>
+    <string name="black_id_placeholder">请选择失信人身份</string>
+    <string name="black_reason">举报理由</string>
+    <string name="black_reason_placeholder">请输入举报理由</string>
+    <string name="black_evidence">举报证据</string>
+    <string name="black_evidence_placeholder">请上传证据图片</string>
 </resources>

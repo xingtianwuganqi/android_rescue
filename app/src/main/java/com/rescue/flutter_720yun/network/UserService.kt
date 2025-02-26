@@ -39,4 +39,8 @@ interface UserService {
     @FormUrlEncoded
     @POST("/api/topic/black/list/")
     fun blackList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("/api/topic/black/create/")
+    fun blackRelease(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }
