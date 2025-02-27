@@ -24,7 +24,8 @@ data class BlackDetailModel(
     val placeholder: String?,
     var desc: String?,
     var photos: MutableList<CoachReleasePhoto>?,
-    var isMust: Boolean
+    var isMust: Boolean?,
+    var order: Int?,
 ): Parcelable
 
 /*

@@ -2,8 +2,14 @@ package com.rescue.flutter_720yun.user.adapter
 
 import android.content.Context
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannedString
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
@@ -105,58 +111,116 @@ class BlackDetailAdapter(val list: MutableList<BlackDetailModel>, val listener: 
 
 class BlackDetailInputViewHolder(val binding: BlackInputItemBinding): RecyclerView.ViewHolder(binding.root) {
     fun bind(item: BlackDetailModel) {
-        binding.titleText.text = item.title
+        if (item.order == 0) {
+            val spanString = SpannableString("${item.title}*") // 确保 title 不为空
+            // 设置颜色和大小
+            val color = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+            val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_content)
+            item.title?.length?.let {
+                spanString.setSpan(ForegroundColorSpan(textColor), 0,
+                    it, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                spanString.setSpan(ForegroundColorSpan(color), it,
+                    it + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            }
+            spanString.setSpan(AbsoluteSizeSpan(16, true), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+
+            binding.titleText.text = spanString
+        }else {
+            binding.titleText.text = item.title
+        }
         binding.editDesc.hint = item.placeholder
 
-        if (item.desc != null) {
-            binding.editDesc.setText((item.desc ?: ""))
-            binding.editDesc.isEnabled = false
-        }else{
-            binding.editDesc.isEnabled = true
-            binding.editDesc.addTextChangedListener(
-                beforeTextChanged = { _, _, _, _, ->
+        binding.editDesc.addTextChangedListener(
+            beforeTextChanged = { _, _, _, _, ->
 
-                },
-                onTextChanged = { _, _, _, _, ->
+            },
+            onTextChanged = { _, _, _, _, ->
 
-                },
-                afterTextChanged = { text ->
-                    item.desc = text.toString()
-                }
-            )
-        }
+            },
+            afterTextChanged = { text ->
+                item.desc = text.toString()
+            }
+        )
+
+//        if (item.desc != null) {
+//            binding.editDesc.setText((item.desc ?: ""))
+//        }else{
+//            binding.editDesc.text = null
+//
+//        }
     }
 }
 
+//1: 领养人，2：送养人
 class BlackDetailSelectViewHolder(val binding: BlackSelectItemBinding): RecyclerView.ViewHolder(binding.root) {
     fun bind(item: BlackDetailModel) {
-        binding.titleText.text = item.title
-        binding.switchButton.textOn = ContextCompat.getString(BaseApplication.context, R.string.user_report)
-        binding.switchButton.textOff = ContextCompat.getString(BaseApplication.context, R.string.user_sender)
 
+        val spanString = SpannableString("${item.title}*") // 确保 title 不为空
+        // 设置颜色和大小
+        val color = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+        val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_content)
+        item.title?.length?.let {
+            spanString.setSpan(ForegroundColorSpan(textColor), 0,
+                it, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            spanString.setSpan(ForegroundColorSpan(color), it,
+                it+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+        spanString.setSpan(AbsoluteSizeSpan(16, true), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        binding.titleText.text = spanString
+
+        binding.senderText.setOnClickListener {
+            binding.senderText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
+            binding.senderText.setTextColor(BaseApplication.context.resources.getColor(R.color.white,null))
+
+            binding.resqueText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
+            binding.resqueText.setTextColor(BaseApplication.context.resources.getColor(R.color.color_node,null))
+            item.desc = "2"
+        }
+
+        binding.resqueText.setOnClickListener {
+            binding.resqueText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
+            binding.resqueText.setTextColor(BaseApplication.context.resources.getColor(R.color.white,null))
+
+            binding.senderText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
+            binding.senderText.setTextColor(BaseApplication.context.resources.getColor(R.color.color_node,null))
+
+            item.desc = "1"
+        }
     }
 }
 
 class BlackDetailDescViewHolder(val binding: BlackDescItemBinding): RecyclerView.ViewHolder(binding.root) {
     fun bind(item: BlackDetailModel) {
-        binding.titleText.text = item.title
+        val spanString = SpannableString("${item.title}*") // 确保 title 不为空
+        // 设置颜色和大小
+        val color = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+        val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_content)
+        item.title?.length?.let {
+            spanString.setSpan(ForegroundColorSpan(textColor), 0,
+                it, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            spanString.setSpan(ForegroundColorSpan(color), it,
+                it+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+        binding.titleText.text = spanString
+
         binding.editDesc.hint = item.placeholder
+
+        binding.editDesc.addTextChangedListener(
+            beforeTextChanged = { _, _, _, _, ->
+
+            },
+            onTextChanged = { _, _, _, _, ->
+
+            },
+            afterTextChanged = { text ->
+                item.desc = text.toString()
+            }
+        )
         if (item.desc != null) {
             binding.editDesc.setText((item.desc ?: ""))
-            binding.editDesc.isEnabled = false
         }else{
-            binding.editDesc.isEnabled = true
-            binding.editDesc.addTextChangedListener(
-                beforeTextChanged = { _, _, _, _, ->
+            binding.editDesc.text = null
 
-                },
-                onTextChanged = { _, _, _, _, ->
-
-                },
-                afterTextChanged = { text ->
-                    item.desc = text.toString()
-                }
-            )
         }
     }
 }
@@ -168,7 +232,19 @@ class BlackDetailImageViewHolder(val binding: BlackImagesItemBinding, val contex
     private val adapter = ReleaseImagesAdapter(mutableListOf())
 
     fun bind(item: BlackDetailModel) {
-        binding.titleText.text = item.title
+        val spanString = SpannableString("${item.title}*") // 确保 title 不为空
+        // 设置颜色和大小
+        val color = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
+        val textColor = ContextCompat.getColor(BaseApplication.context, R.color.color_content)
+        item.title?.length?.let {
+            spanString.setSpan(ForegroundColorSpan(textColor), 0,
+                it, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            spanString.setSpan(ForegroundColorSpan(color), it,
+                it+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+        spanString.setSpan(AbsoluteSizeSpan(16, true), 0, spanString.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        binding.titleText.text = spanString
+
         binding.recyclerview.adapter = adapter
         val gridManager = GridLayoutManager(context, 3)
         binding.recyclerview.layoutManager = gridManager

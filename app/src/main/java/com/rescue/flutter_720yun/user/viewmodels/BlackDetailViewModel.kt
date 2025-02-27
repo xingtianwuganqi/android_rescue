@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class BlackDetailViewModel: ViewModel() {
     private val appService = ServiceCreator.create<UserService>()
-    private var _dataModels = MutableLiveData<List<BlackDetailModel>>()
+    private var _dataModels = MutableLiveData<MutableList<BlackDetailModel>>()
     private val _releaseCompletion = MutableLiveData<Boolean>()
     private val _message = MutableLiveData<String>()
 
@@ -33,35 +33,40 @@ class BlackDetailViewModel: ViewModel() {
             ContextCompat.getString(BaseApplication.context, R.string.black_phone_placeholder),
             null,
             null,
-            true
+            true,
+            0,
         ),
         BlackDetailModel(
             ContextCompat.getString(BaseApplication.context, R.string.black_wx),
             ContextCompat.getString(BaseApplication.context, R.string.black_wx_placeholder),
             null,
             null,
-            false
+            false,
+            1,
         ),
         BlackDetailModel(
             ContextCompat.getString(BaseApplication.context, R.string.black_wx_nickname),
             ContextCompat.getString(BaseApplication.context, R.string.black_nickname_placeholder),
             null,
             null,
-            false
+            false,
+            2,
         ),
         BlackDetailModel(
             ContextCompat.getString(BaseApplication.context, R.string.black_id),
             ContextCompat.getString(BaseApplication.context, R.string.black_id_placeholder),
+            "2",
             null,
-            null,
-            true
+            true,
+            3,
         ),
         BlackDetailModel(
             ContextCompat.getString(BaseApplication.context, R.string.black_reason),
             ContextCompat.getString(BaseApplication.context, R.string.black_reason_placeholder),
             null,
             null,
-            true
+            true,
+            4,
         ),
         BlackDetailModel(
             ContextCompat.getString(BaseApplication.context, R.string.black_evidence),
@@ -74,7 +79,8 @@ class BlackDetailViewModel: ViewModel() {
                 null,
                 null
             )),
-            true
+            true,
+            5,
         ),
     )
     var photos = mutableListOf(
@@ -93,11 +99,15 @@ class BlackDetailViewModel: ViewModel() {
 
 
     fun uploadImageData() {
-        val item = data.last()
-        item.photos = photos
+        Log.d("TAG","fucking ${_dataModels.value?.first()?.desc}")
+        val datas = _dataModels.value
+        datas?.get(5)?.photos = photos
 
-        data[5] = item
-        _dataModels.value = data
+        datas?.let {
+            _dataModels.value = it
+            Log.d("TAG","fucking ${it.first().desc}")
+
+        }
     }
 
     fun releaseReportNetworking(info: ReleaseReportInfoModel) {
@@ -116,12 +126,22 @@ class BlackDetailViewModel: ViewModel() {
             parameter["token"] = UserManager.shared.token
                  */
                 val dic = paramDic
-                dic["name"] = info.name ?: ""
-                dic["contact"] = info.phone ?: ""
-                dic["wx_num"] = info.wx_num ?: ""
-                dic["desc"] = info.desc ?: ""
-                dic["black_type"] = info.black_type ?: 1
+                if (info.name != null) {
+                    dic["name"] = info.name
+                }
+                if (info.phone != null) {
+                    dic["contact"] = info.phone
+                }
+                if (info.wx_num != null) {
+                    dic["wx_num"] = info.wx_num
+                }
+                if (info.desc != null) {
+                    dic["desc"] = info.desc
+                }
+                dic["black_type"] = if (info.black_type == "1") 1 else 2
                 dic["from_userId"] = UserManager.userId
+                dic["imgs"] = info.photos
+
                 Log.d("TAG","$dic")
                 val response = appService.blackRelease(dic).awaitResp()
                 if (response.code == 200) {

@@ -157,17 +157,15 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
 
     // 先上传图片，再提交
     private fun startPush() {
-        if (viewModel.dataModels.value?.get(0)?.desc == null) {
+
+        Log.d("TAG","value is ${viewModel.dataModels.value?.get(0)?.desc}")
+
+        if (viewModel.dataModels.value?.get(0)?.desc?.isEmpty() == true) {
             viewModel.dataModels.value?.get(0)?.placeholder?.toastString()
             return
         }
 
-        if (viewModel.dataModels.value?.get(3)?.desc == null) {
-            viewModel.dataModels.value?.get(3)?.placeholder?.toastString()
-            return
-        }
-
-        if (viewModel.dataModels.value?.get(4)?.desc == null) {
+        if (viewModel.dataModels.value?.get(4)?.desc?.isEmpty() == true) {
             viewModel.dataModels.value?.get(4)?.placeholder?.toastString()
             return
         }
