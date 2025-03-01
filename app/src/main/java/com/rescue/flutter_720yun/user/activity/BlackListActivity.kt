@@ -116,7 +116,11 @@ class BlackListActivity : BaseActivity() {
         }
 
         binding.recyclerview.layoutManager = LinearLayoutManager(this)
-        adapter = BlackListAdapter(mutableListOf())
+        adapter = BlackListAdapter(mutableListOf(), {
+            val intent = Intent(this, BlackDetailActivity::class.java)
+            intent.putExtra("blackId", it.id)
+            detailLauncher.launch(intent)
+        })
         binding.recyclerview.adapter = adapter
     }
 
@@ -168,9 +172,6 @@ class BlackListActivity : BaseActivity() {
             it?.toastString()
         }
 
-//        viewModel.changeModel.observe(this) {
-//            adapter.uploadItem(it)
-//        }
     }
 
     override fun onDestroy() {

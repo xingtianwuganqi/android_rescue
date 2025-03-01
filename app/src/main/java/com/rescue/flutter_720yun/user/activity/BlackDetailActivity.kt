@@ -46,6 +46,14 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
         setContentLayout(R.layout.activity_black_detail)
         setupToolbar(resources.getString(R.string.user_report))
         _binding = ActivityBlackDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
+
+        val blackId = intent.getIntExtra("blackId", 0)
+        viewModel.blackId = blackId
+        if (blackId != 0) {
+            Log.d("TAG", "start request $blackId")
+            viewModel.getBlackDetail(viewModel.blackId)
+        }
+
         addViewAction()
         addViewModelObserver()
     }
@@ -53,7 +61,7 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
     override fun addViewAction() {
         super.addViewAction()
         binding.recyclerview.layoutManager = LinearLayoutManager(this)
-        adapter = BlackDetailAdapter(mutableListOf(), this)
+        adapter = BlackDetailAdapter(viewModel.blackId, mutableListOf(), this)
         binding.recyclerview.adapter = adapter
     }
 
@@ -121,8 +129,12 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_toolbar, menu)
-        return true
+        if (viewModel.blackId == 0) {
+            menuInflater.inflate(R.menu.menu_toolbar, menu)
+            return true
+        }else{
+            return false
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -160,12 +172,12 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
 
         Log.d("TAG","value is ${viewModel.dataModels.value?.get(0)?.desc}")
 
-        if (viewModel.dataModels.value?.get(0)?.desc?.isEmpty() == true) {
+        if (viewModel.dataModels.value?.get(0)?.desc.isNullOrEmpty()) {
             viewModel.dataModels.value?.get(0)?.placeholder?.toastString()
             return
         }
 
-        if (viewModel.dataModels.value?.get(4)?.desc?.isEmpty() == true) {
+        if (viewModel.dataModels.value?.get(4)?.desc.isNullOrEmpty()) {
             viewModel.dataModels.value?.get(4)?.placeholder?.toastString()
             return
         }

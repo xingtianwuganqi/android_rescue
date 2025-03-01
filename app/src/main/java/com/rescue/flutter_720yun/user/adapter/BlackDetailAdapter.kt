@@ -4,7 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannedString
+import android.text.TextWatcher
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.BlackDescItemBinding
@@ -25,9 +24,8 @@ import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.adapter.ReleaseImagesAdapter
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.user.models.BlackDetailModel
-import com.rescue.flutter_720yun.user.models.BlackListModel
 
-class BlackDetailAdapter(val list: MutableList<BlackDetailModel>, val listener: ReleaseImageClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BlackDetailAdapter(val blackId: Int, val list: MutableList<BlackDetailModel>, val listener: ReleaseImageClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val INPUT = 0
@@ -86,14 +84,14 @@ class BlackDetailAdapter(val list: MutableList<BlackDetailModel>, val listener: 
         val item = list[position]
         when (holder) {
             is BlackDetailInputViewHolder -> {
-                holder.bind(item)
+                holder.bind(blackId, item)
             }
             is BlackDetailSelectViewHolder -> {
-                holder.bind(item)
+                holder.bind(blackId, item)
             }
 
             is BlackDetailDescViewHolder -> {
-                holder.bind(item)
+                holder.bind(blackId, item)
             }
 
             is BlackDetailImageViewHolder -> {
@@ -110,7 +108,7 @@ class BlackDetailAdapter(val list: MutableList<BlackDetailModel>, val listener: 
 }
 
 class BlackDetailInputViewHolder(val binding: BlackInputItemBinding): RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: BlackDetailModel) {
+    fun bind(blackId: Int, item: BlackDetailModel) {
         if (item.order == 0) {
             val spanString = SpannableString("${item.title}*") // 确保 title 不为空
             // 设置颜色和大小
@@ -130,30 +128,38 @@ class BlackDetailInputViewHolder(val binding: BlackInputItemBinding): RecyclerVi
         }
         binding.editDesc.hint = item.placeholder
 
-        binding.editDesc.addTextChangedListener(
-            beforeTextChanged = { _, _, _, _, ->
+        // 移除旧的 TextWatcher，防止 setText() 触发监听
+        (binding.editDesc.tag as? TextWatcher)?.let {
+            binding.editDesc.removeTextChangedListener(it)
+        }
 
-            },
-            onTextChanged = { _, _, _, _, ->
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            },
-            afterTextChanged = { text ->
-                item.desc = text.toString()
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                item.desc = s?.toString()
             }
-        )
+        }
 
-//        if (item.desc != null) {
-//            binding.editDesc.setText((item.desc ?: ""))
-//        }else{
-//            binding.editDesc.text = null
-//
-//        }
+        binding.editDesc.setText(item.desc)
+
+        // 重新添加 TextWatcher
+        binding.editDesc.addTextChangedListener(textWatcher)
+
+        // 绑定 TextWatcher 到 EditText
+        binding.editDesc.tag = textWatcher
+
+        if (blackId != 0) {
+            binding.editDesc.isEnabled = false
+        }
     }
 }
 
 //1: 领养人，2：送养人
 class BlackDetailSelectViewHolder(val binding: BlackSelectItemBinding): RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: BlackDetailModel) {
+    fun bind(blackId: Int, item: BlackDetailModel) {
 
         val spanString = SpannableString("${item.title}*") // 确保 title 不为空
         // 设置颜色和大小
@@ -172,25 +178,69 @@ class BlackDetailSelectViewHolder(val binding: BlackSelectItemBinding): Recycler
             binding.senderText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
             binding.senderText.setTextColor(BaseApplication.context.resources.getColor(R.color.white,null))
 
-            binding.resqueText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
-            binding.resqueText.setTextColor(BaseApplication.context.resources.getColor(R.color.color_node,null))
+            binding.rescueText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
+            binding.rescueText.setTextColor(BaseApplication.context.resources.getColor(R.color.color_node,null))
             item.desc = "2"
         }
 
-        binding.resqueText.setOnClickListener {
-            binding.resqueText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
-            binding.resqueText.setTextColor(BaseApplication.context.resources.getColor(R.color.white,null))
+        binding.rescueText.setOnClickListener {
+            binding.rescueText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
+            binding.rescueText.setTextColor(BaseApplication.context.resources.getColor(R.color.white,null))
 
             binding.senderText.background = AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
             binding.senderText.setTextColor(BaseApplication.context.resources.getColor(R.color.color_node,null))
 
             item.desc = "1"
         }
+
+        if (blackId != 0) {
+            binding.senderText.isEnabled = false
+            binding.rescueText.isEnabled = false
+            if (item.desc == "2") {
+                binding.senderText.background =
+                    AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
+                binding.senderText.setTextColor(
+                    BaseApplication.context.resources.getColor(
+                        R.color.white,
+                        null
+                    )
+                )
+
+                binding.rescueText.background =
+                    AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
+                binding.rescueText.setTextColor(
+                    BaseApplication.context.resources.getColor(
+                        R.color.color_node,
+                        null
+                    )
+                )
+
+            } else {
+                binding.rescueText.background =
+                    AppCompatResources.getDrawable(BaseApplication.context, R.color.color_system)
+                binding.rescueText.setTextColor(
+                    BaseApplication.context.resources.getColor(
+                        R.color.white,
+                        null
+                    )
+                )
+
+                binding.senderText.background =
+                    AppCompatResources.getDrawable(BaseApplication.context, R.color.color_eee)
+                binding.senderText.setTextColor(
+                    BaseApplication.context.resources.getColor(
+                        R.color.color_node,
+                        null
+                    )
+                )
+
+            }
+        }
     }
 }
 
 class BlackDetailDescViewHolder(val binding: BlackDescItemBinding): RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: BlackDetailModel) {
+    fun bind(blackId: Int, item: BlackDetailModel) {
         val spanString = SpannableString("${item.title}*") // 确保 title 不为空
         // 设置颜色和大小
         val color = ContextCompat.getColor(BaseApplication.context, R.color.color_system)
@@ -205,22 +255,31 @@ class BlackDetailDescViewHolder(val binding: BlackDescItemBinding): RecyclerView
 
         binding.editDesc.hint = item.placeholder
 
-        binding.editDesc.addTextChangedListener(
-            beforeTextChanged = { _, _, _, _, ->
+        // 移除旧的 TextWatcher，防止 setText() 触发监听
+        (binding.editDesc.tag as? TextWatcher)?.let {
+            binding.editDesc.removeTextChangedListener(it)
+        }
 
-            },
-            onTextChanged = { _, _, _, _, ->
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            },
-            afterTextChanged = { text ->
-                item.desc = text.toString()
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                item.desc = s?.toString()
             }
-        )
-        if (item.desc != null) {
-            binding.editDesc.setText((item.desc ?: ""))
-        }else{
-            binding.editDesc.text = null
+        }
 
+        binding.editDesc.setText(item.desc)
+
+        // 重新添加 TextWatcher
+        binding.editDesc.addTextChangedListener(textWatcher)
+
+        // 绑定 TextWatcher 到 EditText
+        binding.editDesc.tag = textWatcher
+
+        if (blackId != 0) {
+            binding.editDesc.isEnabled = false
         }
     }
 }

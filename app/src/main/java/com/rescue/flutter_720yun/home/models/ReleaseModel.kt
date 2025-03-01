@@ -10,7 +10,8 @@ data class CoachReleasePhoto(
     var isAdd: Boolean,
     val photoKey: String?,
     var media: LocalMedia?,
-    var uploadComplete: Boolean?
+    var uploadComplete: Boolean?,
+    var hiddenClose: Boolean = false
 ): Parcelable
 
 // 缓存的数据结构

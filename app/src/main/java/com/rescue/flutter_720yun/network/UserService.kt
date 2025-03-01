@@ -3,6 +3,7 @@ package com.rescue.flutter_720yun.network
 import com.rescue.flutter_720yun.home.models.BaseResponse
 import com.rescue.flutter_720yun.home.models.UserInfoModel
 import retrofit2.Call
+import retrofit2.http.Field
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -43,4 +44,8 @@ interface UserService {
     @FormUrlEncoded
     @POST("/api/topic/black/create/")
     fun blackRelease(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    @FormUrlEncoded
+    @POST("/api/topic/black/detail/")
+    fun getBlackDetail(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

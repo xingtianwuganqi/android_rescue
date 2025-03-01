@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class BlackListModel(
+    var id: Int?,
     var name: String?,
     var contact: String?,
     var desc: String?,
@@ -28,16 +29,6 @@ data class BlackDetailModel(
     var order: Int?,
 ): Parcelable
 
-/*
-struct ReleaseReportInfo {
-    var phone: String?
-    var wx_num: String?
-    var name: String?
-    var black_type: Int = 1
-    var desc: String?
-    var photos: [ReleasePhotoModel] = []
-}
- */
 @Parcelize
 data class ReleaseReportInfoModel(
     val phone: String?,
@@ -46,4 +37,32 @@ data class ReleaseReportInfoModel(
     val black_type: String?,
     val desc: String?,
     val photos: String
+): Parcelable
+
+
+//struct BlackDetailModel: HandyJSON {
+//    var id: Int?
+//    var name: String?
+//    var contact: String?
+//    var desc: String?
+//    var wx_num: String?
+//    var images: [String]?
+//    var black_status: Int?
+//    var from_userId: Int?
+//
+//    //1: 领养人，2：送养人
+//    var black_type: Int?
+//}
+
+@Parcelize
+data class BlackDetailItemModel(
+    val id: Int?,
+    val name: String?,
+    val contact: String?,
+    val desc: String?,
+    val wx_num: String?,
+    val images: List<String>?,
+    val black_status: Int?,
+    val from_userId: Int?,
+    val black_type: Int?
 ): Parcelable

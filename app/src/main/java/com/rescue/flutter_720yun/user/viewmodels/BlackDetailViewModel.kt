@@ -5,12 +5,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.UserService
 import com.rescue.flutter_720yun.network.awaitResp
+import com.rescue.flutter_720yun.user.models.BlackDetailItemModel
 import com.rescue.flutter_720yun.user.models.BlackDetailModel
 import com.rescue.flutter_720yun.user.models.ReleaseReportInfoModel
 import com.rescue.flutter_720yun.util.UserManager
@@ -26,6 +28,7 @@ class BlackDetailViewModel: ViewModel() {
     val dataModels get() = _dataModels
     val releaseCompletion get() = _releaseCompletion
     val message get() = _message
+    var blackId: Int = 0
 
     private var data: MutableList<BlackDetailModel> = mutableListOf(
         BlackDetailModel(
@@ -113,18 +116,6 @@ class BlackDetailViewModel: ViewModel() {
     fun releaseReportNetworking(info: ReleaseReportInfoModel) {
         viewModelScope.launch {
             try {
-                /*
-                parameter["name"] = info.name
-            parameter["contact"] = info.phone
-            parameter["wx_num"] = info.wx_num
-            parameter["desc"] = info.desc
-            parameter["imgs"] = info.photos.map({ model in
-                return model.photoKey
-            }).joined(separator: ",")
-            parameter["black_type"] = info.black_type
-            parameter["from_userId"] = UserManager.shared.userId
-            parameter["token"] = UserManager.shared.token
-                 */
                 val dic = paramDic
                 if (info.name != null) {
                     dic["name"] = info.name
@@ -157,5 +148,100 @@ class BlackDetailViewModel: ViewModel() {
                 _message.value = BaseApplication.context.getString(R.string.push_fail)
             }
         }
+    }
+
+    fun getBlackDetail(blackId: Int) {
+        viewModelScope.launch {
+            try {
+                val dic = paramDic
+                dic["blackId"] = blackId
+                val response = appService.getBlackDetail(dic).awaitResp()
+                if (response.code == 200) {
+                    Log.d("TAG", "response data is ${response.data}")
+                    val item = when (response.data) {
+                        is Map<*, *> -> {
+                            // 初始化Gson实例
+                            val gson = Gson()
+                            // 尝试将Any转换成Json字符串
+                            val jsonString = gson.toJson(response.data)
+                            // 创建一个具体类型的TypeToken
+                            // 将jsonString解析成List<T>
+                            gson.fromJson(jsonString, BlackDetailItemModel::class.java)
+                        }// data 为 {}，返回空列表
+                        else -> {
+                            null
+                        }
+                    }
+                    Log.d("TAG", "uploadList $item")
+                    if (item != null) {
+                        uploadList(item)
+                    }
+                }
+            }catch (e: Exception) {
+                Log.d("TAG", "error $e")
+            }
+        }
+    }
+
+    private fun uploadList(item: BlackDetailItemModel) {
+        val data: MutableList<BlackDetailModel> = mutableListOf(
+            BlackDetailModel(
+                ContextCompat.getString(BaseApplication.context, R.string.black_phone),
+                ContextCompat.getString(BaseApplication.context, R.string.black_phone_placeholder),
+                item.contact,
+                null,
+                true,
+                0,
+            ),
+            BlackDetailModel(
+                ContextCompat.getString(BaseApplication.context, R.string.black_wx),
+                ContextCompat.getString(BaseApplication.context, R.string.black_wx_placeholder),
+                item.wx_num,
+                null,
+                false,
+                1,
+            ),
+            BlackDetailModel(
+                ContextCompat.getString(BaseApplication.context, R.string.black_wx_nickname),
+                ContextCompat.getString(BaseApplication.context, R.string.black_nickname_placeholder),
+                item.name,
+                null,
+                false,
+                2,
+            ),
+            BlackDetailModel(
+                ContextCompat.getString(BaseApplication.context, R.string.black_id),
+                ContextCompat.getString(BaseApplication.context, R.string.black_id_placeholder),
+                if (item.black_type == 1) "1" else "2",
+                null,
+                true,
+                3,
+            ),
+            BlackDetailModel(
+                ContextCompat.getString(BaseApplication.context, R.string.black_reason),
+                ContextCompat.getString(BaseApplication.context, R.string.black_reason_placeholder),
+                item.desc,
+                null,
+                true,
+                4,
+            ),
+            BlackDetailModel(
+                ContextCompat.getString(BaseApplication.context, R.string.black_evidence),
+                ContextCompat.getString(BaseApplication.context, R.string.black_evidence_placeholder),
+                null,
+                item.images?.map {
+                    CoachReleasePhoto(
+                        false,
+                        it,
+                        null,
+                        null,
+                        true
+                    )
+                }?.toMutableList(),
+                true,
+                5,
+            ),
+        )
+        _dataModels.value = data
     }
 }

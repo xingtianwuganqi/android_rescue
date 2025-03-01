@@ -14,6 +14,7 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.CoachReleaseInfo
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.util.toImgUrl
 
 interface ReleaseImageClickListener{
     fun addImageClick()
@@ -65,7 +66,18 @@ class ReleaseImagesAdapter(val list: MutableList<CoachReleasePhoto>): RecyclerVi
                 }
                 Glide.with(BaseApplication.context)
                     .load(item.media?.compressPath)
+                    .placeholder(R.drawable.icon_eee)
                     .into(holder.imageView)
+
+                if (item.hiddenClose) {
+                    holder.cleanButton.visibility = View.GONE
+                    Glide.with(BaseApplication.context)
+                        .load(item.photoKey?.toImgUrl())
+                        .placeholder(R.drawable.icon_eee)
+                        .into(holder.imageView)
+                }else{
+                    holder.cleanButton.visibility = View.VISIBLE
+                }
             }
         }
     }

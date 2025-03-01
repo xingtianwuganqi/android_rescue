@@ -153,7 +153,7 @@
     <string name="user_collection">我的收藏</string>
     <string name="user_report">举报</string>
     <string name="user_input">请输入</string>
-    <string name="user_resque">领养人</string>
+    <string name="user_rescue">领养人</string>
     <string name="user_sender">送养人</string>
     <string name="black_phone">手机号</string>
     <string name="black_phone_placeholder">请输入失信人手机号</string>

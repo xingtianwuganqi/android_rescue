@@ -55,13 +55,13 @@
                     android:background="@color/color_system"
                     android:gravity="center"/>
                 <TextView
-                    android:id="@+id/resqueText"
+                    android:id="@+id/rescueText"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:textSize="@dimen/desc_font"
                     android:textColor="@color/color_node"
-                    android:text="@string/user_resque"
+                    android:text="@string/user_rescue"
                     android:background="@color/color_eee"
                     android:gravity="center"/>
             </LinearLayout>
