@@ -9,12 +9,13 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.BlackListItemBinding
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.user.models.BlackListModel
+import com.rescue.flutter_720yun.util.maskMiddle
 
 class BlackListAdapter(var list: MutableList<BlackListModel>, private val clickListener: (BlackListModel) -> Unit): RecyclerView.Adapter<BlackListAdapter.ViewHolder>() {
 
     inner class ViewHolder(val binding: BlackListItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BlackListModel, clickListener: (BlackListModel) -> Unit) {
-            binding.phoneText.text = item.contact
+            binding.phoneText.text = item.contact?.maskMiddle()
             binding.desc.text = item.desc
             binding.roleText.text = if (item.black_type == 1) ContextCompat.getString(BaseApplication.context, R.string.user_rescue) else ContextCompat.getString(BaseApplication.context, R.string.user_sender)
             binding.backLayout.setOnClickListener {

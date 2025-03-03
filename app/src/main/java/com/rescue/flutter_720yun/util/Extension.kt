@@ -86,6 +86,16 @@ fun String.imageResourcesId(): Int {
     return BaseApplication.context.resources.getIdentifier(this, "drawable", packageName)
 }
 
+fun String.maskMiddle(): String {
+    val length = this.length
+    return when {
+        length >= 11 -> this.replaceRange(4, 7, "*".repeat(3)) // 手机号
+        length == 3 -> this.replaceRange(1, 2, "*") // 3 个字符
+        length == 2 -> this.replaceRange(1, 2, "*") // 2 个字符
+        else -> this // 其他情况不处理
+    }
+}
+
 fun HomeListModel.getImages(): List<String>? {
     return if (!this.preview_img.isNullOrEmpty()) {
         this.preview_img

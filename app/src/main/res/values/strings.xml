@@ -104,7 +104,10 @@
     <string name="drawer_about">关于我们</string>
     <string name="drawer_help">支持我们</string>
     <string name="drawer_recommend">推荐给朋友</string>
-
+    <string name="drawer_adopt">"领养相关"</string>
+    <string name="drawer_guideline">宠物领养防骗指南</string>
+    <string name="drawer_description">领养说明</string>
+    <string name="drawer_protocol">领养协议</string>
 
     <string name="show_release_add">添加话题 ></string>
     <string name="show_topic_desc">宠物睡姿</string>
@@ -167,4 +170,5 @@
     <string name="black_reason_placeholder">请输入举报理由</string>
     <string name="black_evidence">举报证据</string>
     <string name="black_evidence_placeholder">请上传证据图片</string>
+
 </resources>

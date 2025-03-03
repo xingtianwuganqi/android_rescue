@@ -44,14 +44,14 @@ class MainViewModel: ViewModel() {
                 BaseApplication.context.resources.getString(R.string.drawer_about),
                 null
             ),
-            DrawerListModel("icon_mi_help",
-                BaseApplication.context.resources.getString(R.string.drawer_help),
-                null
-            ),
-            DrawerListModel("icon_mi_tui",
-                BaseApplication.context.resources.getString(R.string.drawer_recommend),
-                null
-            ),
+//            DrawerListModel("icon_mi_help",
+//                BaseApplication.context.resources.getString(R.string.drawer_help),
+//                null
+//            ),
+//            DrawerListModel("icon_mi_tui",
+//                BaseApplication.context.resources.getString(R.string.drawer_recommend),
+//                null
+//            ),
         )
     }
 }

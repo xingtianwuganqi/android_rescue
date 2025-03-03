@@ -26,6 +26,12 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <activity
+            android:name=".user.activity.AdoptAboutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".user.activity.WebPageActivity"
+            android:exported="false" />
+        <activity
             android:name=".user.activity.BlackDetailActivity"
             android:exported="false" />
         <activity
