@@ -28,10 +28,10 @@ class MainViewModel: ViewModel() {
                 BaseApplication.context.resources.getString(R.string.drawer_rescue),
                 null
             ),
-            DrawerListModel("icon_mi_upload",
-                BaseApplication.context.resources.getString(R.string.drawer_upload),
-                null
-            ),
+//            DrawerListModel("icon_mi_upload",
+//                BaseApplication.context.resources.getString(R.string.drawer_upload),
+//                null
+//            ),
             DrawerListModel("icon_mi_xy",
                 BaseApplication.context.resources.getString(R.string.drawer_agreement),
                 null

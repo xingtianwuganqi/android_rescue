@@ -35,6 +35,7 @@ import com.rescue.flutter_720yun.user.activity.UserSettingActivity
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
 import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
 import com.rescue.flutter_720yun.util.BuildConfig
+import com.rescue.flutter_720yun.util.lazyLogin
 
 
 class MainActivity : AppCompatActivity(), DrawerListClickListener {
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
             val searchBtn = binding.searchButton
             when (destination.id) {
                 R.id.navigation_home -> {
-                    supportActionBar?.title = "首页"
+                    supportActionBar?.title = resources.getString(R.string.title_home)
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                     supportActionBar?.setHomeAsUpIndicator(R.drawable.icon_draw_more)
                     searchBtn.visibility = View.VISIBLE
@@ -86,19 +87,19 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
                 }
 
                 R.id.navigation_show -> {
-                    supportActionBar?.title = "秀宠"
+                    supportActionBar?.title = resources.getString(R.string.title_dashboard)
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     searchBtn.visibility = View.GONE
                 }
 
                 R.id.navigation_message -> {
-                    supportActionBar?.title = "消息"
+                    supportActionBar?.title = resources.getString(R.string.title_notifications)
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     searchBtn.visibility = View.GONE
                 }
 
                 R.id.navigation_user -> {
-                    supportActionBar?.title = "我的"
+                    supportActionBar?.title = resources.getString(R.string.title_user)
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     searchBtn.visibility = View.VISIBLE
                     binding.searchButton.setImageDrawable(
@@ -159,10 +160,14 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
     override fun clickItem(item: DrawerListModel) {
         if (item.name == resources.getString(R.string.drawer_footer)) {
+            lazyLogin(this) {
 
+            }
         }else if (item.name == resources.getString(R.string.drawer_collect)) {
-            val intent = Intent(this, UserCollectionActivity::class.java)
-            startActivity(intent)
+            lazyLogin(this) {
+                val intent = Intent(this, UserCollectionActivity::class.java)
+                startActivity(intent)
+            }
         }else if (item.name == resources.getString(R.string.drawer_black)) {
             val intent = Intent(this, BlackListActivity::class.java)
             startActivity(intent)
