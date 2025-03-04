@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.user.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ import com.rescue.flutter_720yun.databinding.ActivityAdoptAboutBinding
 import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.user.adapter.UserSettingAdapter
 import com.rescue.flutter_720yun.user.viewmodels.AdoptAboutViewModel
+import com.rescue.flutter_720yun.util.BuildConfig
 
 class AdoptAboutActivity : BaseActivity(), MessageListItemClickListener {
 
@@ -51,7 +53,14 @@ class AdoptAboutActivity : BaseActivity(), MessageListItemClickListener {
     override fun itemClick(position: Int) {
         when (position) {
             0 -> {
-
+                val intent = Intent(this, UserAccountSafeActivity::class.java)
+                intent.putExtra("localUrl","file:///android_asset/prevention.html")
+                startActivity(intent)
+            }
+            1 -> {
+                val intent = Intent(this, UserAccountSafeActivity::class.java)
+                intent.putExtra("localUrl","file:///android_asset/lyinstruction.html")
+                startActivity(intent)
             }
             else -> {
 

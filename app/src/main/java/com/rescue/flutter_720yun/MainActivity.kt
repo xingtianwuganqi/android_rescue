@@ -34,6 +34,7 @@ import com.rescue.flutter_720yun.user.activity.UserCollectionActivity
 import com.rescue.flutter_720yun.user.activity.UserSettingActivity
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
 import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
+import com.rescue.flutter_720yun.util.BuildConfig
 
 
 class MainActivity : AppCompatActivity(), DrawerListClickListener {
@@ -172,14 +173,21 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
         }else if (item.name == resources.getString(R.string.drawer_agreement)) {
             val intent = Intent(this, WebPageActivity::class.java)
-            intent.putExtra("webUrl","https://baidu.com")
+            val baseUrl = BuildConfig.BASEURL + BuildConfig.USERAGREEN_URL
+            intent.putExtra("webUrl",baseUrl)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_privacy)) {
             val intent = Intent(this, WebPageActivity::class.java)
-            intent.putExtra("webUrl","www.baidu.com")
+            val baseUrl = BuildConfig.BASEURL + BuildConfig.PRAVICY_URL
+            Log.d("TAG", baseUrl)
+            intent.putExtra("webUrl",baseUrl)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_about)) {
-
+            val intent = Intent(this, WebPageActivity::class.java)
+            val baseUrl = BuildConfig.BASEURL + BuildConfig.ABOUTUS
+            Log.d("TAG", baseUrl)
+            intent.putExtra("webUrl",baseUrl)
+            startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_help)) {
 
         }else if (item.name == resources.getString(R.string.drawer_recommend)) {

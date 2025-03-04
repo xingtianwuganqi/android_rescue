@@ -7,6 +7,8 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -63,6 +65,16 @@ class UserAccountSafeActivity : BaseActivity() {
         }), "AccountDeleteClickInterface")
         localUrl?.let {
             webView.loadUrl(it)
+        }
+
+        // 监听网页的标题变化
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onReceivedTitle(view: WebView?, title: String?) {
+                super.onReceivedTitle(view, title)
+                if (title != null) {
+                    setupToolbar(title)
+                }// 设置标题
+            }
         }
     }
 
