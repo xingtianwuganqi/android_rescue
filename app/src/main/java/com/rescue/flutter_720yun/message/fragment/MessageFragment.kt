@@ -22,9 +22,13 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
     private var rootView : View? = null
     private var _binding: FragmentMessageBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: MessageListAdapter
 
+    private val messageViewModel by lazy {
+        ViewModelProvider(this)[MessageViewModel::class.java]
+    }
 
-    var messageLauncher = registerForActivityResult(
+    private var messageLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -32,7 +36,7 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
             val resultData = data?.getStringExtra("message_result")
             // 更新result
             if (resultData == "1") {
-
+                messageViewModel.unreadMessageNumberNetworking()
             }
         }
     }
@@ -42,20 +46,26 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val messageViewModel =
-            ViewModelProvider(this)[MessageViewModel::class.java]
+
         _binding = FragmentMessageBinding.inflate(inflater, container, false)
         if (rootView == null) {
             rootView = binding.root
         }
-        messageViewModel.messageList.observe(viewLifecycleOwner) {
-            val adapter = MessageListAdapter(it)
-            binding.messageList.adapter = adapter
-            binding.messageList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            adapter.setClickListener(this)
-        }
-        Log.d("TAG","Message Fragment onCreateView networking")
+
+        messageViewModel.unreadMessageNumberNetworking()
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val adapter = MessageListAdapter(mutableListOf())
+        binding.messageList.adapter = adapter
+        binding.messageList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        adapter.setClickListener(this)
+
+        messageViewModel.messageList.observe(viewLifecycleOwner) {
+            adapter.reloadList(it)
+        }
     }
 
     override fun itemClick(position: Int) {

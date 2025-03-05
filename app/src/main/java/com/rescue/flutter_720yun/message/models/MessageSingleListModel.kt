@@ -36,3 +36,12 @@ class MessageSystemListModel(
     val user_id: Int?,
     val timeStr: String?
 ): Parcelable
+
+
+@Parcelize
+data class MessageUnreadModel(
+    val sys_unread: Int?,
+    val like_unread: Int?,
+    val collec_unread: Int?,
+    val com_unread: Int?
+): Parcelable

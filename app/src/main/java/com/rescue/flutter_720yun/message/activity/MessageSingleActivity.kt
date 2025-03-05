@@ -1,7 +1,9 @@
 package com.rescue.flutter_720yun.message.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +17,7 @@ import com.rescue.flutter_720yun.databinding.ActivityMessageSingleBinding
 import com.rescue.flutter_720yun.home.activity.FindPetDetailActivity
 import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.home.adapter.FindPetListAdapter
+import com.rescue.flutter_720yun.home.models.TagInfoModel
 import com.rescue.flutter_720yun.message.adapter.MessageSingleItemAdapter
 import com.rescue.flutter_720yun.message.viewmodels.MessageSingleViewModel
 import com.rescue.flutter_720yun.show.activity.ShowDetailActivity
@@ -51,6 +54,7 @@ class MessageSingleActivity : BaseActivity() {
 
         addViewAction()
         addViewModelObserver()
+        addBackListener()
         if (viewModel.uiState.value !is UiState.Success) {
             viewModel.loadMessageListNetworking(RefreshState.REFRESH, messageType)
         }
@@ -125,6 +129,29 @@ class MessageSingleActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private fun addBackListener() {
+        // 注册返回事件的回调
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                sendResultAndFinish()
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    // 返回按钮
+    override fun finishAction() {
+        super.finishAction()
+        sendResultAndFinish()
+    }
+
+    private fun sendResultAndFinish() {
+        val intent = Intent()
+        intent.putExtra("message_result", "1")
+        setResult(Activity.RESULT_OK, intent)
     }
 
     override fun onDestroy() {

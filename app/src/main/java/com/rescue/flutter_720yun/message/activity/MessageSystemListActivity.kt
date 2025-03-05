@@ -1,6 +1,9 @@
 package com.rescue.flutter_720yun.message.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
@@ -32,7 +35,7 @@ class MessageSystemListActivity : BaseActivity() {
 
         addViewAction()
         addViewModelObserver()
-
+        addBackListener()
         if (viewModel.uiState.value !is UiState.Success) {
             viewModel.systemMessageListNetworking(RefreshState.REFRESH)
         }
@@ -83,6 +86,29 @@ class MessageSystemListActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun addBackListener() {
+        // 注册返回事件的回调
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                sendResultAndFinish()
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    // 返回按钮
+    override fun finishAction() {
+        super.finishAction()
+        sendResultAndFinish()
+    }
+
+    private fun sendResultAndFinish() {
+        val intent = Intent()
+        intent.putExtra("message_result", "1")
+        setResult(Activity.RESULT_OK, intent)
     }
 
     override fun onDestroy() {

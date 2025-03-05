@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.network
 
 import com.rescue.flutter_720yun.home.models.BaseResponse
+import com.rescue.flutter_720yun.message.models.MessageUnreadModel
 import com.rescue.flutter_720yun.show.models.CommentListModel
 import com.rescue.flutter_720yun.show.models.ReplyListModel
 import retrofit2.Call
@@ -36,4 +37,9 @@ interface MessageService {
     @FormUrlEncoded
     @POST("api/v1/replypageinfo/")
     fun loadMoreReply(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 获取未读消息数
+    @FormUrlEncoded
+    @POST("api/v1/authunreadnum/")
+    fun unreadMessageNumber(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<MessageUnreadModel>>
 }

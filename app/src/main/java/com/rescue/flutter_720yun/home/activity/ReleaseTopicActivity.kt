@@ -210,6 +210,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         viewModel.uploadSelectTags(items?.toList() ?: listOf())
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun addViewModelObserver() {
         viewModel.selectTags.observe(this) {
             if (it.isNotEmpty()) {
