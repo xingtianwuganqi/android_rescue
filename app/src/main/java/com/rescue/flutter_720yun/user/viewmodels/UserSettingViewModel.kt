@@ -6,11 +6,12 @@ import androidx.lifecycle.ViewModel
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.MessageListModel
+import com.rescue.flutter_720yun.util.UserManager
 
 class UserSettingViewModel: ViewModel() {
 
-    private val _messageList = MutableLiveData<List<MessageListModel>>().apply {
-        value = listOf(
+    private val _messageList = MutableLiveData<MutableList<MessageListModel>>().apply {
+        value = mutableListOf(
             MessageListModel("icon_setting_pswd",
                 BaseApplication.context.resources.getString(R.string.user_change_password)),
             MessageListModel("icon_setting_fk", BaseApplication.context.resources.getString(R.string.user_suggestion)),
@@ -20,5 +21,16 @@ class UserSettingViewModel: ViewModel() {
                 BaseApplication.context.resources.getString(R.string.user_account)),
         )
     }
-    val messageList: LiveData<List<MessageListModel>> = _messageList
+    val messageList: LiveData<MutableList<MessageListModel>> = _messageList
+
+    init {
+        if (UserManager.isLogin) {
+            _messageList.value?.add(
+                MessageListModel(
+                    "icon_mi_inter",
+                    BaseApplication.context.getString(R.string.logout)
+                )
+            )
+        }
+    }
 }

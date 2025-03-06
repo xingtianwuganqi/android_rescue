@@ -42,6 +42,9 @@
     <string name="code_send_error">验证码发送失败，请重试</string>
     <string name="login_unbind">未绑定手机号</string>
     <string name="login_uncheck">未校验手机号</string>
+    <string name="login_token_lose">登录失效，请重新登录</string>
+    <string name="logout">退出登录</string>
+    <string name="logout_remind">确定退出登录吗？</string>
 
     <string name="read_all">全文</string>
     <string name="read_close">收起</string>
@@ -63,6 +66,7 @@
     <string name="home_common">评论</string>
 
     <string name="cancel">取消</string>
+    <string name="confirm_d">确定</string>
     <string name="search">搜索</string>
     <string name="search_hot">热门搜索</string>
     <string name="re_local">重新定位</string>
@@ -90,6 +94,10 @@
     <string name="release_fail">发布失败</string>
     <string name="release_image_fail">图片上传失败</string>
     <string name="release_topic_limit">0/1000</string>
+    <string name="release_dialog">请详细阅读《用户协议》，特别是用户权利和义务部分，发布内容时请严格遵守用户协议。
+禁止出现商业广告、低俗、色情、暴力、具有侮辱性语音或与宠物无关等内容，违规者帖子会被删除。</string>
+    <string name="release_confirm_push">确定发布</string>
+    <string name="release_push_remind">发布提示</string>
 
     <string name="message_system">系统消息</string>
     <string name="message_title">公告</string>

@@ -20,4 +20,12 @@ object ActivityController {
         }
         activities.clear()
     }
+
+    fun finishToLast() {
+        activities.forEachIndexed({ index,value ->
+            if (index != 0) {
+                value.finish()
+            }
+        })
+    }
 }

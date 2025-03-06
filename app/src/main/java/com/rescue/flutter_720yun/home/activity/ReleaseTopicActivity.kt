@@ -157,13 +157,13 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
 
     private fun pushDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("发布提示")
-        builder.setMessage("请详细阅读《用户协议》，特别是用户权利和义务部分，发布内容时请严格遵守用户协议。\n禁止出现商业广告、低俗、色情、暴力、具有侮辱性语音或与宠物无关等内容，违规者帖子会被删除。")
+        builder.setTitle(resources.getString(R.string.release_push_remind))
+        builder.setMessage(resources.getString(R.string.release_dialog))
         builder.setCancelable(false)
-        builder.setPositiveButton("确定发布", DialogInterface.OnClickListener { dialogInterface, i ->
+        builder.setPositiveButton(resources.getString(R.string.release_confirm_push), DialogInterface.OnClickListener { dialogInterface, i ->
                 startPublish()
             })
-        builder.setNegativeButton("取消", DialogInterface.OnClickListener { dialogInterface, i ->
+        builder.setNegativeButton(resources.getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->
 
             })
         val dialog = builder.create()

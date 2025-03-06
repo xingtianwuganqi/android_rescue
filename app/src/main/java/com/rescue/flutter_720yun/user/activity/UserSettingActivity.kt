@@ -1,13 +1,17 @@
 package com.rescue.flutter_720yun.user.activity
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityUserSettingBinding
@@ -16,6 +20,11 @@ import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.message.adapter.MessageSystemItemAdapter
 import com.rescue.flutter_720yun.user.adapter.UserSettingAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserSettingViewModel
+import com.rescue.flutter_720yun.util.UserManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
 
@@ -68,6 +77,36 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
                 intent.putExtra("localUrl","file:///android_asset/account_security.html")
                 startActivity(intent)
             }
+            3 -> {
+                logoutDialog()
+            }
+        }
+    }
+
+    private fun logoutDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(resources.getString(R.string.logout_remind))
+        builder.setCancelable(false)
+        builder.setPositiveButton(resources.getString(R.string.confirm_d), DialogInterface.OnClickListener { dialogInterface, i ->
+            logout()
+        })
+        builder.setNegativeButton(resources.getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->
+
+        })
+        val dialog = builder.create()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.color_system))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.color_node))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).textSize = 16F
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).textSize = 16F
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun logout() {
+        UserManager.logout()
+        GlobalScope.launch {
+            delay(1500)
+            ActivityController.finishToLast()
         }
     }
 

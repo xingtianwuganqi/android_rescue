@@ -33,4 +33,12 @@ object UserManager {
             null
         }
     }
+
+    fun logout() {
+        _userInfo = null
+        val sharedPreferences = BaseApplication.context.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
+        val edit = sharedPreferences.edit()
+        edit.remove("userinfo")
+        edit.apply()
+    }
 }

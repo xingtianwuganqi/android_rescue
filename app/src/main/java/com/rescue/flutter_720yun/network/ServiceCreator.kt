@@ -1,5 +1,15 @@
 package com.rescue.flutter_720yun.network
 import android.util.Log
+import com.rescue.flutter_720yun.ActivityController
+import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.toastString
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -50,6 +60,7 @@ object ServiceCreator {
 
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 suspend fun <T> Call<T>.awaitResp(): T {
     return suspendCancellableCoroutine { continuation ->
         enqueue(object : Callback<T> {
@@ -58,8 +69,18 @@ suspend fun <T> Call<T>.awaitResp(): T {
                     Log.d("TAG", "response body ${response.body()}")
                     continuation.resume(response.body()!!)
                 } else {
-                    Log.d("TAG", "response error ${response.body()}")
-                    continuation.resumeWithException(Exception("Response error"))
+                    if (response.code() == 401) {
+                        BaseApplication.context.resources.getString(R.string.login_token_lose).toastString()
+                        UserManager.logout()
+                        GlobalScope.launch(Dispatchers.Main) {
+                            delay(1500)
+                            ActivityController.finishToLast()
+                        }
+
+                    }else {
+                        Log.d("TAG", "response error ${response.body()}")
+                        continuation.resumeWithException(Exception("Response error"))
+                    }
                 }
             }
 
