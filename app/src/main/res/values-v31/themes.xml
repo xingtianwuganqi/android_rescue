@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Android_rescue" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/icon_launch</item>
+<!--        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>-->
+<!--        <item name="android:windowSplashScreenAnimationDuration">1000</item>-->
+<!--        <item name="android:windowSplashScreenBrandingImage">@mipmap/launch_image</item>-->
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
+
+    <style name="Theme.SplashScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/icon_launch</item>
+        <!--        <item name="android:windowSplashScreenAnimationDuration">1000</item>-->
+        <!--        <item name="android:windowSplashScreenBrandingImage">@mipmap/launch_image</item>-->
+
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
+</resources>
+
+<!--    windowSplashScreenBackground设置启动画面的背景色-->
+<!--    windowSplashScreenAnimatedIcon启动图标。就是显示在启动界面中间的图片，也可以是动画-->
+<!--    windowSplashScreenAnimationDuration设置动画的长度。注意这里最大只能1000ms，如果需要动画时间更长，则需要通过代码的手段让启动画面在屏幕上显示更长时间（下面会讲到）-->
+<!--    windowSplashScreenIconBackground设置启动图标的背景色-->
+<!--    windowSplashScreenBrandingImage设置要显示在启动画面底部的图片。官方设计准则建议不要使用品牌图片。-->

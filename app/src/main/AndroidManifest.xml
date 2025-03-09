@@ -21,7 +21,7 @@
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_config"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
@@ -39,9 +39,6 @@
             android:exported="false" />
         <activity
             android:name=".user.activity.UserCollectionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".user.activity.UserAccountActivity"
             android:exported="false" />
         <activity
             android:name=".user.activity.UserAccountSafeActivity"
@@ -110,8 +107,14 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Android_rescue"
+            />
+        <activity
+            android:name=".SplashActivity"
             android:exported="true"
-            android:label="@string/app_name">
+            android:theme="@style/Theme.SplashScreen"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

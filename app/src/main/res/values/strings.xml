@@ -4,7 +4,10 @@
     <string name="title_dashboard">秀宠</string>
     <string name="title_notifications">消息</string>
     <string name="title_user">我的</string>
-
+    <string name="welcome_text">欢迎使用真命天喵！我们将通过《用户协议》和《隐私政策》帮助您了解我们为您提供的服务，我们将如何处理个人信息以及您享有的权利。我们将会严格按照相关法律法规要求，采取各种安全措施来保护您的个人信息。\n点击"同意"按钮，表示您已知情并同意以下协议和以下约定：\n1.为了保障软件的安全运行和账号安全，我们会申请收集您的设备信息。\n2.上传图片需要申请您的相册或存储权限。\n3.申请设备信息，方便为您推荐个性化广告。\n4.我们尊重您的选择权，您可以访问修改，删除您的个人信息并管理您的授权。</string>
+    <string name="welcome_title">个人隐私保护提示</string>
+    <string name="welcome_agree">同意并继续</string>
+    <string name="welcome_disagree">不同意</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="error_occurred">Error occurred</string>

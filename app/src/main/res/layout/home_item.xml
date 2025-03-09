@@ -51,7 +51,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tag_info"
         android:layout_width="match_parent"
-        android:layout_height="22dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/head_img"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -67,8 +67,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/head_img"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="6dp"
         android:layout_marginStart="65dp"
         android:layout_marginEnd="15dp"
         android:textColor="@color/color_content"
@@ -91,8 +90,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginStart="65dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
         >
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/img_recyclerview"
@@ -115,27 +113,30 @@
         app:layout_constraintTop_toBottomOf="@id/img_back"
         android:layout_marginStart="65dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="5dp"
         />
 
     <LinearLayout
         android:id="@+id/linear_content"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/time_text"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginStart="65dp"
-        android:layout_marginEnd="15dp">
+        android:layout_marginEnd="15dp"
+        >
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:id="@+id/like_button"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:layout_marginTop="-5dp"
+            android:layout_marginBottom="-5dp"
             app:icon="@drawable/icon_zan_un"
             app:iconTint="@null"
             app:iconGravity="textStart"
@@ -150,10 +151,12 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:id="@+id/collect_button"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:layout_marginTop="-5dp"
+            android:layout_marginBottom="-5dp"
             app:icon="@drawable/icon_collection_un"
             app:iconTint="@null"
             app:iconGravity="textStart"
@@ -163,16 +166,17 @@
             android:textSize="@dimen/address_font"
             android:backgroundTint="@android:color/transparent"
             />
-        <!--            style="@style/Widget.MaterialComponents.Button.TextButton"-->
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:id="@+id/comment_button"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:layout_marginTop="-5dp"
+            android:layout_marginBottom="-5dp"
             app:icon="@drawable/icon_sh_commen"
             app:iconTint="@null"
             app:iconGravity="textStart"
@@ -191,7 +195,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linear_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="5dp"
         android:background="#EEEEEE"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
