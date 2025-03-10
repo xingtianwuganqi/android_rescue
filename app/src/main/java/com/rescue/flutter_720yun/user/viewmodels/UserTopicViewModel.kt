@@ -198,4 +198,9 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
             }
         }
     }
+
+    fun cleanData() {
+        _refreshState.value = RefreshState.REFRESH
+        _uiState.value = UiState.Success(listOf())
+    }
 }

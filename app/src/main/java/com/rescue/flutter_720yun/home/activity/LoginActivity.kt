@@ -36,7 +36,11 @@ import com.google.android.material.button.MaterialButton
 import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.home.models.LoginEvent
+import com.rescue.flutter_720yun.user.activity.WebPageActivity
+import com.rescue.flutter_720yun.util.BuildConfig
 import com.rescue.flutter_720yun.util.UserManager
+import org.greenrobot.eventbus.EventBus
 import java.util.Locale
 import kotlin.math.log
 
@@ -81,12 +85,12 @@ class LoginActivity : BaseActivity() {
             }
 
             "bindPhone" -> {
-                val title = "绑定手机号"
+                val title = resources.getString(R.string.login_bind_phone)
                 setupToolbar(title)
             }
 
             "checkPhone" ->{
-                val title = "校验手机号"
+                val title = resources.getString(R.string.login_check_phone)
                 setupToolbar(title)
             }
         }
@@ -274,9 +278,11 @@ class LoginActivity : BaseActivity() {
                 if (response.code == 200) {
                     val msg = resources.getString(R.string.login_success)
                     Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
-                    viewModel.cleanLoginStatus()
                     // 延时5秒执行
                     Handler(Looper.getMainLooper()).postDelayed({
+                        response.data.id?.let { it1 ->
+                            EventBus.getDefault().post(LoginEvent(it1))
+                        }
                         // 退出登录
                         ActivityController.activities.forEach {
                             when (it) {
@@ -290,7 +296,6 @@ class LoginActivity : BaseActivity() {
                 }else {
                     val msg = response.message ?: resources.getString(R.string.login_fail)
                     Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
-                    viewModel.cleanLoginStatus()
                 }
             }
         }
@@ -439,9 +444,9 @@ class LoginActivity : BaseActivity() {
         val spannableStringBuilder = SpannableStringBuilder()
 
         // 添加富文本
-        val text1 = "阅读并同意"
-        val text2 = "用户协议、"
-        val text3 = "隐私政策"
+        val text1 = resources.getString(R.string.login_read_agree)
+        val text2 = "${resources.getString(R.string.drawer_agreement)}、"
+        val text3 = resources.getString(R.string.drawer_privacy)
 
         // 设置样式
         val spannable1 = SpannableString(text1).apply {
@@ -463,7 +468,7 @@ class LoginActivity : BaseActivity() {
             setSpan(object : ClickableSpan() {
                 override fun onClick(widget: View) {
                     // 点击事件处理
-
+                    openUserAgree()
                 }
                 override fun updateDrawState(ds: TextPaint) {
                     super.updateDrawState(ds)
@@ -482,7 +487,7 @@ class LoginActivity : BaseActivity() {
             setSpan(object : ClickableSpan() {
                 override fun onClick(widget: View) {
                     // 点击事件处理
-
+                    openUserPrivacy()
                 }
                 override fun updateDrawState(ds: TextPaint) {
                     super.updateDrawState(ds)
@@ -501,6 +506,20 @@ class LoginActivity : BaseActivity() {
         protocolText?.text = spannableStringBuilder
         protocolText?.movementMethod = LinkMovementMethod.getInstance() // 使点击事件生效
         protocolText?.highlightColor = Color.TRANSPARENT // 去掉高亮背景
+    }
+
+    fun openUserAgree() {
+        val intent = Intent(this, WebPageActivity::class.java)
+        val baseUrl = BuildConfig.BASEURL + BuildConfig.USERAGREEN_URL
+        intent.putExtra("webUrl", baseUrl)
+        startActivity(intent)
+    }
+
+    fun openUserPrivacy() {
+        val intent = Intent(this, WebPageActivity::class.java)
+        val baseUrl = BuildConfig.BASEURL + BuildConfig.PRAVICY_URL
+        intent.putExtra("webUrl", baseUrl)
+        startActivity(intent)
     }
 
     override fun onDestroy() {

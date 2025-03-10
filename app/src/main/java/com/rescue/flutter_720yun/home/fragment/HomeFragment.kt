@@ -2,11 +2,13 @@ package com.rescue.flutter_720yun.home.fragment
 
 import android.app.Activity
 import android.content.Intent
+import android.media.metrics.Event
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +24,7 @@ import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
 import com.rescue.flutter_720yun.home.adapter.OnItemClickListener
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.message.activity.CommentListActivity
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.getImages
@@ -30,6 +33,9 @@ import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class HomeFragment : Fragment(), OnItemClickListener {
     private var rootView : View ?= null
@@ -85,6 +91,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
         val title = arguments?.getString("pageType")  // 从 Bundle 中读取参数
         homeViewModel.pageType = title ?: "0"
         Log.d("TAG","Home Fragment onCreate")
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
     }
 
 
@@ -141,7 +150,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
         if (homeViewModel.uiState.value !is UiState.Success) {
             loadData(RefreshState.REFRESH)
         }
-
     }
 
     private fun addListObserver() {
@@ -193,11 +201,16 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginEvent(event: LoginEvent) {
+        refreshData()
+    }
+
     private fun refreshData() {
         loadData(RefreshState.REFRESH)
     }
 
-    fun loadMoreData() {
+    private fun loadMoreData() {
         when (homeViewModel.pageType) {
             "0" -> {
                 loadData(RefreshState.MORE)
@@ -347,4 +360,12 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
+    }
 }

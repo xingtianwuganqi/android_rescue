@@ -26,6 +26,7 @@ import com.rescue.flutter_720yun.user.adapter.BlackListAdapter
 import com.rescue.flutter_720yun.user.viewmodels.BlackListViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
@@ -43,7 +44,7 @@ class BlackListActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-
+            viewModel.blackListNetworking(RefreshState.REFRESH)
         }
     }
 
@@ -97,8 +98,10 @@ class BlackListActivity : BaseActivity() {
     }
 
     private fun openReportPage() {
-        val intent = Intent(this, BlackDetailActivity::class.java)
-        detailLauncher.launch(intent)
+        lazyLogin(this) {
+            val intent = Intent(this, BlackDetailActivity::class.java)
+            detailLauncher.launch(intent)
+        }
     }
 
     override fun addViewAction() {

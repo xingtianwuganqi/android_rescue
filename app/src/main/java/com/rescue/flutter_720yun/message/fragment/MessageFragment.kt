@@ -17,6 +17,7 @@ import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.databinding.FragmentMessageBinding
 import com.rescue.flutter_720yun.message.activity.MessageSingleActivity
 import com.rescue.flutter_720yun.message.viewmodels.MessageViewModel
+import com.rescue.flutter_720yun.util.lazyLogin
 
 class MessageFragment : Fragment(), MessageListItemClickListener {
     private var rootView : View? = null
@@ -73,9 +74,11 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
             val intent = Intent(activity, MessageSystemListActivity::class.java)
             startActivity(intent)
         }else {
-            val intent = Intent(activity, MessageSingleActivity::class.java)
-            intent.putExtra("messageType", position)
-            messageLauncher.launch(intent)
+            lazyLogin(requireActivity()) {
+                val intent = Intent(activity, MessageSingleActivity::class.java)
+                intent.putExtra("messageType", position)
+                messageLauncher.launch(intent)
+            }
         }
     }
 

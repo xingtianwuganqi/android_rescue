@@ -30,7 +30,7 @@
     <string name="login_action">登录</string>
     <string name="register_action">注册</string>
     <string name="login_find_password">找回密码</string>
-    <string name="login_protocol">请阅读并同意</string>
+    <string name="login_protocol">请阅读并同意用户协议和隐私政策</string>
     <string name="login_success">登录成功</string>
     <string name="login_fail">登录失败</string>
     <string name="login_check_phone">校验手机号</string>
@@ -48,6 +48,8 @@
     <string name="login_token_lose">登录失效，请重新登录</string>
     <string name="logout">退出登录</string>
     <string name="logout_remind">确定退出登录吗？</string>
+    <string name="login_bind_phone">绑定手机号</string>
+    <string name="login_read_agree">阅读并同意</string>
 
     <string name="read_all">全文</string>
     <string name="read_close">收起</string>

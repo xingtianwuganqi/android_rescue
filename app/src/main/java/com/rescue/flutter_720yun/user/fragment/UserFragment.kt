@@ -17,12 +17,16 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentUserBinding
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.user.activity.UserInfoEditActivity
 import com.rescue.flutter_720yun.user.adapter.UserTopViewPageAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserViewModel
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toImgUrl
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class UserFragment : Fragment() {
     private var _binding: FragmentUserBinding? = null
@@ -52,6 +56,22 @@ class UserFragment : Fragment() {
         }
         if (UserManager.isLogin && viewModel.userId == null) {
             viewModel.userId = UserManager.userId
+        }
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginEvent(event: LoginEvent) {
+        if (event.userId != null) {
+            viewModel.userId = event.userId
+            viewModel.userIdGetUserInfoNetworking()
+        }else{
+            viewModel.userId = null
+            binding.username.text = resources.getString(R.string.user_login)
+            binding.headImg.setImageDrawable(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
+            binding.rightButton.visibility = View.GONE
         }
     }
 

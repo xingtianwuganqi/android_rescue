@@ -124,8 +124,10 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
                 val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
             }else if (supportActionBar?.title == "我的"){
-                val intent = Intent(this, UserSettingActivity::class.java)
-                startActivity(intent)
+                lazyLogin(this) {
+                    val intent = Intent(this, UserSettingActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
 
@@ -155,7 +157,9 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
     }
 
     override fun clickHeader() {
+        lazyLogin(this) {
 
+        }
     }
 
     override fun clickItem(item: DrawerListModel) {

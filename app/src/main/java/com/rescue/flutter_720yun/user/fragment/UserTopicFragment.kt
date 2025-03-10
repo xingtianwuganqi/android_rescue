@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentUserTopicBinding
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
 import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
 import com.rescue.flutter_720yun.show.models.ShowPageModel
@@ -23,6 +26,9 @@ import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class UserTopicFragment: Fragment() {
 
@@ -41,6 +47,20 @@ class UserTopicFragment: Fragment() {
         arguments?.let {
             viewModel.userId = it.getInt("userId")
             viewModel.from = it.getInt("from")
+        }
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginEvent(event: LoginEvent) {
+        if (event.userId != null) {
+            viewModel.userId = event.userId
+            viewModel.loadDataNetworking(RefreshState.REFRESH)
+        }else{
+            viewModel.userId = null
+            viewModel.cleanData()
         }
     }
 
@@ -108,7 +128,10 @@ class UserTopicFragment: Fragment() {
                     showSuccess()
                     val list = it.data
                     if (viewModel.refreshState.value == RefreshState.REFRESH) {
-                        if (list.first() is HomeListModel) {
+                        if (list.isEmpty()) {
+                            adapter.refreshItem(listOf())
+                            showError(ContextCompat.getString(BaseApplication.context, R.string.no_data))
+                        }else if (list.first() is HomeListModel) {
                             val items = list.map {
                                 it as HomeListModel
                             }
@@ -120,7 +143,9 @@ class UserTopicFragment: Fragment() {
                             showAdapter.refreshItem(items)
                         }
                     }else if (viewModel.refreshState.value == RefreshState.MORE) {
-                        if (list.first() is HomeListModel) {
+                        if (list.isEmpty()) {
+                            return@observe
+                        }else if (list.first() is HomeListModel) {
                             val items = list.map {
                                 it as HomeListModel
                             }
@@ -179,6 +204,9 @@ class UserTopicFragment: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
     }
 
     companion object {

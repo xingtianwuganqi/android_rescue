@@ -84,6 +84,7 @@ dependencies {
     implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")    //经典加载
     implementation("com.github.rbro112:Android-Indefinite-Pager-Indicator:1.5")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("org.greenrobot:eventbus:3.2.0")
 
 }
 

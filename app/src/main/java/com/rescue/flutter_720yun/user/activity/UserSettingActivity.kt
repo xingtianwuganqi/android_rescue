@@ -15,6 +15,7 @@ import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityUserSettingBinding
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.message.adapter.MessageListAdapter
 import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.message.adapter.MessageSystemItemAdapter
@@ -25,6 +26,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
 
@@ -104,6 +106,7 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
     @OptIn(DelicateCoroutinesApi::class)
     private fun logout() {
         UserManager.logout()
+        EventBus.getDefault().post(LoginEvent(null))
         GlobalScope.launch {
             delay(1500)
             ActivityController.finishToLast()

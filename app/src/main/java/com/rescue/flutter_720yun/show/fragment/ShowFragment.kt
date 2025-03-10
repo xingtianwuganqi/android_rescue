@@ -30,6 +30,7 @@ import com.rescue.flutter_720yun.show.viewmodels.ShowViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
@@ -203,22 +204,24 @@ class ShowFragment : Fragment(), ShowItemClickListener {
     }
 
     override fun likeClick(item: ShowPageModel) {
-        viewModel.showLikeNetworking(item)
+        lazyLogin(this.requireActivity()) {
+            viewModel.showLikeNetworking(item)
+        }
     }
 
     override fun collectionClick(item: ShowPageModel) {
-        viewModel.showCollectionNetworking(item)
+        lazyLogin(this.requireActivity()) {
+            viewModel.showCollectionNetworking(item)
+        }
     }
 
     override fun commentClick(item: ShowPageModel) {
-        if (UserManager.isLogin) {
+        lazyLogin(this.requireActivity()) {
             val intent = Intent(activity, CommentListActivity::class.java)
             intent.putExtra("topicId", item.show_id)
             intent.putExtra("topicType", 2)
             intent.putExtra("toUid", item.user?.id)
             startActivity(intent)
-        }else{
-
         }
     }
 
