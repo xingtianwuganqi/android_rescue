@@ -64,6 +64,11 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
         list.addAll(newList)
         notifyItemRangeInserted(startPosition, newList.size)
     }
+
+    fun cleanItems() {
+        list.clear()
+        notifyDataSetChanged()
+    }
 }
 
 

@@ -35,6 +35,8 @@ class UserFragment : Fragment() {
         ViewModelProvider(this)[UserViewModel::class.java]
     }
 
+    private lateinit var adapter: UserTopViewPageAdapter
+
     private val editActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -52,10 +54,10 @@ class UserFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            viewModel.userId = it.getInt("userId")
+            viewModel.setUserId(it.getInt("userId"))
         }
-        if (UserManager.isLogin && viewModel.userId == null) {
-            viewModel.userId = UserManager.userId
+        if (UserManager.isLogin && viewModel.userIdLiveData.value == null) {
+            UserManager.userId?.let { viewModel.setUserId(it) }
         }
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
@@ -65,13 +67,11 @@ class UserFragment : Fragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginEvent(event: LoginEvent) {
         if (event.userId != null) {
-            viewModel.userId = event.userId
+            viewModel.setUserId(event.userId)
             viewModel.userIdGetUserInfoNetworking()
         }else{
-            viewModel.userId = null
-            binding.username.text = resources.getString(R.string.user_login)
-            binding.headImg.setImageDrawable(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
-            binding.rightButton.visibility = View.GONE
+            viewModel.setUserId(0)
+            viewModel.cleanUserInfo()
         }
     }
 
@@ -85,7 +85,7 @@ class UserFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = UserTopViewPageAdapter(this, viewModel.userId ?: 0)
+        adapter = UserTopViewPageAdapter(this, viewModel.userIdLiveData.value ?: 0)
         binding.viewPager.adapter = adapter
 
         if (UserManager.isLogin) {
@@ -110,11 +110,17 @@ class UserFragment : Fragment() {
         }
 
         viewModel.userInfo.observe(viewLifecycleOwner) {
-            binding.username.text = it.username
-            Glide.with(this)
-                .load(it.avator?.toImgUrl())
-                .placeholder(R.drawable.icon_eee).into(binding.headImg)
-            binding.rightButton.visibility = View.VISIBLE
+            if (it != null) {
+                binding.username.text = it.username
+                Glide.with(this)
+                    .load(it.avator?.toImgUrl())
+                    .placeholder(R.drawable.icon_eee).into(binding.headImg)
+                binding.rightButton.visibility = View.VISIBLE
+            }else{
+                binding.username.text = resources.getString(R.string.user_login)
+                binding.headImg.setImageDrawable(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
+                binding.rightButton.visibility = View.GONE
+            }
         }
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->

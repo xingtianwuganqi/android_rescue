@@ -21,6 +21,7 @@ import com.rescue.flutter_720yun.show.models.ShowPageModel
 import com.rescue.flutter_720yun.user.adapter.UserShowListAdapter
 import com.rescue.flutter_720yun.user.adapter.UserTopicListAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserTopicViewModel
+import com.rescue.flutter_720yun.user.viewmodels.UserViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
@@ -34,41 +35,50 @@ class UserTopicFragment: Fragment() {
 
     private var _binding: FragmentUserTopicBinding? = null
     private val binding get() = _binding!!
+    private var from: Int? = null
 
-    private lateinit var adapter: UserTopicListAdapter
-    private lateinit var showAdapter: UserShowListAdapter
+    private val adapter by lazy {
+        UserTopicListAdapter(mutableListOf(), { item ->
+
+        })
+    }
+    private val showAdapter by lazy {
+        UserShowListAdapter(mutableListOf(), { item ->
+
+        })
+    }
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[UserTopicViewModel::class.java]
+        ViewModelProvider(requireParentFragment())[UserViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            viewModel.userId = it.getInt("userId")
-            viewModel.from = it.getInt("from")
-        }
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
+            from = it.getInt("from")
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onLoginEvent(event: LoginEvent) {
-        if (event.userId != null) {
-            viewModel.userId = event.userId
-            viewModel.loadDataNetworking(RefreshState.REFRESH)
-        }else{
-            viewModel.userId = null
-            viewModel.cleanData()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserTopicBinding.inflate(inflater, container, false)
+
+        // ⚠️ 先移除观察者，防止重复注册
+        viewModel.userIdLiveData.removeObservers(viewLifecycleOwner)
+
+        // 监听 ViewModel 数据变化
+        viewModel.userIdLiveData.observe(viewLifecycleOwner) { userId ->
+            // 更新 UI
+            if (userId != 0) {
+                loadData(RefreshState.REFRESH)
+            }else{
+                viewModel.cleanData()
+            }
+        }
+
         return binding.root
     }
 
@@ -77,34 +87,38 @@ class UserTopicFragment: Fragment() {
 
         addViewModelObserver()
 
-        if (viewModel.uiState.value !is UiState.Success) {
-            viewModel.loadDataNetworking(RefreshState.REFRESH)
-        }
-
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
         binding.refreshLayout.setOnRefreshListener {
-            viewModel.loadDataNetworking(RefreshState.REFRESH)
+            loadData(RefreshState.REFRESH)
         }
         binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
 
         binding.refreshLayout.setOnLoadMoreListener {
-            viewModel.loadDataNetworking(RefreshState.MORE)
+            loadData(RefreshState.MORE)
         }
 
-        if (viewModel.from == 0) {
+        if (from == 0) {
             binding.recyclerview.layoutManager = GridLayoutManager(context, 2)
-            adapter = UserTopicListAdapter(mutableListOf(), { item ->
 
-            })
             binding.recyclerview.adapter = adapter
         }else{
             binding.recyclerview.layoutManager = GridLayoutManager(context, 2)
-            showAdapter = UserShowListAdapter(mutableListOf(), { item ->
 
-            })
             binding.recyclerview.adapter = showAdapter
         }
 
+        if (viewModel.uiState.value !is UiState.Success) {
+            loadData(RefreshState.REFRESH)
+        }
+
+    }
+
+    private fun loadData(refresh: RefreshState) {
+        if (from == 0) {
+            viewModel.loadUserTopicListNetworking(refresh)
+        }else{
+            viewModel.loadUserShowListNetworking(refresh)
+        }
     }
 
     private fun addViewModelObserver() {
@@ -129,8 +143,7 @@ class UserTopicFragment: Fragment() {
                     val list = it.data
                     if (viewModel.refreshState.value == RefreshState.REFRESH) {
                         if (list.isEmpty()) {
-                            adapter.refreshItem(listOf())
-                            showError(ContextCompat.getString(BaseApplication.context, R.string.no_data))
+                            adapter.cleanItems()
                         }else if (list.first() is HomeListModel) {
                             val items = list.map {
                                 it as HomeListModel
@@ -175,9 +188,9 @@ class UserTopicFragment: Fragment() {
             }
         }
 
-        viewModel.errorMsg.observe(viewLifecycleOwner) {
-            it?.toastString()
-        }
+//        viewModel.errorMsg.observe(viewLifecycleOwner) {
+//            it?.toastString()
+//        }
 
 
     }
@@ -204,17 +217,14 @@ class UserTopicFragment: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-        if (EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().unregister(this)
-        }
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(userId: Int, from: Int) =
+        fun newInstance(from: Int) =
             UserTopicFragment().apply {
                 arguments = Bundle().apply {
-                    putInt("userId", userId)
+//                    putInt("userId", userId)
                     putInt("from", from)
                 }
             }

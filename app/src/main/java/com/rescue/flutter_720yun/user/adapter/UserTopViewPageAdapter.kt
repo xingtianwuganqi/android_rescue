@@ -14,6 +14,7 @@ class UserTopViewPageAdapter(fragment: Fragment, private var userId: Int): Fragm
     }
 
     override fun createFragment(position: Int): Fragment {
-        return UserTopicFragment.newInstance(userId, position)
+        return UserTopicFragment.newInstance(position)
     }
+
 }

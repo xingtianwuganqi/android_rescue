@@ -202,5 +202,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
     fun cleanData() {
         _refreshState.value = RefreshState.REFRESH
         _uiState.value = UiState.Success(listOf())
+        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
+        _uiState.value = UiState.Error(noMoreData)
     }
 }

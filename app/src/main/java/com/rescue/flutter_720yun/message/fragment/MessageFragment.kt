@@ -8,16 +8,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.message.activity.MessageSystemListActivity
 import com.rescue.flutter_720yun.message.adapter.MessageListAdapter
 import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.databinding.FragmentMessageBinding
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.message.activity.MessageSingleActivity
 import com.rescue.flutter_720yun.message.viewmodels.MessageViewModel
 import com.rescue.flutter_720yun.util.lazyLogin
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class MessageFragment : Fragment(), MessageListItemClickListener {
     private var rootView : View? = null
@@ -42,6 +49,18 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginEvent(event: LoginEvent) {
+        messageViewModel.unreadMessageNumberNetworking()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,8 +71,9 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
         if (rootView == null) {
             rootView = binding.root
         }
-
-        messageViewModel.unreadMessageNumberNetworking()
+        if (messageViewModel.unreadModel.value != null) {
+            messageViewModel.unreadMessageNumberNetworking()
+        }
         return rootView
     }
 
@@ -85,5 +105,8 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
     }
 }
