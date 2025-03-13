@@ -14,6 +14,8 @@ class MoreBottomFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentMoreBottomBinding? = null
     private val binding get() = _binding!!
 
+    var clickCallBack: ((Any) -> Unit)? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -32,7 +34,19 @@ class MoreBottomFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.moreBlack.setOnClickListener { it
+            clickCallBack?.let { it1 -> it1(it.tag) }
+        }
 
+        binding.moreReport.setOnClickListener {
+            it
+            clickCallBack?.let { it1 -> it1(it.tag) }
+        }
+
+        binding.cancel.setOnClickListener {
+            it
+            clickCallBack?.let { it1 -> it1(it.tag) }
+        }
     }
 
     companion object {

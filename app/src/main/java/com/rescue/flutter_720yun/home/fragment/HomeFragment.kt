@@ -23,7 +23,9 @@ import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
+import com.rescue.flutter_720yun.home.activity.TopicReportActivity
 import com.rescue.flutter_720yun.home.adapter.OnItemClickListener
+import com.rescue.flutter_720yun.home.adapter.TopicReportAdapter
 import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.message.activity.CommentListActivity
 import com.rescue.flutter_720yun.util.UiState
@@ -360,6 +362,34 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
+    override fun moreButtonClick(model: HomeListModel?) {
+        lazyLogin(requireActivity()) {
+            val moreBottomShow = MoreBottomFragment()
+            moreBottomShow.show(childFragmentManager, moreBottomShow.tag)
+            moreBottomShow.clickCallBack = { index ->
+                val value = index as String
+                when (value) {
+                    "0" -> {
+                        showBlackDialog()
+                    }
+                    "1" -> {
+                        val intent = Intent(activity, TopicReportActivity::class.java)
+                        startActivity(intent)
+                        moreBottomShow.dismiss()
+
+                    }
+
+                    "2" -> {
+                        moreBottomShow.dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showBlackDialog() {
+
+    }
 
     override fun onDestroy() {
         super.onDestroy()

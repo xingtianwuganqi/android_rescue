@@ -1,14 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home.fragment.MoreBottomFragment">
+    tools:context=".home.fragment.MoreBottomFragment"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/more_black"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="50dp"
+        android:text="@string/more_black"
+        android:textColor="@color/color_content"
+        android:textSize="@dimen/content_font"
+        android:gravity="center"
+        android:tag="0"
+        />
 
-</FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_eee"/>
+
+    <TextView
+        android:id="@+id/more_report"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/more_report"
+        android:textColor="@color/color_content"
+        android:textSize="@dimen/content_font"
+        android:gravity="center"
+        android:tag="1"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_eee"/>
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/cancel"
+        android:textColor="@color/color_url"
+        android:textSize="@dimen/content_font"
+        android:gravity="center"
+        android:tag="2"
+        />
+
+</LinearLayout>

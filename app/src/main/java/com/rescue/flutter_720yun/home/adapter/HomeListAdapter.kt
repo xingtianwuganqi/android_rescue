@@ -48,8 +48,10 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
 
     fun uploadItem(item: HomeListModel) {
         val position = list.indexOfFirst { it.topic_id == item.topic_id }
-        list[position] = item
-        notifyItemChanged(position)
+        if (list.isNotEmpty()) {
+            list[position] = item
+            notifyItemChanged(position)
+        }
     }
 }
 

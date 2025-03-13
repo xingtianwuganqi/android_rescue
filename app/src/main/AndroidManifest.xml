@@ -26,6 +26,9 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <activity
+            android:name=".home.activity.TopicReportActivity"
+            android:exported="false" />
+        <activity
             android:name=".user.activity.AdoptAboutActivity"
             android:exported="false" />
         <activity
@@ -108,13 +111,11 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.Android_rescue"
-            />
+            android:theme="@style/Theme.Android_rescue" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.SplashScreen"
-            >
+            android:theme="@style/Theme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
