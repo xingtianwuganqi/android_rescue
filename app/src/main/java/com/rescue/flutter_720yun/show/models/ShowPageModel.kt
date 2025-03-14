@@ -19,7 +19,7 @@ data class ShowPageModel(
     var liked: Boolean?,
     var collectioned: Boolean?,
     val create_time: String?,
-    val commentInfo: CommentListModel,
+    val commentInfo: CommentListModel?,
     val commNum: Int?
 ): Parcelable
 

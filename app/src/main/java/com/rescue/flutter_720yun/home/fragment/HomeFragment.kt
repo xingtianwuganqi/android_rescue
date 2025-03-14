@@ -374,6 +374,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
                     }
                     "1" -> {
                         val intent = Intent(activity, TopicReportActivity::class.java)
+                        intent.putExtra("reportId", model?.topic_id)
+                        intent.putExtra("reportType", 1)
+                        intent.putExtra("userId", model?.userInfo?.id)
                         startActivity(intent)
                         moreBottomShow.dismiss()
 

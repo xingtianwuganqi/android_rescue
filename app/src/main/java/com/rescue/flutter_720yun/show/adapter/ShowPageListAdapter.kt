@@ -88,6 +88,11 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>, val listener: Sh
         }
         holder.content.text = item.instruction
 
+        if (item.commentInfo != null) {
+            holder.comment.text = "${item.commentInfo.userInfo?.username ?: ""}:${item.commentInfo.content ?: ""}"
+        }else{
+            holder.comment.text = ContextCompat.getString(BaseApplication.context, R.string.show_add_comment)
+        }
 
         if (item.liked == true) {
             // 获取 drawable 资源（图标）

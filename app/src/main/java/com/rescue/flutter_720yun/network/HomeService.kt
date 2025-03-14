@@ -80,4 +80,14 @@ interface HomeService {
     @FormUrlEncoded
     @POST("/api/v1/authcollection/")
     fun userCollectionList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 举报类型列表
+    @FormUrlEncoded
+    @POST("/api/v1/violations/")
+    fun reportTypeList(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 举报
+    @FormUrlEncoded
+    @POST("/api/v1/report/")
+    fun reportNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }
