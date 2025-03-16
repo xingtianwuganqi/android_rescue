@@ -16,6 +16,7 @@ import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.adapter.HomeDetailAdapter
 import com.rescue.flutter_720yun.databinding.ActivityHomeDetailBinding
 import com.rescue.flutter_720yun.home.adapter.DetailImgClickListener
+import com.rescue.flutter_720yun.home.fragment.HomeDetailMoreFragment
 import com.rescue.flutter_720yun.home.models.HomeDetailModel
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.util.getImages
@@ -30,9 +31,9 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
     private var _binding: ActivityHomeDetailBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: HomeDetailViewModel
-    private var topicId: Int? = null
-    private var topic: HomeListModel? = null
+    private val viewModel by lazy {
+        ViewModelProvider(this)[HomeDetailViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +41,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
         setupToolbar("详情")
 
-        viewModel = ViewModelProvider(this)[HomeDetailViewModel::class.java]
+        viewModel.topicId = intent.getIntExtra("topic_id", 1)
+        viewModel.topicFrom = intent.getIntExtra("topic_from", 0)
 
-        topicId = intent.getIntExtra("topic_id", 1)
-
-        topicId?.let {
+        viewModel.topicId?.let {
             viewModel.loadDetailNetworking(it)
         }
 
@@ -62,7 +62,6 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
         viewModel.changeModel.observe(this) {
             uploadBottom(it)
-            topic = it
         }
 
         viewModel.statusCode.observe(this) {
@@ -93,10 +92,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             false)
 
         val detailList = mutableListOf<HomeDetailModel>()
-        val contentModel = HomeDetailModel(0, homeData, null)
+        val contentModel = HomeDetailModel(0, homeData, null, viewModel.topicFrom)
         detailList.add(contentModel)
         homeData?.getImages()?.forEach {
-            val imageModel = HomeDetailModel(1, null, it)
+            val imageModel = HomeDetailModel(1, null, it, viewModel.topicFrom)
             detailList.add(imageModel)
         }
         val adapter = HomeDetailAdapter(detailList)
@@ -115,6 +114,17 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             .setData(imgUrls)
             .setPosition(position-1)
             .start()
+    }
+
+    override fun moreClick(model: HomeDetailModel) {
+        var data = model.data
+        showMoreAlert(data)
+    }
+
+    private fun showMoreAlert(model: HomeListModel?) {
+        val status = if (model?.is_complete == true) 1 else 0
+        val bottomAlert = HomeDetailMoreFragment.newInstance(status)
+        bottomAlert.show(supportFragmentManager, bottomAlert.tag)
     }
 
     private fun uploadBottom(homeData: HomeListModel?) {
@@ -142,8 +152,8 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             binding.collectButton.icon = newIcon
         }
 
-        if (homeData?.getedcontact == true && homeData?.contact_info != null) {
-            binding.getContactBtn.text = homeData?.contact_info
+        if (homeData?.getedcontact == true && homeData.contact_info != null) {
+            binding.getContactBtn.text = homeData.contact_info
         }else{
             binding.getContactBtn.text = BaseApplication.context.resources.getString(R.string.click_get_contact)
         }
@@ -167,7 +177,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     private fun sendResultAndFinish() {
-        topic?.let {
+        viewModel.changeModel.value?.topic_id?.let {
             val intent = Intent()
             intent.putExtra("result_model", it)
             setResult(Activity.RESULT_OK, intent)

@@ -12,6 +12,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -44,6 +45,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/*
+reportId
+ # 举报类型 # 1.领养举报 2.领养评论 3.领养回复 4.秀宠举报 5.秀宠评论 6.秀宠回复
+ reportType
+    # 举报的id，可为帖子ID，showID，评论id
+    userId 举报人
+ */
 class TopicReportActivity : BaseActivity() {
 
     private var _binding: ActivityTopicReportBinding? = null
@@ -62,8 +70,8 @@ class TopicReportActivity : BaseActivity() {
 
         viewModel.reportId = intent.getIntExtra("reportId", 0)
         viewModel.reportType = intent.getIntExtra("reportType", 0)
-        viewModel.userId = intent.getIntExtra("userId", 0)
 
+        Log.d("TAG", "${viewModel.reportId}, ${viewModel.reportType}")
         addViewAction()
         addViewModelObserver()
         if (viewModel.uiState.value !is UiState.Success) {

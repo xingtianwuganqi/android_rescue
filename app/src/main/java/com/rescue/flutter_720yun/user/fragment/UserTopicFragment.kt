@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentUserTopicBinding
+import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
@@ -39,7 +40,10 @@ class UserTopicFragment: Fragment() {
 
     private val adapter by lazy {
         UserTopicListAdapter(mutableListOf(), { item ->
-
+            val intent = Intent(activity, HomeDetailActivity::class.java)
+            intent.putExtra("topic_id", item.topic_id)
+            intent.putExtra("topic_from", 1)
+            startActivity(intent)
         })
     }
     private val showAdapter by lazy {

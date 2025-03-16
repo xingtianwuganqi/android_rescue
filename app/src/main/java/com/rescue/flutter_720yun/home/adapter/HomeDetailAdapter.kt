@@ -3,6 +3,7 @@ package com.rescue.flutter_720yun.home.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.rescue.flutter_720yun.util.toImgUrl
 
 interface DetailImgClickListener {
     fun clickItem(model: List<HomeDetailModel>, position: Int)
+    fun moreClick(model: HomeDetailModel)
 }
 
 class HomeDetailAdapter(
@@ -63,7 +65,12 @@ class HomeDetailAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is HomeDetailContentViewHolder -> holder.bind(detailList[position])
+            is HomeDetailContentViewHolder -> {
+                holder.bind(detailList[position])
+                holder.moreButton.setOnClickListener {
+                    onClickListener?.moreClick(detailList[position])
+                }
+            }
             is HomeDetailImageViewHolder -> {
                 val item = detailList[position]
                 item.imageStr?.let {
@@ -91,6 +98,7 @@ class HomeDetailContentViewHolder(view: View): RecyclerView.ViewHolder(view) {
     private val nickName: TextView = view.findViewById(R.id.nick_name)
     private val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
     private val contentText: TextView = view.findViewById(R.id.content)
+    val moreButton: ImageButton = view.findViewById(R.id.more_btn)
 
     fun bind(detailData: HomeDetailModel) {
         detailData.data?.userInfo?.avator?.let {
@@ -101,6 +109,12 @@ class HomeDetailContentViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 .into(headImg)
         }
         nickName.text = detailData.data?.userInfo?.username
+
+        if (detailData.from == 1) {
+            moreButton.visibility = View.VISIBLE
+        }else{
+            moreButton.visibility = View.GONE
+        }
 
         if (detailData.data?.tagInfos?.isNotEmpty() == true) {
             detailData.data?.tagInfos?.let {

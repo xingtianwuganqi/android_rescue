@@ -33,6 +33,9 @@ class HomeDetailViewModel: ViewModel() {
     val changeModel: LiveData<HomeListModel?> get() = _changedModel
     val statusCode: LiveData<Int?> get() = _statusCode
 
+    var topicId: Int? = null
+    var topicFrom: Int = 0
+
     fun loadDetailNetworking(topicId: Int) {
         viewModelScope.launch {
             if (_isLoading.value == true) {

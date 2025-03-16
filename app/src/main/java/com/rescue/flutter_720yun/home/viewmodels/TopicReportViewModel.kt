@@ -14,6 +14,7 @@ import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.CommonViewModelInterface
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
@@ -48,7 +49,6 @@ class TopicReportViewModel: ViewModel(), CommonViewModelInterface {
 
     var reportId: Int? = null
     var reportType: Int? = null
-    var userId: Int? = null
 
     fun reportListNetworking() {
         viewModelScope.launch {
@@ -97,10 +97,10 @@ class TopicReportViewModel: ViewModel(), CommonViewModelInterface {
                 if (reportType != null) {
                     dic["report_type"] = reportType
                 }
-                if (userId != null) {
-                    dic["userId"] = userId
+                if (UserManager.userId != null) {
+                    dic["user_id"] = UserManager.userId
                 }
-                dic["violation"] = violation
+                dic["violation_id"] = violation
                 val response = appService.reportNetworking(dic).awaitResp()
                 if (response.code == 200) {
                     _pushSuccess.value = true
