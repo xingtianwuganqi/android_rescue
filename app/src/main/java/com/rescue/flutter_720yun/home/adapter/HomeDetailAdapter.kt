@@ -99,6 +99,7 @@ class HomeDetailContentViewHolder(view: View): RecyclerView.ViewHolder(view) {
     private val tagInfo: RecyclerView = view.findViewById(R.id.tag_info)
     private val contentText: TextView = view.findViewById(R.id.content)
     val moreButton: ImageButton = view.findViewById(R.id.more_btn)
+    private val completionImage: ImageView = view.findViewById(R.id.completion)
 
     fun bind(detailData: HomeDetailModel) {
         detailData.data?.userInfo?.avator?.let {
@@ -132,6 +133,11 @@ class HomeDetailContentViewHolder(view: View): RecyclerView.ViewHolder(view) {
         }
 
         contentText.text = detailData.data?.content
+        if (detailData.data?.is_complete == true) {
+            completionImage.visibility = View.VISIBLE
+        }else{
+            completionImage.visibility = View.GONE
+        }
     }
 }
 

@@ -90,4 +90,14 @@ interface HomeService {
     @FormUrlEncoded
     @POST("/api/v1/report/")
     fun reportNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 修改领养完成状态
+    @FormUrlEncoded
+    @POST("/api/v2/changecompletestatus/")
+    fun changeCompleteStatus(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
+    // 删除帖子
+    @FormUrlEncoded
+    @POST("/api/v2/topic/delete")
+    fun deleteTopic(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
 }

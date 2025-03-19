@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.home.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ class HomeDetailMoreFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentHomeDetailMoreBinding? = null
     private val binding get() = _binding!!
     private var status: Int? = null
+    var clickCallBack: ((Int) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +35,7 @@ class HomeDetailMoreFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("TAG","$status")
         if (status == 0) { // 未完成
             binding.titleText.text = resources.getString(R.string.user_complete_rescue)//"点击完成领养，即代表宠物已经被领养，他人无法获取你的联系方式，确定改成完成领养吗？"
             binding.changeText.text = resources.getString(R.string.user_complete_title)
@@ -42,15 +45,17 @@ class HomeDetailMoreFragment : BottomSheetDialogFragment() {
         }
 
         binding.changeLinear.setOnClickListener {
+            dismiss()
             if (status == 0) { //未完成，要去完成
-
+                clickCallBack?.let { it1 -> it1(1) }
             }else{ // 完成，改成未完成
-
+                clickCallBack?.let { it1 -> it1(0) }
             }
         }
 
         binding.deleteLinear.setOnClickListener {
-
+            dismiss()
+            clickCallBack?.let { it1 -> it1(2) }
         }
 
         binding.cancel.setOnClickListener {
@@ -72,7 +77,7 @@ class HomeDetailMoreFragment : BottomSheetDialogFragment() {
         fun newInstance(status: Int) =
             HomeDetailMoreFragment().apply {
                 arguments = Bundle().apply {
-                    arguments?.putInt("status", status)
+                    putInt("status", status)
                 }
             }
     }

@@ -3,6 +3,7 @@ import android.util.Log
 import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.toastString
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -14,6 +15,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,15 +71,17 @@ suspend fun <T> Call<T>.awaitResp(): T {
                     Log.d("TAG", "response body ${response.body()}")
                     continuation.resume(response.body()!!)
                 } else {
-                    if (response.code() == 401) {
+                    if (response.code() == 401 || response.code() == 403) {
                         BaseApplication.context.resources.getString(R.string.login_token_lose).toastString()
                         UserManager.logout()
-                        GlobalScope.launch(Dispatchers.Main) {
+                        EventBus.getDefault().post(LoginEvent(null))
+                        GlobalScope.launch {
                             delay(1500)
                             ActivityController.finishToLast()
                         }
 
                     }else {
+                        Log.d("TAG","response error Code ${response.code()}")
                         Log.d("TAG", "response error ${response.body()}")
                         continuation.resumeWithException(Exception("Response error"))
                     }

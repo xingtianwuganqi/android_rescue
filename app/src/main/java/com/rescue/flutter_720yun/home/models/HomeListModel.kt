@@ -65,7 +65,7 @@ data class HomeListModel (
     var liked: Boolean?,
     var collectioned: Boolean?,
     val tags: List<Int>?,
-    val is_complete: Boolean?,
+    var is_complete: Boolean?,
     val preview_img: List<String>?,
     val imgs: List<String>?,
     var getedcontact: Boolean?,

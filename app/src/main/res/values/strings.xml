@@ -69,6 +69,8 @@
     <string name="home_like">点赞</string>
     <string name="home_collection">收藏</string>
     <string name="home_common">评论</string>
+    <string name="topic_delete_title">确定删除吗？</string>
+    <string name="topic_delete_content">帖子删除后，您的发帖记录、浏览记录、该帖子的评论、回复、帖子的收藏等数据将会全面删除，确定删除该帖子吗？</string>
 
     <string name="delete">删除</string>
     <string name="cancel">取消</string>
@@ -177,6 +179,7 @@
     <string name="user_un_complete">点击未完成领养，即代表宠物未被领养，他人可以获取你的联系方式，确定改成未完成领养吗？</string>
     <string name="user_complete_title">完成领养</string>
     <string name="user_un_complete_title">未完成领养</string>
+    <string name="user_completion">已完成领养</string>
 
     <string name="black_phone">手机号</string>
     <string name="black_phone_placeholder">请输入失信人手机号</string>

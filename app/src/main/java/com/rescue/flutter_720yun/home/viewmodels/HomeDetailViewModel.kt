@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.home.viewmodels
 
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,11 +28,13 @@ class HomeDetailViewModel: ViewModel() {
     private var _errorMsg = MutableLiveData<String>()
     private val _changedModel = MutableLiveData<HomeListModel?>()
     private val _statusCode = MutableLiveData<Int?>()
+    private val _deleted = MutableLiveData<Boolean>()
     val homeData: LiveData<HomeListModel?> get() = _homeData
     val isLoading: LiveData<Boolean> get() = _isLoading
     val errorMsg: LiveData<String> get() = _errorMsg
     val changeModel: LiveData<HomeListModel?> get() = _changedModel
     val statusCode: LiveData<Int?> get() = _statusCode
+    val deleted: LiveData<Boolean> get() = _deleted
 
     var topicId: Int? = null
     var topicFrom: Int = 0
@@ -141,4 +144,51 @@ class HomeDetailViewModel: ViewModel() {
         }
     }
 
+
+    /*
+    // status 要改成的状态 1：已完成 0：未完成
+     */
+    fun changeCompleteStatus(model: HomeListModel?) {
+        viewModelScope.launch {
+            try {
+                val status = if (model?.is_complete == false) 1 else 0
+                val dic = paramDic
+                if (model?.topic_id != null) {
+                    dic["topic_id"] = model.topic_id
+                }
+                dic["isComplete"] = status
+                Log.d("TAG", "$dic")
+                val response = appService.changeCompleteStatus(dic).awaitResp()
+                Log.d("TAG", "$response")
+                if (response.code == 200) {
+                    model?.is_complete = status == 1
+                    _homeData.value = model
+                }else{
+                    _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+                }
+            }catch (e: Exception) {
+                Log.d("TAG", "$e")
+                _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+            }
+        }
+    }
+
+    fun deleteTopic(model: HomeListModel?) {
+        viewModelScope.launch {
+            try {
+                val dic = paramDic
+                if (model?.topic_id != null) {
+                    dic["topic_id"] = model.topic_id
+                }
+                val response = appService.changeCompleteStatus(dic).awaitResp()
+                if (response.code == 200) {
+                    _deleted.value = true
+                }else{
+                    _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+                }
+            }catch (e: Exception) {
+                _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
+            }
+        }
+    }
 }

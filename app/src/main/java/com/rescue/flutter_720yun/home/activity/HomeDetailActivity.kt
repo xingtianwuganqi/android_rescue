@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.home.activity
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -22,6 +24,7 @@ import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
+import com.rescue.flutter_720yun.util.toastString
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,6 +86,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             }
         }
 
+        viewModel.deleted.observe(this) {
+
+        }
+
     }
 
     private fun uploadViews(homeData: HomeListModel?) {
@@ -117,14 +124,41 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     override fun moreClick(model: HomeDetailModel) {
-        var data = model.data
-        showMoreAlert(data)
+        showMoreAlert(viewModel.homeData.value)
     }
 
     private fun showMoreAlert(model: HomeListModel?) {
         val status = if (model?.is_complete == true) 1 else 0
+        Log.d("TAG", "$status")
         val bottomAlert = HomeDetailMoreFragment.newInstance(status)
         bottomAlert.show(supportFragmentManager, bottomAlert.tag)
+        bottomAlert.clickCallBack = { value ->
+            if (value == 0 || value == 1) {
+                viewModel.changeCompleteStatus(model)
+            }else if (value == 2) {
+                showDeleteDialog(model)
+            }
+
+        }
+    }
+
+    private fun showDeleteDialog(model: HomeListModel?) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(resources.getString(R.string.topic_delete_title))
+        builder.setMessage(resources.getString(R.string.topic_delete_content))
+        builder.setCancelable(false)
+        builder.setPositiveButton(resources.getString(R.string.confirm_d), DialogInterface.OnClickListener { dialogInterface, i ->
+            viewModel.deleteTopic(model)
+        })
+        builder.setNegativeButton(resources.getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->
+
+        })
+        val dialog = builder.create()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.color_system))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.color_node))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).textSize = 16F
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).textSize = 16F
     }
 
     private fun uploadBottom(homeData: HomeListModel?) {
@@ -152,10 +186,15 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             binding.collectButton.icon = newIcon
         }
 
-        if (homeData?.getedcontact == true && homeData.contact_info != null) {
-            binding.getContactBtn.text = homeData.contact_info
-        }else{
-            binding.getContactBtn.text = BaseApplication.context.resources.getString(R.string.click_get_contact)
+        if (homeData?.is_complete == true) {
+            binding.getContactBtn.text = resources.getString(R.string.user_completion)
+        }else {
+            if (homeData?.getedcontact == true && homeData.contact_info != null) {
+                binding.getContactBtn.text = homeData.contact_info
+            } else {
+                binding.getContactBtn.text =
+                    BaseApplication.context.resources.getString(R.string.click_get_contact)
+            }
         }
 
     }
@@ -209,13 +248,17 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
         binding.getContactBtn.setOnClickListener {
             lazyLogin(this) {
-                if (viewModel.homeData.value?.getedcontact == true && viewModel.homeData.value?.contact_info != null) {
-                    // 复制
+                if (viewModel.homeData.value?.is_complete == false) {
+                    if (viewModel.homeData.value?.getedcontact == true && viewModel.homeData.value?.contact_info != null) {
+                        // 复制
 
-                }else {
-                    viewModel.homeData.value?.let {
-                        viewModel.clickGetContactInfoNetworking(it)
+                    } else {
+                        viewModel.homeData.value?.let {
+                            viewModel.clickGetContactInfoNetworking(it)
+                        }
                     }
+                }else{
+                    resources.getString(R.string.user_completion).toastString()
                 }
             }
         }
