@@ -23,7 +23,7 @@ interface DetailImgClickListener {
 }
 
 class HomeDetailAdapter(
-    private val detailList: List<HomeDetailModel>
+    private val detailList: MutableList<HomeDetailModel>
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var onClickListener: DetailImgClickListener? = null
@@ -90,6 +90,12 @@ class HomeDetailAdapter(
 
     fun setOnClickListener(listener: DetailImgClickListener) {
         onClickListener = listener
+    }
+
+    fun reloadItems(items: MutableList<HomeDetailModel>) {
+        detailList.clear()
+        detailList.addAll(items)
+        notifyDataSetChanged()
     }
 }
 

@@ -23,6 +23,7 @@
 
     <string name="no_data">暂无数据</string>
     <string name="copy_success">复制成功</string>
+    <string name="copy_success_copy">已复制到粘贴板</string>
 
     <string name="login_new_register">新用户注册</string>
     <string name="login_phone_placeholder">请输入手机号</string>

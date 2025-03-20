@@ -1,11 +1,15 @@
 package com.rescue.flutter_720yun.user.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -38,12 +42,28 @@ class UserTopicFragment: Fragment() {
     private val binding get() = _binding!!
     private var from: Int? = null
 
+
+    // 处理反向传值
+    private val detailActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("TAG", "反向传值了")
+            val data: Intent? = result.data
+            val resultData = data?.getParcelableExtra<HomeListModel>("result_model")
+            Log.d("TAG", "data is $data")
+            Log.d("TAG", "resultData is $resultData")
+            Log.d("TAG", "result data is ${resultData?.topic_id}")
+            uploadItem(resultData)
+        }
+    }
+
     private val adapter by lazy {
         UserTopicListAdapter(mutableListOf(), { item ->
             val intent = Intent(activity, HomeDetailActivity::class.java)
             intent.putExtra("topic_id", item.topic_id)
             intent.putExtra("topic_from", 1)
-            startActivity(intent)
+            detailActivityLauncher.launch(intent)
         })
     }
     private val showAdapter by lazy {
@@ -192,11 +212,13 @@ class UserTopicFragment: Fragment() {
             }
         }
 
-//        viewModel.errorMsg.observe(viewLifecycleOwner) {
-//            it?.toastString()
-//        }
+    }
 
-
+    // 更新item
+    private fun uploadItem(model: HomeListModel?) {
+        model?.let {
+            adapter.uploadItem(model)
+        }
     }
 
     private fun showLoading() {

@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.user.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,12 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
 
             binding.imgBack.setOnClickListener {
                 clickListener(item)
+            }
+
+            if (item.is_complete == true) {
+                binding.completion.visibility = View.VISIBLE
+            }else{
+                binding.completion.visibility = View.GONE
             }
         }
 
@@ -68,6 +75,14 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
     fun cleanItems() {
         list.clear()
         notifyDataSetChanged()
+    }
+
+    fun uploadItem(item: HomeListModel) {
+        val position = list.indexOfFirst { it.topic_id == item.topic_id }
+        if (list.isNotEmpty()) {
+            list[position] = item
+            notifyItemChanged(position)
+        }
     }
 }
 

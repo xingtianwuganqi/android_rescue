@@ -62,6 +62,23 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/completion"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/desc_font"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/user_complete_title"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/color_system"
+        app:cornerRadius="6dp"
+        android:layout_gravity="top|end"
+        />
 </FrameLayout>
 
 

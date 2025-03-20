@@ -2,6 +2,9 @@ package com.rescue.flutter_720yun.home.activity
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -10,25 +13,22 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.home.adapter.HomeDetailAdapter
 import com.rescue.flutter_720yun.databinding.ActivityHomeDetailBinding
 import com.rescue.flutter_720yun.home.adapter.DetailImgClickListener
+import com.rescue.flutter_720yun.home.adapter.HomeDetailAdapter
 import com.rescue.flutter_720yun.home.fragment.HomeDetailMoreFragment
 import com.rescue.flutter_720yun.home.models.HomeDetailModel
 import com.rescue.flutter_720yun.home.models.HomeListModel
+import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
-import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
 import com.rescue.flutter_720yun.util.toastString
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
@@ -37,6 +37,8 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     private val viewModel by lazy {
         ViewModelProvider(this)[HomeDetailViewModel::class.java]
     }
+
+    private lateinit var adapter: HomeDetailAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,13 +49,13 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         viewModel.topicId = intent.getIntExtra("topic_id", 1)
         viewModel.topicFrom = intent.getIntExtra("topic_from", 0)
 
+        addViewAction()
+        addViewModelObserver()
+        addBackListener()
+
         viewModel.topicId?.let {
             viewModel.loadDetailNetworking(it)
         }
-
-        addViewModelObserver()
-        addViewAction()
-        addBackListener()
     }
 
 
@@ -63,9 +65,9 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             uploadBottom(it)
         }
 
-        viewModel.changeModel.observe(this) {
-            uploadBottom(it)
-        }
+//        viewModel.changeModel.observe(this) {
+//            uploadBottom(it)
+//        }
 
         viewModel.statusCode.observe(this) {
             it?.let { code ->
@@ -93,10 +95,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     private fun uploadViews(homeData: HomeListModel?) {
-        val imgRecyclerView = binding.imagesRecyclerview
-        imgRecyclerView.layoutManager = LinearLayoutManager(this,
-            LinearLayoutManager.VERTICAL,
-            false)
+
 
         val detailList = mutableListOf<HomeDetailModel>()
         val contentModel = HomeDetailModel(0, homeData, null, viewModel.topicFrom)
@@ -105,9 +104,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             val imageModel = HomeDetailModel(1, null, it, viewModel.topicFrom)
             detailList.add(imageModel)
         }
-        val adapter = HomeDetailAdapter(detailList)
-        adapter.setOnClickListener(this)
-        imgRecyclerView.adapter = adapter
+        adapter.reloadItems(detailList)
+//        val adapter = HomeDetailAdapter(detailList)
+//        adapter.setOnClickListener(this)
+//        imgRecyclerView.adapter = adapter
     }
 
     override fun clickItem(model: List<HomeDetailModel>, position: Int) {
@@ -216,14 +216,22 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     private fun sendResultAndFinish() {
-        viewModel.changeModel.value?.topic_id?.let {
+        if (viewModel.homeDataChanged.value == true) {
             val intent = Intent()
-            intent.putExtra("result_model", it)
+            intent.putExtra("result_model", viewModel.homeData.value)
             setResult(Activity.RESULT_OK, intent)
         }
     }
 
     override fun addViewAction() {
+        val imgRecyclerView = binding.imagesRecyclerview
+        imgRecyclerView.layoutManager = LinearLayoutManager(this,
+            LinearLayoutManager.VERTICAL,
+            false)
+        adapter = HomeDetailAdapter(mutableListOf())
+        adapter.setOnClickListener(this)
+        imgRecyclerView.adapter = adapter
+
         binding.likeButton.setOnClickListener{
             lazyLogin(this) {
                 viewModel.homeData.value?.let {
@@ -251,7 +259,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
                 if (viewModel.homeData.value?.is_complete == false) {
                     if (viewModel.homeData.value?.getedcontact == true && viewModel.homeData.value?.contact_info != null) {
                         // 复制
-
+                        viewModel.homeData.value?.contact_info?.let {
+                            copy(this, it)
+                            resources.getString(R.string.copy_success_copy).toastString()
+                        }
                     } else {
                         viewModel.homeData.value?.let {
                             viewModel.clickGetContactInfoNetworking(it)
@@ -262,6 +273,17 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
                 }
             }
         }
+    }
+
+    //系统剪贴板-复制:   s为内容
+    private fun copy(context: Context, s: String?) {
+        // 获取系统剪贴板
+        val clipboard: ClipboardManager =
+            context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        // 创建一个剪贴数据集，包含一个普通文本数据条目（需要复制的数据）
+        val clipData = ClipData.newPlainText(null, s)
+        // 把数据集设置（复制）到剪贴板
+        clipboard.setPrimaryClip(clipData)
     }
 
     override fun onDestroy() {

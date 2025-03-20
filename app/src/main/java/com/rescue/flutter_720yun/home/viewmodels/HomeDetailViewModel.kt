@@ -26,13 +26,13 @@ class HomeDetailViewModel: ViewModel() {
     private var _loadFail = MutableLiveData(false)
     private var _isLoading = MutableLiveData(false)
     private var _errorMsg = MutableLiveData<String>()
-    private val _changedModel = MutableLiveData<HomeListModel?>()
+    private val _homeDataChanged = MutableLiveData<Boolean>()
     private val _statusCode = MutableLiveData<Int?>()
     private val _deleted = MutableLiveData<Boolean>()
     val homeData: LiveData<HomeListModel?> get() = _homeData
     val isLoading: LiveData<Boolean> get() = _isLoading
     val errorMsg: LiveData<String> get() = _errorMsg
-    val changeModel: LiveData<HomeListModel?> get() = _changedModel
+    val homeDataChanged: LiveData<Boolean> get() = _homeDataChanged
     val statusCode: LiveData<Int?> get() = _statusCode
     val deleted: LiveData<Boolean> get() = _deleted
 
@@ -75,7 +75,8 @@ class HomeDetailViewModel: ViewModel() {
                 val response = appService.topicLikeAction(dic).awaitResp()
                 if (response.code == 200) {
                     model?.liked = response.data?.mark == 1
-                    _changedModel.value = model
+                    _homeData.value = model
+                    _homeDataChanged.value = true
                 }else{
                     val msg = BaseApplication.context.resources.getString(R.string.like_error)
                     _errorMsg.value = msg
@@ -103,7 +104,8 @@ class HomeDetailViewModel: ViewModel() {
                 val response = appService.topicCollectionAction(dic).awaitResp()
                 if (response.code == 200) {
                     model?.collectioned = response.data?.mark == 1
-                    _changedModel.value = model
+                    _homeData.value = model
+                    _homeDataChanged.value = true
                 }else{
                     _errorMsg.value = BaseApplication.context.getString(R.string.collect_error)
                 }
@@ -129,7 +131,8 @@ class HomeDetailViewModel: ViewModel() {
                     if (response.code == 200) {
                         model?.contact_info = response.data.contact
                         model?.getedcontact = true
-                        _changedModel.value = model
+                        _homeData.value = model
+                        _homeDataChanged.value = true
                     } else if (response.code == 202) { // 无法获取联系方式
                         _errorMsg.value = BaseApplication.context.getString(R.string.unable_get_contact)
                     }else{
@@ -163,6 +166,7 @@ class HomeDetailViewModel: ViewModel() {
                 if (response.code == 200) {
                     model?.is_complete = status == 1
                     _homeData.value = model
+                    _homeDataChanged.value = true
                 }else{
                     _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
                 }

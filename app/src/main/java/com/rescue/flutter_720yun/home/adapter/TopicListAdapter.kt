@@ -79,6 +79,7 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val collection: MaterialButton = view.findViewById(R.id.collect_button)
     val commentBtn: MaterialButton = view.findViewById(R.id.comment_button)
     var moreButton: ImageButton = view.findViewById(R.id.more_btn)
+    val completion: ImageView = view.findViewById(R.id.completion)
 
     fun bind(context: Context, item: HomeListModel?, listener: OnItemClickListener) {
         name.text = item?.userInfo?.username
@@ -155,6 +156,11 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             collection.icon = newIcon
         }
 
+        if (item?.is_complete == true) {
+            completion.visibility = View.VISIBLE
+        }else{
+            completion.visibility = View.GONE
+        }
 
         name.setOnClickListener{
             listener.userClick(item)
