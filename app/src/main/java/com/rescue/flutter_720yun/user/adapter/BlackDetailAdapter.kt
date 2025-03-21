@@ -318,6 +318,10 @@ class BlackDetailImageViewHolder(val binding: BlackImagesItemBinding, val contex
     override fun deleteImageClick(item: CoachReleasePhoto) {
         this.listener.deleteImageClick(item)
     }
+
+    override fun photoClickCallBack(position: Int) {
+        this.listener.photoClickCallBack(position)
+    }
 }
 
 

@@ -21,6 +21,7 @@ import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.message.adapter.MessageSystemItemAdapter
 import com.rescue.flutter_720yun.user.adapter.UserSettingAdapter
 import com.rescue.flutter_720yun.user.viewmodels.UserSettingViewModel
+import com.rescue.flutter_720yun.util.LoadingDialog
 import com.rescue.flutter_720yun.util.UserManager
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -105,10 +106,12 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun logout() {
+        LoadingDialog.show(this)
         UserManager.logout()
         EventBus.getDefault().post(LoginEvent(null))
         GlobalScope.launch {
-            delay(1500)
+            LoadingDialog.hide()
+            delay(1000)
             ActivityController.finishToLast()
         }
     }

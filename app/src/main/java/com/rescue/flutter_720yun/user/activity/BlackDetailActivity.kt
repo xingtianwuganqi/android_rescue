@@ -28,6 +28,7 @@ import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
 import com.rescue.flutter_720yun.util.toastString
+import com.wei.wimagepreviewlib.WImagePreviewBuilder
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
@@ -228,6 +229,18 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
         viewModel.uploadImageData()
     }
 
+    override fun photoClickCallBack(position: Int) {
+        val imageArr = viewModel.dataModels.value?.last()?.photos?.map {
+            "http://img.rxswift.cn/${it.photoKey}"
+        }
+        imageArr?.let {
+            WImagePreviewBuilder
+                .load(this)
+                .setData(it)
+                .setPosition(position)
+                .start()
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()

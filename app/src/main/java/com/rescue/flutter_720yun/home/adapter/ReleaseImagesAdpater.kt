@@ -19,6 +19,7 @@ import com.rescue.flutter_720yun.util.toImgUrl
 interface ReleaseImageClickListener{
     fun addImageClick()
     fun deleteImageClick(item: CoachReleasePhoto)
+    fun photoClickCallBack(position: Int)
 }
 
 class ReleaseImagesAdapter(val list: MutableList<CoachReleasePhoto>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -75,6 +76,9 @@ class ReleaseImagesAdapter(val list: MutableList<CoachReleasePhoto>): RecyclerVi
                         .load(item.photoKey?.toImgUrl())
                         .placeholder(R.drawable.icon_eee)
                         .into(holder.imageView)
+                    holder.imageView.setOnClickListener {
+                        listener?.photoClickCallBack(position)
+                    }
                 }else{
                     holder.cleanButton.visibility = View.VISIBLE
                 }

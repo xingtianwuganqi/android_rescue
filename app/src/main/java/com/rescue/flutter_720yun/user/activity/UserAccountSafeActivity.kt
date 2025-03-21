@@ -16,17 +16,21 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityUserAccountSafeBinding
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.user.viewmodels.UserAccountSafeViewModel
 import com.rescue.flutter_720yun.util.LoadingDialog
+import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.toastString
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 class UserAccountSafeActivity : BaseActivity() {
 
@@ -105,9 +109,11 @@ class UserAccountSafeActivity : BaseActivity() {
             LoadingDialog.hide()
             if (it == true) {
                 resources.getString(R.string.user_logout_success).toastString()
-                GlobalScope.launch(Dispatchers.Main) {
-                    delay(2000)
-                    finishAllActivity()
+                UserManager.logout()
+                EventBus.getDefault().post(LoginEvent(null))
+                GlobalScope.launch {
+                    delay(1000)
+                    ActivityController.finishToLast()
                 }
             }else if (it == false){
                 resources.getString(R.string.user_logout_fail).toastString()

@@ -23,7 +23,7 @@ interface DrawerListClickListener {
     fun clickItem(item: DrawerListModel)
 }
 
-class DrawerListAdapter(val list: List<DrawerListModel>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DrawerListAdapter(val list: MutableList<DrawerListModel>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var listener: DrawerListClickListener? = null
 
@@ -85,6 +85,16 @@ class DrawerListAdapter(val list: List<DrawerListModel>): RecyclerView.Adapter<R
 
     fun setListener(listener: DrawerListClickListener) {
         this.listener = listener
+    }
+
+    fun reloadItems(items: List<DrawerListModel>) {
+        list.clear()
+        list.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    fun reloadData() {
+        notifyDataSetChanged()
     }
 }
 

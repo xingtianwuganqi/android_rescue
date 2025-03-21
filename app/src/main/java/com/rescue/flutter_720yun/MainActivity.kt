@@ -25,6 +25,7 @@ import com.rescue.flutter_720yun.home.adapter.DrawerListAdapter
 import com.rescue.flutter_720yun.databinding.ActivityMainBinding
 import com.rescue.flutter_720yun.home.adapter.DrawerListClickListener
 import com.rescue.flutter_720yun.home.models.DrawerListModel
+import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.MainViewModel
 import com.rescue.flutter_720yun.user.activity.AdoptAboutActivity
@@ -36,6 +37,9 @@ import com.rescue.flutter_720yun.user.activity.WebPageActivity
 import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
 import com.rescue.flutter_720yun.util.BuildConfig
 import com.rescue.flutter_720yun.util.lazyLogin
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
 class MainActivity : AppCompatActivity(), DrawerListClickListener {
@@ -46,6 +50,9 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
     private val viewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
+
+    private lateinit var adapter: DrawerListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,6 +63,8 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         drawerLayout = binding.drawerLayout
+
+
 
         val navView: BottomNavigationView = binding.navView
 
@@ -71,7 +80,10 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-
+        adapter = DrawerListAdapter(mutableListOf())
+        adapter.setListener(this)
+        binding.drawerRecyclerview.layoutManager = LinearLayoutManager(this)
+        binding.drawerRecyclerview.adapter = adapter
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val searchBtn = binding.searchButton
@@ -132,14 +144,24 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         }
 
         addViewModelObserver()
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginEvent(event: LoginEvent) {
+        adapter.reloadData()
     }
 
     private fun addViewModelObserver() {
         viewModel.drawerList.observe(this) {
-            val adapter = DrawerListAdapter(it)
-            adapter.setListener(this)
-            binding.drawerRecyclerview.layoutManager = LinearLayoutManager(this)
-            binding.drawerRecyclerview.adapter = adapter
+//            val adapter = DrawerListAdapter(it)
+//            adapter.setListener(this)
+//            binding.drawerRecyclerview.layoutManager = LinearLayoutManager(this)
+//            binding.drawerRecyclerview.adapter = adapter
+            adapter.reloadItems(it)
         }
     }
 
@@ -153,7 +175,11 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
         ActivityController.removeActivity(this)
+
     }
 
     override fun clickHeader() {

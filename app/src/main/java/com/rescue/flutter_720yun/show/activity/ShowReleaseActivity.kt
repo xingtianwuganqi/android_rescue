@@ -403,6 +403,10 @@ class ShowReleaseActivity : BaseActivity(), ReleaseImageClickListener {
         adapter.refreshItems(viewModel.releaseInfo.photos.toList())
     }
 
+    override fun photoClickCallBack(position: Int) {
+
+    }
+
     private fun sendResultAndFinish() {
         val intent = Intent()
         intent.putExtra("published", true)
