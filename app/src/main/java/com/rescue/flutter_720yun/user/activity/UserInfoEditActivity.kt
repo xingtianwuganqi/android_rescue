@@ -1,8 +1,10 @@
 package com.rescue.flutter_720yun.user.activity
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -18,6 +20,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -28,6 +31,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.hjq.permissions.OnPermissionCallback
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import com.luck.picture.lib.basic.PictureSelector
 import com.luck.picture.lib.config.SelectMimeType
 import com.luck.picture.lib.engine.CompressFileEngine
@@ -35,6 +41,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.BaseApplication.Companion.context
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityUserInfoEditBinding
 import com.rescue.flutter_720yun.home.models.CoachReleasePhoto
@@ -63,6 +70,17 @@ class UserInfoEditActivity : BaseActivity() {
 
     private val viewModel by lazy {
         ViewModelProvider(this)[UserInfoEditViewModel::class.java]
+    }
+
+    private val photoPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGrand ->
+        if (isGrand) {
+
+        }else{
+
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,7 +145,7 @@ class UserInfoEditActivity : BaseActivity() {
     override fun addViewAction() {
         super.addViewAction()
         binding.headImg.setOnClickListener {
-            uploadHeadImage()
+            requestCameraPermission()
         }
 
         binding.username.addTextChangedListener(object : TextWatcher {
@@ -199,7 +217,7 @@ class UserInfoEditActivity : BaseActivity() {
         }
     }
 
-    fun uploadPhoto(photo: CoachReleasePhoto) {
+    private fun uploadPhoto(photo: CoachReleasePhoto) {
         if(viewModel.uploadToken.value != null) {
             viewModel.uploadToken.value?.let {
                 viewModel.imageUpload(it)
@@ -310,6 +328,36 @@ class UserInfoEditActivity : BaseActivity() {
         val intent = Intent()
         intent.putExtra("published", true)
         setResult(Activity.RESULT_OK, intent)
+    }
+
+    private fun requestCameraPermission() {
+        XXPermissions.with(this)
+            // 申请单个权限
+            .permission(Permission.READ_MEDIA_IMAGES)
+            // 设置权限请求拦截器（局部设置）
+            //.interceptor(new PermissionInterceptor())
+            // 设置不触发错误检测机制（局部设置）
+            //.unchecked()
+            .request(object : OnPermissionCallback {
+
+                override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+                    if (!allGranted) {
+//                        toast("获取部分权限成功，但部分权限未正常授予")
+                        return
+                    }
+                    uploadHeadImage()
+                }
+
+                override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+                    if (doNotAskAgain) {
+                        resources.getString(R.string.photo_permission_never).toastString()
+                        // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                        XXPermissions.startPermissionActivity(context, permissions)
+                    } else {
+                        resources.getString(R.string.photo_permission_error).toastString()
+                    }
+                }
+            })
     }
 
     override fun onDestroy() {

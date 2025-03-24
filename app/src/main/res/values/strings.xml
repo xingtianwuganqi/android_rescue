@@ -200,6 +200,9 @@
     <string name="more_remind">请选择对应的理由，理由与内容不符，会延迟处理</string>
     <string name="more_privacy">了解用户协议</string>
     <string name="more_select_remind">请选择举报类型</string>
+
+    <string name="photo_permission_error">获取相册权限失败</string>
+    <string name="photo_permission_never">相册权限被永久拒绝授权，请手动授予相册权限</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

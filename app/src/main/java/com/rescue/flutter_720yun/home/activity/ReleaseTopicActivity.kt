@@ -1,9 +1,11 @@
 package com.rescue.flutter_720yun.home.activity
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -18,6 +20,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexboxLayoutManager
+import com.hjq.permissions.OnPermissionCallback
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.adapter.ReleaseImagesAdapter
@@ -32,6 +37,7 @@ import com.luck.picture.lib.engine.CompressFileEngine
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.BaseApplication.Companion.context
 import com.rescue.flutter_720yun.util.GlideEngine
 import com.rescue.flutter_720yun.home.adapter.ReleaseImageClickListener
 import com.rescue.flutter_720yun.home.fragment.LocationSheetFragment
@@ -184,6 +190,39 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
         }
     }
 
+    private fun requestCameraPermission() {
+        XXPermissions.with(this)
+            // 申请单个权限
+            .permission(Permission.READ_MEDIA_IMAGES)
+            // 申请多个权限
+//            .permission(Permission.Group.CALENDAR)
+            // 设置权限请求拦截器（局部设置）
+            //.interceptor(new PermissionInterceptor())
+            // 设置不触发错误检测机制（局部设置）
+            //.unchecked()
+            .request(object : OnPermissionCallback {
+
+                override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+                    if (!allGranted) {
+//                        toast("获取部分权限成功，但部分权限未正常授予")
+                        return
+                    }
+                    startSelectPhoto()
+                }
+
+                override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+                    if (doNotAskAgain) {
+                        resources.getString(R.string.photo_permission_never).toastString()
+                        // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                        XXPermissions.startPermissionActivity(context, permissions)
+                    } else {
+                        resources.getString(R.string.photo_permission_error).toastString()
+                    }
+                }
+            })
+    }
+
+
     override fun addViewAction() {
         binding.addTags.setOnClickListener {
             val intent = Intent(this, TagListActivity::class.java)
@@ -299,6 +338,10 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
     }
 
     override fun addImageClick() {
+        requestCameraPermission()
+    }
+
+    private fun startSelectPhoto() {
         val images = viewModel.releaseInfo.photos.filter {
             !it.isAdd
         }
@@ -330,7 +373,7 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
                         CoachReleasePhoto(
                             false,
                             "${dateFormatter("yyyy-MM")}/origin/${randomString(8)}.jpeg",
-                             it,
+                            it,
                             null,
                         )
                     }
