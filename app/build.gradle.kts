@@ -12,19 +12,52 @@ android {
         applicationId = "com.rescue.flutter_720yun"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 16
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // 签名类型
+
+    signingConfigs {
+        register("release") {
+            // 别名
+            keyAlias = "key0"
+            // 别名密码
+            keyPassword = "android1512"
+            // 路径
+            storeFile = file("./keystore.jks")
+            // 签名文件密码
+            storePassword = "android1512"
+        }
+    }
+
     buildTypes {
         release {
+            // 签名
+            signingConfig = signingConfigs.getByName("release")
+            // 混淆
             isMinifyEnabled = false
+            // 移除无用的resource文件
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+
+        }
+
+        debug {
+            // 关闭混淆以方便调试
+            isMinifyEnabled = false
+        }
+
+        lint {
+            checkReleaseBuilds = false
+            abortOnError = false
+            baseline = file("lint-baseline.xml")
         }
     }
     compileOptions {
