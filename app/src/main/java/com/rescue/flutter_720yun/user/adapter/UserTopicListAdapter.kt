@@ -28,7 +28,7 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
                 .placeholder(R.drawable.icon_eee)
                 .into(binding.headImg)
 
-            binding.content.text = item.content
+            binding.content.text = item.userInfo?.username
 
             binding.imgBack.setOnClickListener {
                 clickListener(item)
@@ -102,7 +102,7 @@ class UserShowListAdapter(var list: MutableList<ShowPageModel>,
                 .placeholder(R.drawable.icon_eee)
                 .into(binding.headImg)
 
-            binding.content.text = item.instruction
+            binding.content.text = item.user?.username
 
             binding.imgBack.setOnClickListener {
                 clickListener(item)

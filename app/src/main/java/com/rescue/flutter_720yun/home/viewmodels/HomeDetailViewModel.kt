@@ -184,7 +184,7 @@ class HomeDetailViewModel: ViewModel() {
                 if (model?.topic_id != null) {
                     dic["topic_id"] = model.topic_id
                 }
-                val response = appService.changeCompleteStatus(dic).awaitResp()
+                val response = appService.deleteTopic(dic).awaitResp()
                 if (response.code == 200) {
                     _deleted.value = true
                 }else{

@@ -20,6 +20,7 @@ import com.rescue.flutter_720yun.databinding.FragmentUserTopicBinding
 import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.LoginEvent
+import com.rescue.flutter_720yun.show.activity.ShowDetailActivity
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
 import com.rescue.flutter_720yun.show.adapter.ShowPageListAdapter
 import com.rescue.flutter_720yun.show.models.ShowPageModel
@@ -54,7 +55,12 @@ class UserTopicFragment: Fragment() {
             Log.d("TAG", "data is $data")
             Log.d("TAG", "resultData is $resultData")
             Log.d("TAG", "result data is ${resultData?.topic_id}")
-            uploadItem(resultData)
+            val deletedValue = data?.getIntExtra("deleted", 0)
+            if (deletedValue == 1) {
+                deleteItem(resultData)
+            }else {
+                uploadItem(resultData)
+            }
         }
     }
 
@@ -68,7 +74,9 @@ class UserTopicFragment: Fragment() {
     }
     private val showAdapter by lazy {
         UserShowListAdapter(mutableListOf(), { item ->
-
+            val intent = Intent(activity, ShowDetailActivity::class.java)
+            intent.putExtra("show_id", item.show_id)
+            startActivity(intent)
         })
     }
 
@@ -218,6 +226,18 @@ class UserTopicFragment: Fragment() {
     private fun uploadItem(model: HomeListModel?) {
         model?.let {
             adapter.uploadItem(model)
+        }
+    }
+
+    private fun deleteItem(model: HomeListModel?) {
+        model?.let {
+            viewModel.deleteItem(it)
+        }
+    }
+
+    private fun deleteItemShowInfo(model: ShowPageModel?) {
+        model?.let {
+            viewModel.deleteShowInfo(model)
         }
     }
 

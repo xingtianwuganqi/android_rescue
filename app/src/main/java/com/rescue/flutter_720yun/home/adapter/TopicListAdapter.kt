@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
@@ -80,6 +81,7 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val commentBtn: MaterialButton = view.findViewById(R.id.comment_button)
     var moreButton: ImageButton = view.findViewById(R.id.more_btn)
     val completion: ImageView = view.findViewById(R.id.completion)
+    var homeBackLayout: ConstraintLayout = view.findViewById(R.id.home_back)
 
     fun bind(context: Context, item: HomeListModel?, listener: OnItemClickListener) {
         name.text = item?.userInfo?.username
@@ -170,7 +172,11 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             listener.userClick(item)
         }
 
-        content.setOnClickListener{
+        homeBackLayout.setOnClickListener{
+            listener.onItemClick(item)
+        }
+
+        tagInfo.setOnClickListener{
             listener.onItemClick(item)
         }
 

@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 
 class UserViewModel: ViewModel(), CommonViewModelInterface {
     val appService = ServiceCreator.create<UserService>()
-    private val _userInfo = MutableLiveData<UserInfoModel>()
-    val userInfo: LiveData<UserInfoModel> get() = _userInfo
+    private val _userInfo = MutableLiveData<UserInfoModel?>()
+    val userInfo: LiveData<UserInfoModel?> get() = _userInfo
     private val _userIdLiveData = MutableLiveData<Int>()
     val userIdLiveData: LiveData<Int> = _userIdLiveData.distinctUntilChanged()
 
@@ -227,5 +227,54 @@ class UserViewModel: ViewModel(), CommonViewModelInterface {
         _uiState.value = UiState.Success(listOf())
         val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
         _uiState.value = UiState.Error(noMoreData)
+    }
+
+    fun deleteItem(model: HomeListModel) {
+        when (_uiState.value) {
+            is UiState.Success -> {
+                val list = (_uiState.value as UiState.Success<List<Any>>).data
+                if (list.first() is HomeListModel) {
+                    val items = list.map {
+                        it as HomeListModel
+                    }
+                    val newItem = items.filter {
+                        it.topic_id != model.topic_id
+                    }
+                    _uiState.value = UiState.Success(newItem)
+                }else if (list.first() is ShowPageModel) {
+                    val items = list.map {
+                        it as ShowPageModel
+                    }
+                    _uiState.value = UiState.Success(items)
+                }
+            }else -> {
+
+            }
+        }
+    }
+
+    fun deleteShowInfo(show: ShowPageModel) {
+        when (_uiState.value) {
+            is UiState.Success -> {
+                val list = (_uiState.value as UiState.Success<List<Any>>).data
+                if (list.first() is HomeListModel) {
+                    val items = list.map {
+                        it as HomeListModel
+                    }
+
+                    _uiState.value = UiState.Success(items)
+                }else if (list.first() is ShowPageModel) {
+                    val items = list.map {
+                        it as ShowPageModel
+                    }
+                    val newItem = items.filter {
+                        it.show_id != show.show_id
+                    }
+                    _uiState.value = UiState.Success(items)
+                }
+            }else -> {
+
+        }
+        }
     }
 }

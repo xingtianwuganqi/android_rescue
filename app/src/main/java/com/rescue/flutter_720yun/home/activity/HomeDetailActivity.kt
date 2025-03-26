@@ -24,10 +24,16 @@ import com.rescue.flutter_720yun.home.fragment.HomeDetailMoreFragment
 import com.rescue.flutter_720yun.home.models.HomeDetailModel
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
+import com.rescue.flutter_720yun.message.activity.CommentListActivity
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
@@ -59,6 +65,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun addViewModelObserver() {
         viewModel.homeData.observe(this) {
             uploadViews(it)
@@ -89,7 +96,13 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         }
 
         viewModel.deleted.observe(this) {
-
+            // 延迟退出并删除数据
+            resources.getString(R.string.delete_success).toastString()
+            GlobalScope.launch(Dispatchers.Main) {
+                delay(1500)
+                sendResultAndFinish()
+                finish()
+            }
         }
 
     }
@@ -219,7 +232,17 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         if (viewModel.homeDataChanged.value == true) {
             val intent = Intent()
             intent.putExtra("result_model", viewModel.homeData.value)
+            if (viewModel.deleted.value == true) {
+                intent.putExtra("deleted", 1)
+            }
             setResult(Activity.RESULT_OK, intent)
+        }else{
+            if (viewModel.deleted.value == true) {
+                val intent = Intent()
+                intent.putExtra("result_model", viewModel.homeData.value)
+                intent.putExtra("deleted", 1)
+                setResult(Activity.RESULT_OK, intent)
+            }
         }
     }
 
@@ -250,7 +273,11 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
         binding.commentButton.setOnClickListener {
             lazyLogin(this) {
-
+                val intent = Intent(this, CommentListActivity::class.java)
+                intent.putExtra("topicId", viewModel.homeData.value?.topic_id)
+                intent.putExtra("topicType", 1)
+                intent.putExtra("toUid", viewModel.homeData.value?.userInfo?.id)
+                startActivity(intent)
             }
         }
 

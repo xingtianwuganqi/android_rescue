@@ -78,6 +78,7 @@
         android:backgroundTint="@color/color_system"
         app:cornerRadius="6dp"
         android:layout_gravity="top|end"
+        android:visibility="gone"
         />
 </FrameLayout>
 
