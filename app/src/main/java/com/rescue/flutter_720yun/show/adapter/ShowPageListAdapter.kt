@@ -136,6 +136,10 @@ class ShowPageListAdapter(val list: MutableList<ShowPageModel>, val listener: Sh
         holder.commentButton.setOnClickListener {
             listener.commentClick(item)
         }
+
+        holder.moreButton.setOnClickListener {
+            listener.moreClick(item)
+        }
     }
 
     fun refreshItem(newList: List<ShowPageModel>) {

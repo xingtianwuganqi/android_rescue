@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
+import com.rescue.flutter_720yun.home.activity.TopicReportActivity
+import com.rescue.flutter_720yun.home.fragment.MoreBottomFragment
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.message.activity.CommentListActivity
@@ -241,6 +243,33 @@ class ShowFragment : Fragment(), ShowItemClickListener {
     }
 
     override fun moreClick(item: ShowPageModel) {
+        lazyLogin(requireActivity()) {
+            val moreBottomShow = MoreBottomFragment()
+            moreBottomShow.show(childFragmentManager, moreBottomShow.tag)
+            moreBottomShow.clickCallBack = { index ->
+                val value = index as String
+                when (value) {
+                    "0" -> {
+                        showBlackDialog()
+                    }
+                    "1" -> {
+                        val intent = Intent(activity, TopicReportActivity::class.java)
+                        intent.putExtra("reportId", item.show_id)
+                        intent.putExtra("reportType", 4)
+                        startActivity(intent)
+                        moreBottomShow.dismiss()
+
+                    }
+
+                    "2" -> {
+                        moreBottomShow.dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showBlackDialog() {
 
     }
 
