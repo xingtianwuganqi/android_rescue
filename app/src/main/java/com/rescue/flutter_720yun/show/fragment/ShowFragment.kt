@@ -258,9 +258,7 @@ class ShowFragment : Fragment(), ShowItemClickListener {
                         intent.putExtra("reportType", 4)
                         startActivity(intent)
                         moreBottomShow.dismiss()
-
                     }
-
                     "2" -> {
                         moreBottomShow.dismiss()
                     }

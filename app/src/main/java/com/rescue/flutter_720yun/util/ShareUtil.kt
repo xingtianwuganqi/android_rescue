@@ -29,4 +29,20 @@ object SharedPreferencesUtil {
         }
         return null
     }
+
+    fun putStringSet(key: String, value: Set<String>, context: Context) {
+        if (value.isNotEmpty()) {
+            val edit: SharedPreferences.Editor = getSps(context).edit()
+            edit.putStringSet(key, value)
+            edit.apply()
+        }
+    }
+
+    fun getStringSet(key: String, context: Context): Set<String>? {
+        if (key.isNotBlank()) {
+            val sps: SharedPreferences= getSps(context)
+            return sps.getStringSet(key, null)
+        }
+        return null
+    }
 }

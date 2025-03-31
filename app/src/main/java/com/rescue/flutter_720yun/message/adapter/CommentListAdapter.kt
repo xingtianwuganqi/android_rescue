@@ -24,6 +24,8 @@ interface CommentClickListener {
     fun commentAction(item: CommentListModel)
     fun replyAction(item: ReplyListModel)
     fun loadMoreReplys(item: CommentListModel)
+    fun commentMoreClick(item: CommentListModel)
+    fun replyMoreClick(item: ReplyListModel)
 }
 
 class CommentListAdapter(val list: MutableList<CommentItemModel>, val listener: CommentClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -143,6 +145,10 @@ class CommentListViewHolder(var binding: CommentListItemBinding): RecyclerView.V
         binding.replyButton.setOnClickListener {
             listener.commentAction(item)
         }
+
+        binding.moreButton.setOnClickListener {
+            listener.commentMoreClick(item)
+        }
     }
 }
 
@@ -161,6 +167,10 @@ class ReplyListViewHolder(var binding: ReplyListItemBinding): RecyclerView.ViewH
 
         binding.replyButton.setOnClickListener {
             listener.replyAction(item)
+        }
+
+        binding.moreButton.setOnClickListener {
+            listener.replyMoreClick(item)
         }
     }
 }

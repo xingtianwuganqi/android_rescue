@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.HomeListModel
 
-class HomeListAdapter(private val list: MutableList<HomeListModel>,
+class HomeListAdapter(private var list: MutableList<HomeListModel>,
                       private val context: Context,
                       private val listener: OnItemClickListener
 ):
@@ -52,6 +52,13 @@ class HomeListAdapter(private val list: MutableList<HomeListModel>,
             list[position] = item
             notifyItemChanged(position)
         }
+    }
+
+    fun deleteItem(item: HomeListModel) {
+        list = list.filter {
+            item.topic_id != it.topic_id
+        }.toMutableList()
+        notifyDataSetChanged()
     }
 }
 

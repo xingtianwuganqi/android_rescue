@@ -1,5 +1,6 @@
 package com.rescue.flutter_720yun.message.activity
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityCommentListBinding
+import com.rescue.flutter_720yun.home.activity.TopicReportActivity
+import com.rescue.flutter_720yun.home.fragment.MoreBottomFragment
 import com.rescue.flutter_720yun.message.adapter.CommentClickListener
 import com.rescue.flutter_720yun.message.adapter.CommentListAdapter
 import com.rescue.flutter_720yun.message.viewmodels.CommentListViewModel
@@ -20,6 +23,7 @@ import com.rescue.flutter_720yun.show.models.CommentListModel
 import com.rescue.flutter_720yun.show.models.ReplyListModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
@@ -243,6 +247,76 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
         item.comment_id?.let {
             viewModel.loadMoreReplyNetworking(it, item.next_page)
         }
+    }
+
+    override fun commentMoreClick(item: CommentListModel) {
+        lazyLogin(this) {
+            val moreBottomShow = MoreBottomFragment()
+            moreBottomShow.show(supportFragmentManager, moreBottomShow.tag)
+            moreBottomShow.clickCallBack = { index ->
+                val value = index as String
+                when (value) {
+                    "0" -> {
+                        showBlackDialog()
+                    }
+                    "1" -> {
+                        var reportType: Int = 0
+                        if (viewModel.topicType == 1) { // home
+                            reportType = 2
+                        }else if (viewModel.topicType == 2) { // show
+                            reportType = 5
+                        }
+                        val intent = Intent(this, TopicReportActivity::class.java)
+                        intent.putExtra("reportId", item.topic_id)
+                        intent.putExtra("reportType", reportType)
+                        startActivity(intent)
+                        moreBottomShow.dismiss()
+
+                    }
+
+                    "2" -> {
+                        moreBottomShow.dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun replyMoreClick(item: ReplyListModel) {
+        lazyLogin(this) {
+            val moreBottomShow = MoreBottomFragment()
+            moreBottomShow.show(supportFragmentManager, moreBottomShow.tag)
+            moreBottomShow.clickCallBack = { index ->
+                val value = index as String
+                when (value) {
+                    "0" -> {
+                        showBlackDialog()
+                    }
+                    "1" -> {
+                        var reportType: Int = 0
+                        if (viewModel.topicType == 1) { // home
+                            reportType = 3
+                        }else if (viewModel.topicType == 2) { // show
+                            reportType = 6
+                        }
+                        val intent = Intent(this, TopicReportActivity::class.java)
+                        intent.putExtra("reportId", item.reply_id)
+                        intent.putExtra("reportType", reportType)
+                        startActivity(intent)
+                        moreBottomShow.dismiss()
+
+                    }
+
+                    "2" -> {
+                        moreBottomShow.dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showBlackDialog() {
+
     }
 
     private fun newShowLoading() {

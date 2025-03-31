@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.home.fragment
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.media.metrics.Event
 import android.os.Bundle
@@ -22,12 +24,15 @@ import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.HomeViewModel
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity
 import com.rescue.flutter_720yun.home.activity.TopicReportActivity
 import com.rescue.flutter_720yun.home.adapter.OnItemClickListener
 import com.rescue.flutter_720yun.home.adapter.TopicReportAdapter
 import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.message.activity.CommentListActivity
+import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
@@ -370,7 +375,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 val value = index as String
                 when (value) {
                     "0" -> {
-                        showBlackDialog()
+                        showBlackDialog(model)
                     }
                     "1" -> {
                         val intent = Intent(activity, TopicReportActivity::class.java)
@@ -389,8 +394,40 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    private fun showBlackDialog() {
+    private fun showBlackDialog(model: HomeListModel?) {
+        val builder = AlertDialog.Builder(activity)
+        builder.setMessage(resources.getString(R.string.more_black_desc))
+        builder.setCancelable(false)
+        builder.setPositiveButton(resources.getString(R.string.confirm_d), DialogInterface.OnClickListener { dialogInterface, i ->
+            moreBlackAction(model)
+            if (model != null) {
+                adapter.deleteItem(model)
+            }
+        })
+        builder.setNegativeButton(resources.getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->
 
+        })
+        val dialog = builder.create()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireActivity(), R.color.color_system))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireActivity(), R.color.color_node))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).textSize = 16F
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).textSize = 16F
+    }
+
+    private fun moreBlackAction(model: HomeListModel?) {
+        val topicId = model?.topic_id ?: 0
+        val value = SharedPreferencesUtil.getStringSet("black_home_list", requireActivity())
+        if (value.isNullOrEmpty()) {
+            val list: Set<String> = mutableSetOf("$topicId")
+            SharedPreferencesUtil.putStringSet("black_home_list", list, requireActivity())
+        }else{
+            val data = value.toMutableSet()
+            data.add("$topicId")
+            SharedPreferencesUtil.putStringSet("black_home_list",
+                    data, requireActivity())
+
+        }
     }
 
     override fun onDestroy() {

@@ -16,6 +16,7 @@ import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.RefreshState
+import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
@@ -74,7 +75,7 @@ class HomeViewModel : ViewModel() {
                 val response = appService.getTopicList(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {
-                    val items = when (response.data) {
+                    var items = when (response.data) {
                         is List<*> -> {
                             val homeList = convertAnyToList(response.data, HomeListModel::class.java)
                             (homeList ?: emptyList())
@@ -85,6 +86,10 @@ class HomeViewModel : ViewModel() {
                         else -> {
                             emptyList()
                         }
+                    }
+                    val topicIds = SharedPreferencesUtil.getStringSet("black_home_list", BaseApplication.context)
+                    items = items.filter {
+                        topicIds?.contains("${it.topic_id}") != true
                     }
                     if (items.isNotEmpty()) {
                         page += 1
