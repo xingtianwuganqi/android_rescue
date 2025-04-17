@@ -101,7 +101,7 @@ class HomeViewModel : ViewModel() {
                         }else{
                             _isLastPage.value = true
                         }
-                    }
+                    } 
                 }else{
                     if (page == 1) {
                         val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)

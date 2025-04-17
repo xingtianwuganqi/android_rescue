@@ -27,6 +27,7 @@
 
     <string name="login_new_register">新用户注册</string>
     <string name="login_phone_placeholder">请输入手机号</string>
+    <string name="login_email_placeholder">请输入邮箱</string>
     <string name="login_password_placeholder">请输入密码</string>
     <string name="login_action">登录</string>
     <string name="register_action">注册</string>

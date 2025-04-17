@@ -12,6 +12,8 @@ import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.Tool
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.isValidEmail
+import com.rescue.flutter_720yun.util.paramDic
 import com.rescue.flutter_720yun.util.toMD5
 import kotlinx.coroutines.CoroutineScope
 
@@ -38,7 +40,15 @@ class LoginViewModel: ViewModel() {
 
     suspend fun loginNetworking(phone: String, password: String) {
         val passwordMD5String = password.toMD5()
-        val response = appService.login(phone, passwordMD5String).awaitResp()
+        val dic = paramDic
+        dic["password"] = passwordMD5String
+        if (phone.isValidEmail()) {
+            dic["email"] = phone
+        }else{
+            dic["phone"] = phone
+        }
+        dic["phone_type"] = "android"
+        val response = appService.login(dic).awaitResp()
         if (response.code == 200) {
             val userInfo = response.data
             UserManager.setUserInfo(userInfo)
@@ -51,18 +61,41 @@ class LoginViewModel: ViewModel() {
     // 获取验证码
     suspend fun getCodeNetworking(phone: String): BaseResponse<Any> {
         val code = Tool.encryptionString(Tool.code) ?: ""
-        return appService.getVerificationCode(phone, code).awaitResp()
+        val dic = paramDic
+        dic["code"] = code
+        if (phone.isValidEmail()) {
+            dic["email"] = phone
+        }else{
+            dic["phone"] = phone
+        }
+        return appService.getVerificationCode(dic).awaitResp()
     }
 
     // 验证验证码
     suspend fun checkCodeNetworking(phone: String, code: String) {
-        val response = appService.checkCode(phone, code).awaitResp()
+        val dic = paramDic
+        dic["code"] = code
+        if (phone.isValidEmail()) {
+            dic["email"] = phone
+        }else{
+            dic["phone"] = phone
+        }
+        val response = appService.checkCode(dic).awaitResp()
         _checkCodeSucc.value = response.code == 200
     }
 
     // 登录
     suspend fun register(phone: String, password: String) {
-        val response = appService.register(phone, password.toMD5(), password.toMD5()).awaitResp()
+        val dic = paramDic
+        dic["password"] = password.toMD5()
+        dic["confirm_password"] = password.toMD5()
+        if (phone.isValidEmail()) {
+            dic["email"] = phone
+        }else{
+            dic["phoneNum"] = phone
+        }
+        dic["phone_type"] = "android"
+        val response = appService.register(dic).awaitResp()
         if (response.code == 200) {
             val userInfo = response.data
             UserManager.setUserInfo(userInfo)
@@ -74,7 +107,15 @@ class LoginViewModel: ViewModel() {
 
     // 找回密码
     suspend fun findPassword(phone: String, password: String, confirm_phone: String) {
-        val response = appService.uploadPassword(phone, password, confirm_phone).awaitResp()
+        val dic = paramDic
+        dic["password"] = password.toMD5()
+        dic["confirm_password"] = password.toMD5()
+        if (phone.isValidEmail()) {
+            dic["email"] = phone
+        }else{
+            dic["phoneNum"] = phone
+        }
+        val response = appService.uploadPassword(dic).awaitResp()
         _findPasswordStatus.value = response.code == 200
     }
 
