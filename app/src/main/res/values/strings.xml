@@ -45,12 +45,12 @@
     <string name="uploadPasswordFail">更新密码失败</string>
     <string name="check_code_fail">验证码有误</string>
     <string name="code_send_error">验证码发送失败，请重试</string>
-    <string name="login_unbind">未绑定手机号</string>
+    <string name="login_unbind">未绑定邮箱</string>
     <string name="login_uncheck">未校验账号</string>
     <string name="login_token_lose">登录失效，请重新登录</string>
     <string name="logout">退出登录</string>
     <string name="logout_remind">确定退出登录吗？</string>
-    <string name="login_bind_phone">绑定手机号</string>
+    <string name="login_bind_phone">绑定邮箱</string>
     <string name="login_read_agree">阅读并同意</string>
 
     <string name="read_all">全文</string>

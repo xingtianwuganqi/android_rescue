@@ -1,48 +1,38 @@
 package com.rescue.flutter_720yun.home.activity
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
+import android.text.style.AbsoluteSizeSpan
 import android.text.style.ClickableSpan
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.databinding.ActivityLoginBinding
-import com.rescue.flutter_720yun.home.viewmodels.LoginViewModel
-import kotlinx.coroutines.launch
-import android.text.SpannableStringBuilder
-import android.text.style.AbsoluteSizeSpan
-import android.util.Log
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.FrameLayout
-import androidx.compose.ui.text.toLowerCase
 import com.google.android.material.button.MaterialButton
 import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.databinding.ActivityLoginBinding
 import com.rescue.flutter_720yun.home.models.LoginEvent
+import com.rescue.flutter_720yun.home.viewmodels.LoginViewModel
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
 import com.rescue.flutter_720yun.util.BuildConfig
 import com.rescue.flutter_720yun.util.UserManager
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import java.util.Locale
-import kotlin.math.log
 
 
 class LoginActivity : BaseActivity() {
@@ -79,7 +69,7 @@ class LoginActivity : BaseActivity() {
                 val title = resources.getText(R.string.login_check_phone).toString()
                 setupToolbar(title)
             }
-            "find" -> {
+            "findPassword" -> {
                 val title = resources.getText(R.string.login_find_password).toString()
                 setupToolbar(title)
             }
@@ -326,6 +316,7 @@ class LoginActivity : BaseActivity() {
                     val register = Intent(this, LoginActivity::class.java)
                     register.putExtra("type", "findPassword")
                     register.putExtra("phoneNum", phoneTextField.text.trim().toString())
+                    register.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(register)
 
                 }else if (type == "registerCheckCode"){
@@ -347,6 +338,7 @@ class LoginActivity : BaseActivity() {
                 val msg = resources.getString(R.string.uploadPasswordSucc)
                 Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
                 viewModel.cleanFindPasswordStatus()
+                finish()
             }else if (it == false){
                 val msg = resources.getString(R.string.uploadPasswordFail)
                 Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
