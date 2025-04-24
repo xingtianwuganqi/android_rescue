@@ -121,7 +121,7 @@ class LoginActivity : BaseActivity() {
         loginBtn.setOnClickListener {
             if (type == "login") {
                 if (phoneTextField.text.trim().isEmpty()) {
-                    val msg = resources.getString(R.string.login_phone_placeholder)
+                    val msg = resources.getString(R.string.login_email_placeholder)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
@@ -143,9 +143,34 @@ class LoginActivity : BaseActivity() {
                         passwordTextField.text.trim().toString()
                     )
                 }
-            }else if (type == "findCheckCode" || type == "registerCheckCode" || type == "bindPhone" || type == "checkPhone") {
+            }else if (type == "registerCheckCode") {
                 if (phoneTextField.text.trim().isEmpty()) {
-                    val msg = resources.getString(R.string.login_phone_placeholder)
+                    val msg = resources.getString(R.string.login_email_placeholder)
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                if (passwordTextField.text.trim().isEmpty()) {
+                    val msg = resources.getString(R.string.login_password_placeholder)
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                if (viewModel.agreement.value == false) {
+                    val msg = resources.getString(R.string.login_protocol)
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                lifecycleScope.launch {
+                    viewModel.checkCodeNetworking(
+                        phoneTextField.text.trim().toString(),
+                        passwordTextField.text.trim().toString()
+                    )
+                }
+            }else if (type == "findCheckCode" || type == "bindPhone" || type == "checkPhone") {
+                if (phoneTextField.text.trim().isEmpty()) {
+                    val msg = resources.getString(R.string.login_email_placeholder)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
@@ -389,7 +414,21 @@ class LoginActivity : BaseActivity() {
                 getCodeBtn?.visibility = View.GONE
                 showPassword?.visibility = View.VISIBLE
             }
-            "registerCheckCode", "findCheckCode" -> {
+
+            "registerCheckCode" -> {
+                findBtn?.visibility = View.GONE
+                registerBtn?.visibility = View.GONE
+                agreementLayout?.visibility = View.VISIBLE
+
+                passwordTextField.hint = resources.getText(R.string.register_input_code)
+                passwordTextField.inputType = InputType.TYPE_CLASS_TEXT
+                loginBtn.text = resources.getText(R.string.login_check_phone)
+
+                getCodeBtn?.visibility = View.VISIBLE
+                showPassword?.visibility = View.GONE
+            }
+
+             "findCheckCode" -> {
                 findBtn?.visibility = View.GONE
                 registerBtn?.visibility = View.GONE
                 agreementLayout?.visibility = View.GONE

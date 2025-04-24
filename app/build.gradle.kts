@@ -12,7 +12,7 @@ android {
         applicationId = "com.rescue.flutter_720yun"
         minSdk = 28
         targetSdk = 34
-        versionCode = 16
+        versionCode = 17
         versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

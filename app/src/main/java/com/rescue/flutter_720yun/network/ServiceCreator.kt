@@ -27,8 +27,9 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 object ServiceCreator {
-    private const val BASE_URL = "http://test.rxswift.cn/"
+//    private const val BASE_URL = "http://test.rxswift.cn/"
 
+    private const val BASE_URL = "http://rescue.rxswift.cn/"
     // 创建 Interceptor
     private val headerInterceptor = Interceptor { chain ->
         val request: Request = chain.request()

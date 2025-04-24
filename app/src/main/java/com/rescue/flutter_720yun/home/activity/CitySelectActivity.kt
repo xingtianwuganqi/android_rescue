@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
@@ -19,7 +20,11 @@ import com.rescue.flutter_720yun.home.adapter.CitySelectAdapter
 import com.rescue.flutter_720yun.home.models.AddressItem
 import com.rescue.flutter_720yun.home.models.CityModel
 import com.rescue.flutter_720yun.home.viewmodels.CitySelectViewModel
+import com.rescue.flutter_720yun.util.LoadingDialog
 import com.rescue.flutter_720yun.util.UiState
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class CitySelectActivity : BaseActivity() {
 
@@ -66,6 +71,11 @@ class CitySelectActivity : BaseActivity() {
         binding.cityRecyclerview.adapter = CitySelectAdapter(cities, { addressItem ->
             addressItem?.let {
                 viewModel.uploadCityInfo(it)
+                GlobalScope.launch {
+                    delay(1000)
+                    sendResultAndFinish()
+                    finish()
+                }
             }
         })
     }
