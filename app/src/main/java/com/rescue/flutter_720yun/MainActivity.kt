@@ -30,12 +30,10 @@ import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.home.viewmodels.MainViewModel
 import com.rescue.flutter_720yun.user.activity.AdoptAboutActivity
 import com.rescue.flutter_720yun.user.activity.BlackListActivity
-import com.rescue.flutter_720yun.user.activity.UserAccountSafeActivity
 import com.rescue.flutter_720yun.user.activity.UserCollectionActivity
 import com.rescue.flutter_720yun.user.activity.UserSettingActivity
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
-import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
-import com.rescue.flutter_720yun.util.BuildConfig
+import com.rescue.flutter_720yun.util.AppBuildConfig
 import com.rescue.flutter_720yun.util.lazyLogin
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -208,18 +206,18 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
         }else if (item.name == resources.getString(R.string.drawer_agreement)) {
             val intent = Intent(this, WebPageActivity::class.java)
-            val baseUrl = BuildConfig.BASEURL + BuildConfig.USERAGREEN_URL
+            val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.USERAGREEN_URL
             intent.putExtra("webUrl",baseUrl)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_privacy)) {
             val intent = Intent(this, WebPageActivity::class.java)
-            val baseUrl = BuildConfig.BASEURL + BuildConfig.PRAVICY_URL
+            val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.PRAVICY_URL
             Log.d("TAG", baseUrl)
             intent.putExtra("webUrl",baseUrl)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_about)) {
             val intent = Intent(this, WebPageActivity::class.java)
-            val baseUrl = BuildConfig.BASEURL + BuildConfig.ABOUTUS
+            val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.ABOUTUS
             Log.d("TAG", baseUrl)
             intent.putExtra("webUrl",baseUrl)
             startActivity(intent)

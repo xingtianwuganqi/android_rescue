@@ -18,13 +18,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
-import com.rescue.flutter_720yun.util.BuildConfig
 import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 import android.graphics.Color
 import android.widget.Button
+import com.rescue.flutter_720yun.util.AppBuildConfig
 
 
 class SplashActivity : AppCompatActivity() {
@@ -115,14 +113,14 @@ class SplashActivity : AppCompatActivity() {
 
     private fun openUserAgree() {
         val intent = Intent(this, WebPageActivity::class.java)
-        val baseUrl = BuildConfig.BASEURL + BuildConfig.USERAGREEN_URL
+        val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.USERAGREEN_URL
         intent.putExtra("webUrl",baseUrl)
         startActivity(intent)
     }
 
     private fun openPrivacy() {
         val intent = Intent(this, WebPageActivity::class.java)
-        val baseUrl = BuildConfig.BASEURL + BuildConfig.PRAVICY_URL
+        val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.PRAVICY_URL
         intent.putExtra("webUrl",baseUrl)
         startActivity(intent)
     }

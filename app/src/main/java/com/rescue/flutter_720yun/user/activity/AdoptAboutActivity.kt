@@ -14,7 +14,6 @@ import com.rescue.flutter_720yun.databinding.ActivityAdoptAboutBinding
 import com.rescue.flutter_720yun.message.adapter.MessageListItemClickListener
 import com.rescue.flutter_720yun.user.adapter.UserSettingAdapter
 import com.rescue.flutter_720yun.user.viewmodels.AdoptAboutViewModel
-import com.rescue.flutter_720yun.util.BuildConfig
 
 class AdoptAboutActivity : BaseActivity(), MessageListItemClickListener {
 

@@ -1,7 +1,7 @@
 package com.rescue.flutter_720yun.util
 
-object BuildConfig {
-    const val DEBUG: Boolean = true
+object AppBuildConfig {
+    const val DEBUG: Boolean = false
     val BASEURL: String get() = if (DEBUG) "http://test.rxswift.cn" else "https://rescue.rxswift.cn"
     const val PRAVICY_URL = "/api/pravicy/"
     const val USERAGREEN_URL = "/api/useragreen/"

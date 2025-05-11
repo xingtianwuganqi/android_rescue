@@ -29,7 +29,7 @@ import com.rescue.flutter_720yun.databinding.ActivityLoginBinding
 import com.rescue.flutter_720yun.home.models.LoginEvent
 import com.rescue.flutter_720yun.home.viewmodels.LoginViewModel
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
-import com.rescue.flutter_720yun.util.BuildConfig
+import com.rescue.flutter_720yun.util.AppBuildConfig
 import com.rescue.flutter_720yun.util.UserManager
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -541,14 +541,14 @@ class LoginActivity : BaseActivity() {
 
     fun openUserAgree() {
         val intent = Intent(this, WebPageActivity::class.java)
-        val baseUrl = BuildConfig.BASEURL + BuildConfig.USERAGREEN_URL
+        val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.USERAGREEN_URL
         intent.putExtra("webUrl", baseUrl)
         startActivity(intent)
     }
 
     fun openUserPrivacy() {
         val intent = Intent(this, WebPageActivity::class.java)
-        val baseUrl = BuildConfig.BASEURL + BuildConfig.PRAVICY_URL
+        val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.PRAVICY_URL
         intent.putExtra("webUrl", baseUrl)
         startActivity(intent)
     }

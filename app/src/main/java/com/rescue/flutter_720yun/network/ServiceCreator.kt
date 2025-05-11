@@ -4,6 +4,7 @@ import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.LoginEvent
+import com.rescue.flutter_720yun.util.AppBuildConfig
 import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.toastString
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -21,15 +22,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import top.zibin.luban.BuildConfig
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 object ServiceCreator {
-//    private const val BASE_URL = "http://test.rxswift.cn/"
-
-    private const val BASE_URL = "http://rescue.rxswift.cn/"
     // 创建 Interceptor
     private val headerInterceptor = Interceptor { chain ->
         val request: Request = chain.request()
@@ -52,7 +51,7 @@ object ServiceCreator {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(AppBuildConfig.BASEURL)
         .addConverterFactory(GsonConverterFactory.create())
 //        .client(okHttpClient)
         .build()

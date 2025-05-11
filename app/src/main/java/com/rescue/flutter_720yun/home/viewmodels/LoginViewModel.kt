@@ -45,7 +45,7 @@ class LoginViewModel: ViewModel() {
         if (phone.isValidEmail()) {
             dic["email"] = phone
         }else{
-            dic["phone"] = phone
+            dic["phoneNum"] = phone
         }
         dic["phone_type"] = "android"
         val response = appService.login(dic).awaitResp()

@@ -33,7 +33,7 @@ import com.rescue.flutter_720yun.home.adapter.TopicReportAdapter
 import com.rescue.flutter_720yun.home.models.ReportTypeModel
 import com.rescue.flutter_720yun.home.viewmodels.TopicReportViewModel
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
-import com.rescue.flutter_720yun.util.BuildConfig
+import com.rescue.flutter_720yun.util.AppBuildConfig
 import com.rescue.flutter_720yun.util.LoadingDialog
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
@@ -182,7 +182,7 @@ class TopicReportActivity : BaseActivity() {
 
     fun openUserAgree() {
         val intent = Intent(this, WebPageActivity::class.java)
-        val baseUrl = BuildConfig.BASEURL + BuildConfig.USERAGREEN_URL
+        val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.USERAGREEN_URL
         intent.putExtra("webUrl", baseUrl)
         startActivity(intent)
     }
