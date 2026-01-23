@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -35,6 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.rescue.flutter_720yun.demo.HomeDetail
+import kotlinx.coroutines.selects.select
 
 
 class MainActivity : ComponentActivity() {
@@ -75,84 +78,106 @@ fun MainScreen() {
         BottomTab.Profile,
         BottomTab.Settings
     )
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val showBottomBar = currentDestination?.hierarchy?.any {
+        it.route in tabs.map { tab -> tab.route }
+    } == true
+
     Scaffold(
         bottomBar = {
-            NavigationBar() {
-                val currentRouter = currentRoute(navController)
-                tabs.forEach { tab ->
-                    NavigationBarItem(
-                        selected = currentRouter == tab.route,
-                        icon = {
-                            Icon(
-                                imageVector = tab.icon,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text(text = tab.title) },
-                        onClick = {
-                            navController.navigate(tab.route) {
-                                popUpTo(navController.graph.startDestinationId){
-                                    saveState = true
+            if (showBottomBar) {
+                NavigationBar() {
+                    tabs.forEach { tab ->
+                        val selected = currentDestination
+                            .hierarchy
+                            .any { it.route == tab.route }
+
+                        NavigationBarItem(
+                            selected = selected,
+                            icon = {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = null
+                                )
+                            },
+                            label = { Text(text = tab.title) },
+                            onClick = {
+                                navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = BottomTab.Home.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            navigation(
-                startDestination = "home/main",
-                route = BottomTab.Home.route
-            ) {
-                composable("home/main") {
-                    HomeScreen(navController)
-                }
 
-                composable("home/detail/{id}",
-                        arguments = listOf(
-                            navArgument("id") {
-                                type = NavType.IntType
-                            }
-                        )
-                    ) {
-                    val id = it.arguments?.getInt("id") ?: 0
-                    HomeDetail(navController, id)
-                }
-
-            }
-
-            navigation(
-                startDestination = "page/home",
-                route = "page"
-            ) {
-                composable("page/home") {
-                    Page()
-                }
-                composable("page/detail") {
-                    Page2()
-                }
-            }
-
-            navigation(
-                startDestination = "settings/home",
-                route = "settings"
-            ) {
-                composable("settings/home") {
-                    Page2()
-                }
-            }
-        }
+        AppNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
 
     }
 }
+
+@Composable
+fun AppNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = BottomTab.Home.route,
+        modifier = modifier
+    ) {
+
+        // Home Tab
+        navigation(
+            startDestination = "home/main",
+            route = BottomTab.Home.route
+        ) {
+            composable("home/main") {
+                HomeScreen(navController)
+            }
+
+            composable(
+                "home/detail/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.IntType }
+                )
+            ) {
+                val id = it.arguments?.getInt("id") ?: 0
+                HomeDetail(navController, id)
+            }
+        }
+
+        // Profile Tab
+        navigation(
+            startDestination = "profile/main",
+            route = BottomTab.Profile.route
+        ) {
+            composable("profile/main") {
+                Page()
+            }
+        }
+
+        // Settings Tab
+        navigation(
+            startDestination = "settings/main",
+            route = BottomTab.Settings.route
+        ) {
+            composable("settings/main") {
+                Page2()
+            }
+        }
+    }
+}
+
 
 @Composable
 fun currentRoute(navController: NavController): String? {
