@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".home.fragment.FindPetFragment">
+
+    <!-- 加载中占位视图 -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+    <!-- 数据为空占位视图 -->
+    <TextView
+        android:id="@+id/errorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_data"
+        android:textSize="@dimen/address_font"
+        android:textColor="@color/color_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:paddingBottom="10dp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            >
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:id="@+id/back_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                app:cornerRadius="10dp"
+                android:backgroundTint="@color/color_system"/>
+
+            <TextView
+                android:id="@+id/find_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/find_title"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_gravity="start|center"
+                android:layout_marginStart="20dp"/>
+            <!--        android:textStyle="bold"-->
+
+
+            <ImageView
+                android:id="@+id/right_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:src="@drawable/icon_find_line"
+                android:layout_marginStart="180dp"
+                android:layout_gravity="end"/>
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:id="@+id/find_button"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:contentDescription="@null"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:cornerRadius="18dp"
+                android:backgroundTint="@color/white"
+                android:text="@string/find_go"
+                android:textColor="@color/color_vip"
+                android:textSize="@dimen/content_font"
+                android:layout_gravity="end|center"
+                android:layout_marginEnd="20dp"
+                app:icon="@drawable/icon_find_right"
+                app:iconGravity="end"
+                app:iconTint="@null"
+                />
+
+        </FrameLayout>
+
+        <com.scwang.smart.refresh.layout.SmartRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <com.scwang.smart.refresh.header.MaterialHeader
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/find_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+            <com.scwang.smart.refresh.footer.ClassicsFooter
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.scwang.smart.refresh.layout.SmartRefreshLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

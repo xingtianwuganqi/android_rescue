@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.rescue.flutter_720yun.app-mergeDebugResources-72:/values-zh/values-zh.xml",
+            "map": [
+                {
+                    "source": "/Users/jingjun/.gradle/caches/transforms-3/f3635da55f2388d6dae7da716809f1c4/transformed/jetified-refresh-layout-kernel-3.0.0-alpha/res/values-zh/values-zh.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,163",
+                        "endColumns": "107,91",
+                        "endOffsets": "158,250"
+                    }
+                },
+                {
+                    "source": "/Users/jingjun/.gradle/caches/transforms-3/ad94495daf049de5c28d4aabff60d1b3/transformed/jetified-refresh-footer-classics-3.0.0-alpha/res/values-zh/values-zh.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "55,106,157,210,265,319,379",
+                        "endColumns": "50,50,52,54,53,59,53",
+                        "endOffsets": "101,152,205,260,314,374,428"
+                    },
+                    "to": {
+                        "startLines": "4,5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "255,306,357,410,465,519,579",
+                        "endColumns": "50,50,52,54,53,59,53",
+                        "endOffsets": "301,352,405,460,514,574,628"
+                    }
+                }
+            ]
+        }
+    ]
+}

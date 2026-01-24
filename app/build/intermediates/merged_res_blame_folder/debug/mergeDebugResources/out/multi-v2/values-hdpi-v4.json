@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.rescue.flutter_720yun.app-mergeDebugResources-72:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/jingjun/.gradle/caches/transforms-3/bebc61b7d5780ffa1d5c9ade6dd7eeb8/transformed/appcompat-1.6.1/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}

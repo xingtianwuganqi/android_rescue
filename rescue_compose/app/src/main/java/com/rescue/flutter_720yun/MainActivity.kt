@@ -27,7 +27,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rescue.flutter_720yun.demo.BottomTab
-import com.rescue.flutter_720yun.demo.DemoActivity
 import com.rescue.flutter_720yun.demo.HomeScreen
 import com.rescue.flutter_720yun.ui.theme.RescuecomposeTheme
 import androidx.navigation.compose.composable
@@ -82,9 +81,13 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val showBottomBar = currentDestination?.hierarchy?.any {
-        it.route in tabs.map { tab -> tab.route }
-    } == true
+    val bottomBarRoutes = setOf(
+        "home/main",
+        "profile/main",
+        "settings/main"
+    )
+
+    val showBottomBar = currentDestination?.route in bottomBarRoutes
 
     Scaffold(
         bottomBar = {
@@ -92,8 +95,8 @@ fun MainScreen() {
                 NavigationBar() {
                     tabs.forEach { tab ->
                         val selected = currentDestination
-                            .hierarchy
-                            .any { it.route == tab.route }
+                            ?.hierarchy
+                            ?.any { it.route == tab.route } == true
 
                         NavigationBarItem(
                             selected = selected,
@@ -106,11 +109,31 @@ fun MainScreen() {
                             label = { Text(text = tab.title) },
                             onClick = {
                                 navController.navigate(tab.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
+//                                    popUpTo(navController.graph.startDestinationId) {
+//                                        saveState = true
+//                                    }
+//                                    launchSingleTop = true
+//                                    restoreState = true
+                                    // ① 回退栈清理规则
+                                    popUpTo(tab.route) {
+                                        // 是否把 tab.route 本身也弹掉
+                                        // false = 保留 tab.route 作为栈底
+                                        inclusive = false
+
+                                        // 是否保存被 pop 掉页面的状态
+                                        // false = 不保留状态（Tab 间不共享历史）
+                                        saveState = false
                                     }
+
+                                    // ② 如果当前已经在这个 tab.route
+                                    // 则不再创建一个新的实例
+                                    // 避免重复压栈（home -> home -> home）
                                     launchSingleTop = true
-                                    restoreState = true
+
+                                    // ③ 是否恢复之前保存的状态
+                                    // false = 每次点击 Tab 都是“全新开始”
+                                    restoreState = false
+
                                 }
                             }
                         )
@@ -162,7 +185,7 @@ fun AppNavHost(
             route = BottomTab.Profile.route
         ) {
             composable("profile/main") {
-                Page()
+                Page(navController)
             }
         }
 

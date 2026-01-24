@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.rescue.flutter_720yun.home.fragment.HomeLayoutFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home_layout" />
+
+    <fragment
+        android:id="@+id/navigation_show"
+        android:name="com.rescue.flutter_720yun.show.fragment.ShowFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_show" />
+
+    <fragment
+        android:id="@+id/navigation_message"
+        android:name="com.rescue.flutter_720yun.message.fragment.MessageFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_message" />
+
+    <fragment
+        android:id="@+id/navigation_user"
+        android:name="com.rescue.flutter_720yun.user.fragment.UserFragment"
+        android:label="User"
+        tools:layout="@layout/fragment_user"
+        />
+</navigation>

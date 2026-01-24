@@ -1,0 +1,81 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.rescue.flutter_720yun.app-mergeDebugResources-72:/values-night-v8/values-night-v8.xml",
+            "map": [
+                {
+                    "source": "/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/res/values-night/themes.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "100",
+                        "endLines": "14",
+                        "endColumns": "12",
+                        "endOffsets": "803"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "14",
+                        "endColumns": "12",
+                        "endOffsets": "637"
+                    }
+                },
+                {
+                    "source": "/Users/jingjun/.gradle/caches/transforms-3/bebc61b7d5780ffa1d5c9ade6dd7eeb8/transformed/appcompat-1.6.1/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,125,209,293,389,491,593,687",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "120,204,288,384,486,588,682,771"
+                    },
+                    "to": {
+                        "startLines": "15,16,17,18,19,20,21,60",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "642,712,796,880,976,1078,1180,4621",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "707,791,875,971,1073,1175,1269,4705"
+                    }
+                },
+                {
+                    "source": "/Users/jingjun/.gradle/caches/transforms-3/c93f1d335dee98420dfae43821a1b881/transformed/material-1.10.0/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,130,241,330,431,538,645,744,851,954,1042,1166,1268,1370,1486,1588,1702,1830,1946,2068,2204,2324,2458,2578,2690,2816,2933,3057,3187,3309,3447,3581,3697",
+                        "endColumns": "74,110,88,100,106,106,98,106,102,87,123,101,101,115,101,113,127,115,121,135,119,133,119,111,125,116,123,129,121,137,133,115,119",
+                        "endOffsets": "125,236,325,426,533,640,739,846,949,1037,1161,1263,1365,1481,1583,1697,1825,1941,2063,2199,2319,2453,2573,2685,2811,2928,3052,3182,3304,3442,3576,3692,3812"
+                    },
+                    "to": {
+                        "startLines": "22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,61,62,63,64,65,66,67,68",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "1274,1349,1460,1549,1650,1757,1864,1963,2070,2173,2261,2385,2487,2589,2705,2807,2921,3049,3165,3287,3423,3543,3677,3797,3909,4710,4827,4951,5081,5203,5341,5475,5591",
+                        "endColumns": "74,110,88,100,106,106,98,106,102,87,123,101,101,115,101,113,127,115,121,135,119,133,119,111,125,116,123,129,121,137,133,115,119",
+                        "endOffsets": "1344,1455,1544,1645,1752,1859,1958,2065,2168,2256,2380,2482,2584,2700,2802,2916,3044,3160,3282,3418,3538,3672,3792,3904,4030,4822,4946,5076,5198,5336,5470,5586,5706"
+                    }
+                },
+                {
+                    "source": "/Users/jingjun/.gradle/caches/transforms-3/cbaf85285142a89363298c2610ee2909/transformed/jetified-WImagePreview-1.4.3/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "14",
+                        "endColumns": "12",
+                        "endOffsets": "757"
+                    },
+                    "to": {
+                        "startLines": "47",
+                        "startColumns": "4",
+                        "startOffsets": "4035",
+                        "endLines": "59",
+                        "endColumns": "12",
+                        "endOffsets": "4616"
+                    }
+                }
+            ]
+        }
+    ]
+}

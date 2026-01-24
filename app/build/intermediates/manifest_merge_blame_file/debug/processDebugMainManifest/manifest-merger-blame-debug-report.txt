@@ -1,0 +1,331 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.rescue.flutter_720yun"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="28"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:5:5-67
+11-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:5:22-64
+12    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+12-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:6:5-81
+12-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:6:22-78
+13    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
+13-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:7:5-82
+13-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:7:22-79
+14    <!-- <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" /> -->
+15    <!-- <uses-permission android:name="android.permission.WRITE_SETTINGS" /> -->
+16    <!-- <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" /> -->
+17    <!-- <uses-permission android:name="android.permission.VIBRATE" /> -->
+18    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+18-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:12:5-76
+18-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:12:22-73
+19    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+19-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:13:5-80
+19-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:13:22-77
+20
+21    <permission
+21-->[androidx.core:core:1.12.0] /Users/jingjun/.gradle/caches/transforms-3/f73b782fdc1e194255a840c983bb9332/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+22        android:name="com.rescue.flutter_720yun.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+22-->[androidx.core:core:1.12.0] /Users/jingjun/.gradle/caches/transforms-3/f73b782fdc1e194255a840c983bb9332/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+23        android:protectionLevel="signature" />
+23-->[androidx.core:core:1.12.0] /Users/jingjun/.gradle/caches/transforms-3/f73b782fdc1e194255a840c983bb9332/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+24
+25    <uses-permission android:name="com.rescue.flutter_720yun.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+25-->[androidx.core:core:1.12.0] /Users/jingjun/.gradle/caches/transforms-3/f73b782fdc1e194255a840c983bb9332/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+25-->[androidx.core:core:1.12.0] /Users/jingjun/.gradle/caches/transforms-3/f73b782fdc1e194255a840c983bb9332/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+26
+27    <application
+27-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:15:5-88:19
+28        android:name="com.rescue.flutter_720yun.BaseApplication"
+28-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:16:9-40
+29        android:allowBackup="true"
+29-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:17:9-35
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.12.0] /Users/jingjun/.gradle/caches/transforms-3/f73b782fdc1e194255a840c983bb9332/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+31        android:dataExtractionRules="@xml/data_extraction_rules"
+31-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:18:9-65
+32        android:debuggable="true"
+33        android:extractNativeLibs="false"
+34        android:fullBackupContent="@xml/backup_rules"
+34-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:19:9-54
+35        android:icon="@mipmap/ic_launcher"
+35-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:20:9-43
+36        android:label="@string/app_name"
+36-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:21:9-41
+37        android:networkSecurityConfig="@xml/network_config"
+37-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:22:9-60
+38        android:requestLegacyExternalStorage="true"
+38-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:23:9-52
+39        android:roundIcon="@mipmap/ic_launcher_round"
+39-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:24:9-54
+40        android:supportsRtl="true"
+40-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:25:9-35
+41        android:testOnly="true"
+42        android:theme="@style/Theme.Android_rescue" >
+42-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:26:9-52
+43        <activity
+43-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:28:9-30:40
+44            android:name="com.rescue.flutter_720yun.message.activity.CommentListActivity"
+44-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:29:13-65
+45            android:exported="false" />
+45-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:30:13-37
+46        <activity
+46-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:31:9-33:40
+47            android:name="com.rescue.flutter_720yun.show.activity.ShowDetailActivity"
+47-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:32:13-61
+48            android:exported="false" />
+48-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:33:13-37
+49        <activity
+49-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:34:9-36:40
+50            android:name="com.rescue.flutter_720yun.message.activity.MessageSingleActivity"
+50-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:35:13-67
+51            android:exported="false" />
+51-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:36:13-37
+52        <activity
+52-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:37:9-39:40
+53            android:name="com.rescue.flutter_720yun.show.activity.GambitListActivity"
+53-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:38:13-61
+54            android:exported="false" />
+54-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:39:13-37
+55        <activity
+55-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:40:9-43:55
+56            android:name="com.rescue.flutter_720yun.show.activity.ShowReleaseActivity"
+56-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:41:13-62
+57            android:exported="false"
+57-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:42:13-37
+58            android:windowSoftInputMode="adjustPan" />
+58-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:43:13-52
+59        <activity
+59-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:44:9-46:40
+60            android:name="com.rescue.flutter_720yun.home.activity.FindPetDetailActivity"
+60-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:45:13-64
+61            android:exported="false" />
+61-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:46:13-37
+62        <activity
+62-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:47:9-49:40
+63            android:name="com.rescue.flutter_720yun.home.activity.CitySelectActivity"
+63-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:48:13-61
+64            android:exported="false" />
+64-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:49:13-37
+65        <activity
+65-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:50:9-52:40
+66            android:name="com.rescue.flutter_720yun.message.activity.MessageSystemListActivity"
+66-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:51:13-71
+67            android:exported="false" />
+67-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:52:13-37
+68        <activity
+68-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:53:9-55:40
+69            android:name="com.rescue.flutter_720yun.home.activity.TagListActivity"
+69-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:54:13-58
+70            android:exported="false" />
+70-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:55:13-37
+71        <activity
+71-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:56:9-58:40
+72            android:name="com.rescue.flutter_720yun.home.activity.SearchActivity"
+72-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:57:13-57
+73            android:exported="false" />
+73-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:58:13-37
+74        <activity
+74-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:59:9-62:55
+75            android:name="com.rescue.flutter_720yun.home.activity.ReleaseTopicActivity"
+75-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:60:13-63
+76            android:exported="false"
+76-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:61:13-37
+77            android:windowSoftInputMode="adjustPan" />
+77-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:62:13-52
+78        <activity
+78-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:63:9-65:40
+79            android:name="com.rescue.flutter_720yun.BaseActivity"
+79-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:64:13-41
+80            android:exported="false" />
+80-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:65:13-37
+81        <activity
+81-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:66:9-68:40
+82            android:name="com.rescue.flutter_720yun.home.activity.HomeDetailActivity"
+82-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:67:13-61
+83            android:exported="false" />
+83-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:68:13-37
+84        <activity
+84-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:69:9-71:40
+85            android:name="com.rescue.flutter_720yun.home.activity.LoginActivity"
+85-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:70:13-56
+86            android:exported="false" />
+86-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:71:13-37
+87        <activity
+87-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:72:9-74:40
+88            android:name="com.yalantis.ucrop.UCropActivity"
+88-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:73:13-60
+89            android:configChanges="orientation|keyboardHidden|screenSize"
+89-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:10:13-74
+90            android:exported="false"
+90-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:74:13-37
+91            android:screenOrientation="portrait"
+91-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:11:13-49
+92            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+92-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:12:13-69
+93        <activity
+93-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:75:9-77:40
+94            android:name="com.luck.picture.lib.basic.PictureSelectorSupporterActivity"
+94-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:76:13-87
+95            android:configChanges="orientation|keyboardHidden|screenSize"
+95-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:25:13-74
+96            android:exported="false"
+96-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:77:13-37
+97            android:theme="@style/Base.Theme.NoActionBar" />
+97-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:26:13-58
+98        <activity
+98-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:78:9-87:20
+99            android:name="com.rescue.flutter_720yun.MainActivity"
+99-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:79:13-41
+100            android:exported="true"
+100-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:80:13-36
+101            android:label="@string/app_name" >
+101-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:81:13-45
+102            <intent-filter>
+102-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:82:13-86:29
+103                <action android:name="android.intent.action.MAIN" />
+103-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:83:17-69
+103-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:83:25-66
+104
+105                <category android:name="android.intent.category.LAUNCHER" />
+105-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:85:17-77
+105-->/Users/jingjun/Desktop/Githup/android_rescue/app/src/main/AndroidManifest.xml:85:27-74
+106            </intent-filter>
+107        </activity>
+108        <activity
+108-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:13:9-17:72
+109            android:name="com.yalantis.ucrop.UCropMultipleActivity"
+109-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:14:13-68
+110            android:configChanges="orientation|keyboardHidden|screenSize"
+110-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:15:13-74
+111            android:screenOrientation="portrait"
+111-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:16:13-49
+112            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+112-->[io.github.lucksiege:ucrop:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/1214206000fd17c5590878cddfaf7b95/transformed/jetified-ucrop-v3.11.2/AndroidManifest.xml:17:13-69
+113        <activity android:name="com.wei.wimagepreviewlib.activity.ImagePreviewFragmentActivity" />
+113-->[com.github.Wei-1021:WImagePreview:1.4.3] /Users/jingjun/.gradle/caches/transforms-3/cbaf85285142a89363298c2610ee2909/transformed/jetified-WImagePreview-1.4.3/AndroidManifest.xml:13:9-99
+113-->[com.github.Wei-1021:WImagePreview:1.4.3] /Users/jingjun/.gradle/caches/transforms-3/cbaf85285142a89363298c2610ee2909/transformed/jetified-WImagePreview-1.4.3/AndroidManifest.xml:13:19-96
+114
+115        <provider
+115-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:8:9-16:20
+116            android:name="com.luck.picture.lib.basic.PictureFileProvider"
+116-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:9:13-74
+117            android:authorities="com.rescue.flutter_720yun.luckProvider"
+117-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:10:13-64
+118            android:exported="false"
+118-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:11:13-37
+119            android:grantUriPermissions="true" >
+119-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:12:13-47
+120            <meta-data
+120-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:13:13-15:57
+121                android:name="android.support.FILE_PROVIDER_PATHS"
+121-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:14:17-67
+122                android:resource="@xml/ps_file_paths" />
+122-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:15:17-54
+123        </provider>
+124
+125        <service
+125-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:18:9-21:56
+126            android:name="com.luck.picture.lib.service.ForegroundService"
+126-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:19:13-74
+127            android:enabled="true"
+127-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:20:13-35
+128            android:foregroundServiceType="location" />
+128-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:21:13-53
+129
+130        <activity
+130-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:28:9-32:20
+131            android:name="com.luck.picture.lib.basic.PictureSelectorTransparentActivity"
+131-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:29:13-89
+132            android:configChanges="orientation|keyboardHidden|screenSize"
+132-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:30:13-74
+133            android:theme="@style/Picture.Theme.Translucent" >
+133-->[io.github.lucksiege:pictureselector:v3.11.2] /Users/jingjun/.gradle/caches/transforms-3/c1729f14c940fe8122db866331cba681/transformed/jetified-pictureselector-v3.11.2/AndroidManifest.xml:31:13-61
+134        </activity>
+135
+136        <provider
+136-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+137            android:name="androidx.startup.InitializationProvider"
+137-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+138            android:authorities="com.rescue.flutter_720yun.androidx-startup"
+138-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+139            android:exported="false" >
+139-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+140            <meta-data
+140-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+141                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+141-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+142                android:value="androidx.startup" />
+142-->[androidx.emoji2:emoji2:1.2.0] /Users/jingjun/.gradle/caches/transforms-3/ffb45bba782accffe9196d65a7a6dd7e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+143            <meta-data
+143-->[androidx.lifecycle:lifecycle-process:2.8.3] /Users/jingjun/.gradle/caches/transforms-3/1faa9de78b1d1b418e72f25aa2937c72/transformed/jetified-lifecycle-process-2.8.3/AndroidManifest.xml:29:13-31:52
+144                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+144-->[androidx.lifecycle:lifecycle-process:2.8.3] /Users/jingjun/.gradle/caches/transforms-3/1faa9de78b1d1b418e72f25aa2937c72/transformed/jetified-lifecycle-process-2.8.3/AndroidManifest.xml:30:17-78
+145                android:value="androidx.startup" />
+145-->[androidx.lifecycle:lifecycle-process:2.8.3] /Users/jingjun/.gradle/caches/transforms-3/1faa9de78b1d1b418e72f25aa2937c72/transformed/jetified-lifecycle-process-2.8.3/AndroidManifest.xml:31:17-49
+146            <meta-data
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+147                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+147-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+148                android:value="androidx.startup" />
+148-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+149        </provider>
+150
+151        <uses-library
+151-->[androidx.window:window:1.0.0] /Users/jingjun/.gradle/caches/transforms-3/6de7ee48baef82c1efd2234d607e5625/transformed/jetified-window-1.0.0/AndroidManifest.xml:25:9-27:40
+152            android:name="androidx.window.extensions"
+152-->[androidx.window:window:1.0.0] /Users/jingjun/.gradle/caches/transforms-3/6de7ee48baef82c1efd2234d607e5625/transformed/jetified-window-1.0.0/AndroidManifest.xml:26:13-54
+153            android:required="false" />
+153-->[androidx.window:window:1.0.0] /Users/jingjun/.gradle/caches/transforms-3/6de7ee48baef82c1efd2234d607e5625/transformed/jetified-window-1.0.0/AndroidManifest.xml:27:13-37
+154        <uses-library
+154-->[androidx.window:window:1.0.0] /Users/jingjun/.gradle/caches/transforms-3/6de7ee48baef82c1efd2234d607e5625/transformed/jetified-window-1.0.0/AndroidManifest.xml:28:9-30:40
+155            android:name="androidx.window.sidecar"
+155-->[androidx.window:window:1.0.0] /Users/jingjun/.gradle/caches/transforms-3/6de7ee48baef82c1efd2234d607e5625/transformed/jetified-window-1.0.0/AndroidManifest.xml:29:13-51
+156            android:required="false" />
+156-->[androidx.window:window:1.0.0] /Users/jingjun/.gradle/caches/transforms-3/6de7ee48baef82c1efd2234d607e5625/transformed/jetified-window-1.0.0/AndroidManifest.xml:30:13-37
+157
+158        <receiver
+158-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+159            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+159-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+160            android:directBootAware="false"
+160-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+161            android:enabled="true"
+161-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+162            android:exported="true"
+162-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+163            android:permission="android.permission.DUMP" >
+163-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+164            <intent-filter>
+164-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+165                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+165-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+165-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+166            </intent-filter>
+167            <intent-filter>
+167-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+168                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+168-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+168-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+169            </intent-filter>
+170            <intent-filter>
+170-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+171                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+171-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+171-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+172            </intent-filter>
+173            <intent-filter>
+173-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+174                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+174-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+174-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/jingjun/.gradle/caches/transforms-3/7cc71414c18194e82720c04c865b141e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+175            </intent-filter>
+176        </receiver>
+177    </application>
+178
+179</manifest>

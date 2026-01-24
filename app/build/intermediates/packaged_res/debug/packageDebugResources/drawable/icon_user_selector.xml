@@ -1,0 +1,8 @@
+<?xml version ="1.0" encoding ="utf-8"?><!--  Learn More about how to use App Actions: https://developer.android.com/guide/actions/index.html -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 选中状态的图标 -->
+    <item android:drawable="@drawable/icon_tabbar_mi_se" android:state_checked="true" />
+    <!-- 未选中状态的图标 -->
+    <item android:drawable="@drawable/icon_tabbar_mi_un" android:state_checked="false" />
+</selector>
+

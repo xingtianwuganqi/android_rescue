@@ -1,0 +1,6 @@
+com.rescue.flutter_720yun.test.app-annotation-experimental-1.4.1-0 /Users/jingjun/.gradle/caches/transforms-3/0daf62084699b597e56d3c4491ae6060/transformed/annotation-experimental-1.4.1/res
+com.rescue.flutter_720yun.test.app-core-1.5.0-1 /Users/jingjun/.gradle/caches/transforms-3/24af145a8d936bc93101aacd1534ad8e/transformed/core-1.5.0/res
+com.rescue.flutter_720yun.test.app-androidTest-2 /Users/jingjun/Desktop/Githup/android_rescue/app/build/generated/res/resValues/androidTest/debug
+com.rescue.flutter_720yun.test.app-mergeDebugAndroidTestResources-3 /Users/jingjun/Desktop/Githup/android_rescue/app/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/merged.dir
+com.rescue.flutter_720yun.test.app-mergeDebugAndroidTestResources-4 /Users/jingjun/Desktop/Githup/android_rescue/app/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/stripped.dir
+com.rescue.flutter_720yun.test.app-debugAndroidTest-5 /Users/jingjun/Desktop/Githup/android_rescue/app/build/intermediates/merged_res/debugAndroidTest/mergeDebugAndroidTestResources

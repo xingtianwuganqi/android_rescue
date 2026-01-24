@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.activity.SearchActivity">
+    
+    <LinearLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_a_back"
+            android:contentDescription="@null"
+            android:background="#00000000"
+            android:paddingStart="15dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:background="@drawable/rounded_edittext_background"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_wx_search"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null" />
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:autofillHints="@string/search_placeholder"
+                android:hint="@string/search_placeholder"
+                android:inputType="text"
+                android:selectAllOnFocus="true"
+                android:background="@null"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:theme="@style/EditTextStyle"
+                android:textSize="@dimen/address_font"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/search"
+            android:textColor="@color/color_content"
+            android:textSize="@dimen/content_font"
+            />
+        
+    </LinearLayout>
+    
+    <FrameLayout
+        android:id="@+id/search_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="50dp"
+    />
+        
+
+</androidx.constraintlayout.widget.ConstraintLayout>
