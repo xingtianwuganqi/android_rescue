@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -36,17 +37,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.rescue.flutter_720yun.demo.HomeDetail
+import com.rescue.flutter_720yun.viewmodels.HomeViewModel
 import kotlinx.coroutines.selects.select
 
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel by lazy {
+        ViewModelProvider(this)[HomeViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             RescuecomposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen()
+                    MainScreen(viewModel)
                 }
             }
         }
@@ -70,7 +77,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: HomeViewModel) {
     val navController = rememberNavController()
     val tabs = listOf(
         BottomTab.Home,
@@ -143,7 +150,11 @@ fun MainScreen() {
         }
     ) { innerPadding ->
 
-        AppNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
+        AppNavHost(
+            navController = navController,
+            modifier = Modifier.padding(innerPadding),
+            viewModel = viewModel
+            )
 
     }
 }
@@ -151,7 +162,8 @@ fun MainScreen() {
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel
 ) {
     NavHost(
         navController = navController,
@@ -165,7 +177,7 @@ fun AppNavHost(
             route = BottomTab.Home.route
         ) {
             composable("home/main") {
-                HomeScreen(navController)
+                HomeScreen(navController, viewModel)
             }
 
             composable(

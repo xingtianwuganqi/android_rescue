@@ -6,3 +6,12 @@ sealed class UiState<out T> {
     data class Error(val message: String) : UiState<Nothing>()
 }
 
+//sealed class RefreshState {
+//    object Refreshing : RefreshState()
+//    object RefreshComplete : RefreshState()
+//}
+
+enum class RefreshState {
+    Refresh,
+    LoadMore
+}
