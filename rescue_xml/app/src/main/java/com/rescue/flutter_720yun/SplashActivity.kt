@@ -22,25 +22,60 @@ import com.rescue.flutter_720yun.user.activity.WebPageActivity
 import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 import android.graphics.Color
 import android.widget.Button
+import android.widget.FrameLayout
+import com.rescue.flutter_720yun.ads.SplashAdController
 import com.rescue.flutter_720yun.util.AppBuildConfig
 
 
 class SplashActivity : AppCompatActivity() {
+    private var splashAd: SplashAdController? = null
+    private var navigated = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
         // 判断是否已同意隐私政策
         if (SharedPreferencesUtil.getString("firstOpen",this) == "1") {
-            navigateToMain()
+            loadSplashAd()
         } else {
             showPrivacy()
         }
     }
 
     private fun navigateToMain() {
+        if (navigated || isFinishing || isDestroyed) return
+        navigated = true
         startActivity(Intent(this, MainActivity::class.java))
         finish()
+    }
+
+    private fun loadSplashAd() {
+        if (splashAd != null) return
+        val container = FrameLayout(this)
+        setContentView(container)
+        splashAd = SplashAdController(this, container, ::navigateToMain).also {
+            it.load()
+            if (lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) it.onResume()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        splashAd?.onResume()
+    }
+
+    override fun onPause() {
+        splashAd?.onPause()
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        privacyDialog?.dismiss()
+        privacyDialog = null
+        splashAd?.destroy()
+        splashAd = null
+        super.onDestroy()
     }
 
     private fun showPrivacy() {
@@ -89,7 +124,10 @@ class SplashActivity : AppCompatActivity() {
 
         btnAgree.setOnClickListener {
             SharedPreferencesUtil.putString("firstOpen", "1", this)
+            // iOS reserves first launch for consent/onboarding; subsequent cold launches show splash.
+            com.rescue.flutter_720yun.ads.TakuAds.initialize(this)
             navigateToMain()
+            privacyDialog?.dismiss()
         }
 
         btnDisagree.setOnClickListener {
@@ -99,6 +137,7 @@ class SplashActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setView(inflate)
             .show()
+        privacyDialog = dialog
 
         // 通过WindowManager获取
         val dm = DisplayMetrics()
@@ -110,6 +149,8 @@ class SplashActivity : AppCompatActivity() {
         dialog.window?.attributes = params
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
+
+    private var privacyDialog: AlertDialog? = null
 
     private fun openUserAgree() {
         val intent = Intent(this, WebPageActivity::class.java)

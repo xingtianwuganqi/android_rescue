@@ -302,6 +302,7 @@ class LoginActivity : BaseActivity() {
                         ActivityController.activities.forEach {
                             when (it) {
                                 is LoginActivity -> {
+                                    it.setResult(android.app.Activity.RESULT_OK)
                                     it.finish()
                                 }
                             }

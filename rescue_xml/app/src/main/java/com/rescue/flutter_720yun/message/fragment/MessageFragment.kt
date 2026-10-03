@@ -33,7 +33,7 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
     private lateinit var adapter: MessageListAdapter
 
     private val messageViewModel by lazy {
-        ViewModelProvider(this)[MessageViewModel::class.java]
+        ViewModelProvider(requireActivity())[MessageViewModel::class.java]
     }
 
     private var messageLauncher = registerForActivityResult(
@@ -68,13 +68,7 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
     ): View? {
 
         _binding = FragmentMessageBinding.inflate(inflater, container, false)
-        if (rootView == null) {
-            rootView = binding.root
-        }
-        if (messageViewModel.unreadModel.value != null) {
-            messageViewModel.unreadMessageNumberNetworking()
-        }
-        return rootView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,23 +84,26 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
     }
 
     override fun itemClick(position: Int) {
-        if (position == 0) { // 系统消息
-            val intent = Intent(activity, MessageSystemListActivity::class.java)
-            startActivity(intent)
-        }else {
-            lazyLogin(requireActivity()) {
-                val intent = Intent(activity, MessageSingleActivity::class.java)
-                intent.putExtra("messageType", position)
-                messageLauncher.launch(intent)
-            }
+        val category=messageViewModel.messageList.value?.getOrNull(position)?.category ?: return
+        if(category == "system") {
+            startActivity(Intent(activity, MessageSystemListActivity::class.java)); return
+        }
+        if(category in listOf("my_applications", "received_applications")) {
+            val target=if(category=="my_applications") com.rescue.flutter_720yun.adoption.activity.AdoptionMyApplicationsActivity::class.java
+                else com.rescue.flutter_720yun.adoption.activity.AdoptionApplicationsActivity::class.java
+            startActivity(Intent(requireContext(),target)); return
+        }
+        val oldType=mapOf("like" to 1,"collection" to 2,"comment" to 3)[category] ?: return
+        lazyLogin(requireActivity()) {
+            messageLauncher.launch(Intent(activity, MessageSingleActivity::class.java).putExtra("messageType",oldType))
         }
     }
+    override fun onResume() { super.onResume(); messageViewModel.unreadMessageNumberNetworking() }
+    override fun onDestroy() { EventBus.getDefault().unregister(this); super.onDestroy() }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        if (EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().unregister(this)
-        }
+
     }
 }

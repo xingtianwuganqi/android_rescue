@@ -39,17 +39,21 @@ class HomeDetailViewModel: ViewModel() {
     var topicId: Int? = null
     var topicFrom: Int = 0
 
+    fun markTopicChanged() { _homeDataChanged.value = true }
+
     fun loadDetailNetworking(topicId: Int) {
         viewModelScope.launch {
             if (_isLoading.value == true) {
                 return@launch
             }
+            _isLoading.value = true
             try {
                 val dic = paramDic
                 dic["topic_id"] = topicId
                 val response = appService.topicDetail(dic).awaitResp()
                 if (response.code == 200) {
-                    _homeData.value = response.data
+                    if(_homeData.value?.is_complete != null && _homeData.value?.is_complete != response.data.is_complete) _homeDataChanged.value = true
+                    _homeData.value = response.data.also { it.contact_info = null; it.getedcontact = false }
                 }else{
                     _errorMsg.value = response.message
                 }
@@ -118,51 +122,20 @@ class HomeDetailViewModel: ViewModel() {
         }
     }
 
-    fun clickGetContactInfoNetworking(model: HomeListModel?) {
+    // Compatibility is limited to reopening a completed legacy topic without application history.
+    // The V2 state is checked by the caller and the server enforces history/closed-flow guards.
+    fun reopenLegacyTopic(model: HomeListModel?) {
+        if(model?.is_complete != true || model.topic_id == null || _isLoading.value == true) return
+        _isLoading.value = true
         viewModelScope.launch {
             try {
-                if (_isLoading.value == true) {
-                    return@launch
-                }
-                    val dic = paramDic
-                    dic["topic_id"] = model?.topic_id
-                    val response = appService.getTopicContact(dic).awaitResp()
-                    _statusCode.value = response.code
-                    if (response.code == 200) {
-                        model?.contact_info = response.data.contact
-                        model?.getedcontact = true
-                        _homeData.value = model
-                        _homeDataChanged.value = true
-                    } else if (response.code == 202) { // 无法获取联系方式
-                        _errorMsg.value = BaseApplication.context.getString(R.string.unable_get_contact)
-                    }else{
-                        _errorMsg.value = BaseApplication.context.getString(R.string.get_contact_error)
-                    }
-
-            }catch (e: Exception) {
-                _errorMsg.value = BaseApplication.context.getString(R.string.network_request_error)
-            }finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-
-    /*
-    // status 要改成的状态 1：已完成 0：未完成
-     */
-    fun changeCompleteStatus(model: HomeListModel?) {
-        viewModelScope.launch {
-            try {
-                val status = if (model?.is_complete == false) 1 else 0
+                val status = 0
                 val dic = paramDic
                 if (model?.topic_id != null) {
                     dic["topic_id"] = model.topic_id
                 }
                 dic["isComplete"] = status
-                Log.d("TAG", "$dic")
                 val response = appService.changeCompleteStatus(dic).awaitResp()
-                Log.d("TAG", "$response")
                 if (response.code == 200) {
                     model?.is_complete = status == 1
                     _homeData.value = model
@@ -173,7 +146,7 @@ class HomeDetailViewModel: ViewModel() {
             }catch (e: Exception) {
                 Log.d("TAG", "$e")
                 _errorMsg.value = ContextCompat.getString(BaseApplication.context, R.string.network_request_error)
-            }
+            } finally { _isLoading.value = false }
         }
     }
 

@@ -7,5 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class MessageListModel(
     val icon: String,
     val title: String,
-    var unread: Int? = 0
+    var unread: Int? = 0,
+    val category: String = "system"
 ): Parcelable

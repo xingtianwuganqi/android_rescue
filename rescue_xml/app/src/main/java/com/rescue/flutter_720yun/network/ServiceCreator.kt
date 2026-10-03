@@ -68,7 +68,7 @@ suspend fun <T> Call<T>.awaitResp(): T {
         enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 if (response.isSuccessful) {
-                    Log.d("TAG", "response body ${response.body()}")
+                    // Legacy topic responses may contain an acquired contact. Never log the body.
                     continuation.resume(response.body()!!)
                 } else {
                     if (response.code() == 401 || response.code() == 403) {
@@ -82,7 +82,6 @@ suspend fun <T> Call<T>.awaitResp(): T {
 
                     }else {
                         Log.d("TAG","response error Code ${response.code()}")
-                        Log.d("TAG", "response error ${response.body()}")
                         continuation.resumeWithException(Exception("Response error"))
                     }
                 }

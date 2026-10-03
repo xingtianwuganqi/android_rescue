@@ -76,6 +76,22 @@
 <!--                />-->
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
+        <LinearLayout
+            android:id="@+id/adoption_private_entries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:background="@color/white"
+            android:visibility="gone">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/adoption_profile_entry"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="领养资料" />
+        </LinearLayout>
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
@@ -111,7 +127,23 @@
 <!--        android:orientation="vertical"-->
 <!--        app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
-<!--        <com.google.android.material.tabs.TabLayout-->
+<!--        <LinearLayout
+            android:id="@+id/adoption_private_entries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:background="@color/white"
+            android:visibility="gone">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/adoption_profile_entry"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="领养资料" />
+        </LinearLayout>
+
+        <com.google.android.material.tabs.TabLayout-->
 <!--            android:id="@+id/tab"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="?attr/actionBarSize"-->

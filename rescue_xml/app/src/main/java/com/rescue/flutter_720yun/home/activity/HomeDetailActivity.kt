@@ -14,13 +14,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ConcatAdapter
+import com.rescue.flutter_720yun.ads.DetailBannerAdapter
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityHomeDetailBinding
 import com.rescue.flutter_720yun.home.adapter.DetailImgClickListener
 import com.rescue.flutter_720yun.home.adapter.HomeDetailAdapter
-import com.rescue.flutter_720yun.home.fragment.HomeDetailMoreFragment
 import com.rescue.flutter_720yun.home.models.HomeDetailModel
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.viewmodels.HomeDetailViewModel
@@ -29,11 +30,6 @@ import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
@@ -44,7 +40,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         ViewModelProvider(this)[HomeDetailViewModel::class.java]
     }
 
+    private var deleteDialog: AlertDialog? = null
     private lateinit var adapter: HomeDetailAdapter
+    private lateinit var imageAdapter: HomeDetailAdapter
+    private lateinit var adoptionFlow: com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +51,11 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
         setupToolbar("详情")
 
-        viewModel.topicId = intent.getIntExtra("topic_id", 1)
+        val topic = intent.getIntExtra("topic_id", 0)
+        if (topic <= 0) { "帖子参数无效".toastString(); finish(); return }
+        viewModel.topicId = topic
+        adoptionFlow = com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow(this, binding.getContactBtn)
+        adoptionFlow.setTopic(topic)
         viewModel.topicFrom = intent.getIntExtra("topic_from", 0)
 
         addViewAction()
@@ -65,8 +68,8 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun addViewModelObserver() {
+        viewModel.errorMsg.observe(this) { it?.toastString() }
         viewModel.homeData.observe(this) {
             uploadViews(it)
             uploadBottom(it)
@@ -76,32 +79,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 //            uploadBottom(it)
 //        }
 
-        viewModel.statusCode.observe(this) {
-            it?.let { code ->
-                when (code) {
-                    209 -> {
-                        // 去绑定手机号
-                        val intent = Intent(this, LoginActivity::class.java)
-                        intent.putExtra("type", "bindPhone")
-                        startActivity(intent)
-                    }
-                    210 -> {
-                        // 去校验手机号
-                        val intent = Intent(this, LoginActivity::class.java)
-                        intent.putExtra("type", "checkPhone")
-                        startActivity(intent)
-                    }
-                }
-            }
-        }
-
         viewModel.deleted.observe(this) {
-            // 延迟退出并删除数据
-            resources.getString(R.string.delete_success).toastString()
-            GlobalScope.launch(Dispatchers.Main) {
-                delay(1500)
-                sendResultAndFinish()
-                finish()
+            if(it == true) {
+                resources.getString(R.string.delete_success).toastString()
+                sendResultAndFinish(); finish()
             }
         }
 
@@ -110,17 +91,14 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     private fun uploadViews(homeData: HomeListModel?) {
 
 
-        val detailList = mutableListOf<HomeDetailModel>()
         val contentModel = HomeDetailModel(0, homeData, null, viewModel.topicFrom)
-        detailList.add(contentModel)
+        adapter.reloadItems(mutableListOf(contentModel))
+        val imageList = mutableListOf<HomeDetailModel>()
         homeData?.getImages()?.forEach {
             val imageModel = HomeDetailModel(1, null, it, viewModel.topicFrom)
-            detailList.add(imageModel)
+            imageList.add(imageModel)
         }
-        adapter.reloadItems(detailList)
-//        val adapter = HomeDetailAdapter(detailList)
-//        adapter.setOnClickListener(this)
-//        imgRecyclerView.adapter = adapter
+        imageAdapter.reloadItems(imageList)
     }
 
     override fun clickItem(model: List<HomeDetailModel>, position: Int) {
@@ -132,28 +110,22 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         WImagePreviewBuilder
             .load(this)
             .setData(imgUrls)
-            .setPosition(position-1)
+            .setPosition(model.take(position).count { it.imageStr != null })
             .start()
     }
 
     override fun moreClick(model: HomeDetailModel) {
-        showMoreAlert(viewModel.homeData.value)
+        showMoreAlert()
     }
 
-    private fun showMoreAlert(model: HomeListModel?) {
-        val status = if (model?.is_complete == true) 1 else 0
-        Log.d("TAG", "$status")
-        val bottomAlert = HomeDetailMoreFragment.newInstance(status)
-        bottomAlert.show(supportFragmentManager, bottomAlert.tag)
-        bottomAlert.clickCallBack = { value ->
-            if (value == 0 || value == 1) {
-                viewModel.changeCompleteStatus(model)
-            }else if (value == 2) {
-                showDeleteDialog(model)
-            }
-
-        }
+    private fun showMoreAlert() {
+        adoptionFlow.ownerMore()
     }
+
+    fun confirmDeleteTopic() { showDeleteDialog(viewModel.homeData.value) }
+    fun reopenLegacyTopic() { viewModel.reopenLegacyTopic(viewModel.homeData.value) }
+    fun reloadAdoptionTopic() { viewModel.markTopicChanged(); viewModel.topicId?.let { viewModel.loadDetailNetworking(it) }; adoptionFlow.refresh() }
+    fun copyAuthorizedContact(value: String) { copy(this, value); resources.getString(R.string.copy_success_copy).toastString() }
 
     private fun showDeleteDialog(model: HomeListModel?) {
         val builder = AlertDialog.Builder(this)
@@ -167,6 +139,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
         })
         val dialog = builder.create()
+        deleteDialog = dialog
         dialog.show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.color_system))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.color_node))
@@ -199,17 +172,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             binding.collectButton.icon = newIcon
         }
 
-        if (homeData?.is_complete == true) {
-            binding.getContactBtn.text = resources.getString(R.string.user_completion)
-        }else {
-            if (homeData?.getedcontact == true && homeData.contact_info != null) {
-                binding.getContactBtn.text = homeData.contact_info
-            } else {
-                binding.getContactBtn.text =
-                    BaseApplication.context.resources.getString(R.string.click_get_contact)
-            }
-        }
-
+        // Contact/application text is exclusively controlled by the V2 application-state flow.
     }
 
     private fun addBackListener() {
@@ -231,7 +194,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     private fun sendResultAndFinish() {
         if (viewModel.homeDataChanged.value == true) {
             val intent = Intent()
-            intent.putExtra("result_model", viewModel.homeData.value)
+            intent.putExtra("result_model", viewModel.homeData.value?.also { it.contact_info = null; it.getedcontact = false })
             if (viewModel.deleted.value == true) {
                 intent.putExtra("deleted", 1)
             }
@@ -239,7 +202,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         }else{
             if (viewModel.deleted.value == true) {
                 val intent = Intent()
-                intent.putExtra("result_model", viewModel.homeData.value)
+                intent.putExtra("result_model", viewModel.homeData.value?.also { it.contact_info = null; it.getedcontact = false })
                 intent.putExtra("deleted", 1)
                 setResult(Activity.RESULT_OK, intent)
             }
@@ -253,7 +216,9 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             false)
         adapter = HomeDetailAdapter(mutableListOf())
         adapter.setOnClickListener(this)
-        imgRecyclerView.adapter = adapter
+        imageAdapter = HomeDetailAdapter(mutableListOf())
+        imageAdapter.setOnClickListener(this)
+        imgRecyclerView.adapter = ConcatAdapter(adapter, DetailBannerAdapter(this, this), imageAdapter)
 
         binding.likeButton.setOnClickListener{
             lazyLogin(this) {
@@ -281,25 +246,20 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             }
         }
 
-        binding.getContactBtn.setOnClickListener {
-            lazyLogin(this) {
-                if (viewModel.homeData.value?.is_complete == false) {
-                    if (viewModel.homeData.value?.getedcontact == true && viewModel.homeData.value?.contact_info != null) {
-                        // 复制
-                        viewModel.homeData.value?.contact_info?.let {
-                            copy(this, it)
-                            resources.getString(R.string.copy_success_copy).toastString()
-                        }
-                    } else {
-                        viewModel.homeData.value?.let {
-                            viewModel.clickGetContactInfoNetworking(it)
-                        }
-                    }
-                }else{
-                    resources.getString(R.string.user_completion).toastString()
-                }
-            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::adoptionFlow.isInitialized) {
+            adoptionFlow.refresh()
+            viewModel.topicId?.let { viewModel.loadDetailNetworking(it) }
         }
+    }
+
+    override fun onPause() {
+        if (::adoptionFlow.isInitialized) adoptionFlow.clearDialog()
+        deleteDialog?.dismiss(); deleteDialog = null
+        super.onPause()
     }
 
     //系统剪贴板-复制:   s为内容

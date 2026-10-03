@@ -35,6 +35,8 @@ class UserFragment : Fragment() {
         ViewModelProvider(this)[UserViewModel::class.java]
     }
 
+    private val isOwnPage get() = UserManager.isLogin && viewModel.userIdLiveData.value == UserManager.userId
+    private val isOtherUserPage get() = arguments?.getInt("userId", 0)?.let { it > 0 } == true
     private lateinit var adapter: UserTopViewPageAdapter
 
     private val editActivityLauncher = registerForActivityResult(
@@ -66,6 +68,7 @@ class UserFragment : Fragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginEvent(event: LoginEvent) {
+        if (isOtherUserPage) { updatePrivateEntries(); return }
         if (event.userId != null) {
             viewModel.setUserId(event.userId)
             viewModel.userIdGetUserInfoNetworking()
@@ -98,7 +101,11 @@ class UserFragment : Fragment() {
             binding.rightButton.visibility = View.GONE
         }
 
+        binding.adoptionProfileEntry.setOnClickListener { if(isOwnPage) startActivity(Intent(requireContext(), com.rescue.flutter_720yun.adoption.activity.AdoptionProfileActivity::class.java)) }
+        UserManager.sessionRevision.observe(viewLifecycleOwner) { updatePrivateEntries() }
+        viewModel.userIdLiveData.observe(viewLifecycleOwner) { updatePrivateEntries() }
         binding.backLayout.setOnClickListener {
+            if(isOtherUserPage && !isOwnPage) return@setOnClickListener
             lazyLogin(requireActivity()) {
                 val intent = Intent(activity, UserInfoEditActivity::class.java)
                 viewModel.userInfo.value?.let {
@@ -115,7 +122,7 @@ class UserFragment : Fragment() {
                 Glide.with(this)
                     .load(it.avator?.toImgUrl())
                     .placeholder(R.drawable.icon_eee).into(binding.headImg)
-                binding.rightButton.visibility = View.VISIBLE
+                binding.rightButton.visibility = if(isOwnPage) View.VISIBLE else View.GONE
             }else{
                 binding.username.text = resources.getString(R.string.user_login)
                 binding.headImg.setImageDrawable(ContextCompat.getDrawable(BaseApplication.context, R.drawable.icon_eee))
@@ -130,6 +137,13 @@ class UserFragment : Fragment() {
             }
         }.attach()
     }
+
+    private fun updatePrivateEntries() {
+        _binding?.adoptionPrivateEntries?.visibility = if(isOwnPage) View.VISIBLE else View.GONE
+        _binding?.rightButton?.visibility = if(isOwnPage) View.VISIBLE else View.GONE
+    }
+    override fun onDestroyView() { _binding = null; super.onDestroyView() }
+    override fun onDestroy() { EventBus.getDefault().unregister(this); super.onDestroy() }
 
     companion object {
         @JvmStatic

@@ -20,6 +20,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rescue.flutter_720yun.ads.NativeFeedAdapter
+import com.rescue.flutter_720yun.ads.FeedAdPlacement
+import com.rescue.flutter_720yun.BuildConfig
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentShowBinding
@@ -51,6 +54,7 @@ class ShowFragment : Fragment(), ShowItemClickListener {
     private val viewModel by lazy {
         ViewModelProvider(this)[ShowViewModel::class.java]
     }
+    private var nativeFeed: NativeFeedAdapter? = null
     private lateinit var adapter: ShowPageListAdapter
 
 
@@ -96,10 +100,6 @@ class ShowFragment : Fragment(), ShowItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelAddObserver()
-        if (viewModel.uiState.value !is UiState.Success) {
-            loadData(RefreshState.REFRESH)
-        }
 
 
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
@@ -119,7 +119,13 @@ class ShowFragment : Fragment(), ShowItemClickListener {
 
         binding.showList.layoutManager = LinearLayoutManager(context)
         adapter = ShowPageListAdapter(mutableListOf(), this)
-        binding.showList.adapter = adapter
+        if (viewModel.showId != -1) {
+            val nativeId = BuildConfig.TAKU_NATIVE_SECONDARY_ID.ifBlank { BuildConfig.TAKU_NATIVE_ID }
+            nativeFeed = NativeFeedAdapter(requireActivity(), viewLifecycleOwner, adapter, FeedAdPlacement.SHOW, nativeId)
+        }
+        binding.showList.adapter = nativeFeed ?: adapter
+        viewModelAddObserver()
+        if (viewModel.uiState.value !is UiState.Success) loadData(RefreshState.REFRESH)
 
         binding.tip.setOnClickListener {
             activity?.let {
@@ -156,6 +162,7 @@ class ShowFragment : Fragment(), ShowItemClickListener {
                     }else if (viewModel.refreshState.value == RefreshState.MORE) {
                         adapter.addItems(list)
                     }
+                    nativeFeed?.pageLoaded(list.size, viewModel.refreshState.value == RefreshState.REFRESH)
                 }
 
                 is UiState.Error -> {
@@ -272,6 +279,9 @@ class ShowFragment : Fragment(), ShowItemClickListener {
     }
 
     override fun onDestroyView() {
+        nativeFeed?.destroy()
+        nativeFeed = null
+        _binding?.showList?.adapter = null
         super.onDestroyView()
         _binding = null
         if (EventBus.getDefault().isRegistered(this)) {

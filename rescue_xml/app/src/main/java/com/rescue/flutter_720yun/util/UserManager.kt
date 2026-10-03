@@ -7,6 +7,7 @@ import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.home.models.UserInfo
 
 object UserManager {
+    val sessionRevision = androidx.lifecycle.MutableLiveData(0L)
     private var _userInfo: UserInfo? = null
     val isLogin: Boolean get() = _userInfo != null
     val token: String? get() = _userInfo?.token
@@ -15,11 +16,13 @@ object UserManager {
     val userInfo: UserInfo? get() = _userInfo
 
     fun setUserInfo(info: UserInfo) {
+        val changed = _userInfo?.id != info.id || _userInfo?.token != info.token
         val sharedPreferences = BaseApplication.context.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("userinfo", Gson().toJson(info))
         editor.apply()
         _userInfo = info
+        if (changed) sessionRevision.value = (sessionRevision.value ?: 0) + 1
     }
 
     fun getUserInfo() {
@@ -40,5 +43,6 @@ object UserManager {
         val edit = sharedPreferences.edit()
         edit.remove("userinfo")
         edit.apply()
+        sessionRevision.value = (sessionRevision.value ?: 0) + 1
     }
 }

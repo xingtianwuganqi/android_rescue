@@ -33,6 +33,7 @@ import com.rescue.flutter_720yun.user.activity.BlackListActivity
 import com.rescue.flutter_720yun.user.activity.UserCollectionActivity
 import com.rescue.flutter_720yun.user.activity.UserSettingActivity
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
+import com.rescue.flutter_720yun.user.activity.SupportActivity
 import com.rescue.flutter_720yun.util.AppBuildConfig
 import com.rescue.flutter_720yun.util.lazyLogin
 import org.greenrobot.eventbus.EventBus
@@ -49,6 +50,8 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
+    private val messages by lazy { ViewModelProvider(this)[com.rescue.flutter_720yun.message.viewmodels.MessageViewModel::class.java] }
+    override fun onResume() { super.onResume(); messages.unreadMessageNumberNetworking() }
     private lateinit var adapter: DrawerListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +80,10 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        messages.badgeTotal.observe(this) { count ->
+            if(count > 0) navView.getOrCreateBadge(R.id.navigation_message).number=count
+            else navView.removeBadge(R.id.navigation_message)
+        }
 
         adapter = DrawerListAdapter(mutableListOf())
         adapter.setListener(this)
@@ -222,7 +229,7 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
             intent.putExtra("webUrl",baseUrl)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_help)) {
-
+            startActivity(Intent(this, SupportActivity::class.java))
         }else if (item.name == resources.getString(R.string.drawer_recommend)) {
 
         }
@@ -230,5 +237,4 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
 
 }
-
 

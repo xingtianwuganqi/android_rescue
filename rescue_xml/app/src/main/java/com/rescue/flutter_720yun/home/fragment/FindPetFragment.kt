@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rescue.flutter_720yun.ads.NativeFeedAdapter
+import com.rescue.flutter_720yun.ads.FeedAdPlacement
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.FragmentFindPetBinding
@@ -34,6 +36,7 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
         ViewModelProvider(this)[FindPetViewModel::class.java]
     }
 
+    private var nativeFeed: NativeFeedAdapter? = null
     private lateinit var adapter: FindPetListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +79,8 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
 
         adapter = FindPetListAdapter(mutableListOf(), this)
         binding.findList.layoutManager = LinearLayoutManager(activity)
-        binding.findList.adapter = adapter
+        nativeFeed = NativeFeedAdapter(requireActivity(), viewLifecycleOwner, adapter, FeedAdPlacement.FIND_PET)
+        binding.findList.adapter = nativeFeed
     }
 
     private fun addViewModelObserver() {
@@ -94,6 +98,7 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
                     }else if (viewModel.refreshState.value == RefreshState.MORE) {
                         adapter.addItems(list)
                     }
+                    nativeFeed?.pageLoaded(list.size, viewModel.refreshState.value == RefreshState.REFRESH)
                 }
 
                 is UiState.Error -> {
@@ -143,6 +148,9 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
     }
 
     override fun onDestroyView() {
+        nativeFeed?.destroy()
+        nativeFeed = null
+        _binding?.findList?.adapter = null
         super.onDestroyView()
         _binding = null
     }

@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-parcelize")
 }
+
+val takuProperties = Properties().apply {
+    rootProject.file("taku-ads.properties").inputStream().use { load(it) }
+}
+fun takuValue(key: String): String = providers.gradleProperty(key)
+    .getOrElse(takuProperties.getProperty(key, ""))
 
 android {
     namespace = "com.rescue.flutter_720yun"
@@ -12,10 +20,20 @@ android {
         applicationId = "com.rescue.flutter_720yun"
         minSdk = 28
         targetSdk = 34
-        versionCode = 20
-        versionName = "1.2.0"
+        versionCode = 21
+        versionName = "1.3.0"
+        val apiUrl = providers.gradleProperty("API_BASE_URL").getOrElse("http://test.rxswift.cn/")
+        buildConfigField("String", "API_BASE_URL", "\"${apiUrl.replace("\"", "\\\"")}\"")
+        val adoptionUrl = providers.gradleProperty("ADOPTION_BASE_URL").getOrElse(apiUrl)
+        buildConfigField("String", "ADOPTION_BASE_URL", "\"${adoptionUrl.replace("\"", "\\\"")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Override with -PTAKU_* or ~/.gradle/gradle.properties for Android placements.
+        listOf("APP_ID", "APP_KEY", "SPLASH_ID", "BANNER_ID", "NATIVE_ID", "NATIVE_SECONDARY_ID",
+            "INTERSTITIAL_ID", "REWARDED_ID").forEach { name ->
+            val value = takuValue("TAKU_$name").replace("\\", "\\\\").replace("\"", "\\\"")
+            buildConfigField("String", "TAKU_$name", "\"$value\"")
+        }
     }
 
     // 签名类型
@@ -69,12 +87,15 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 
 }
 
 dependencies {
+    implementation(fileTree("taku_libs") { include("*.aar", "*.jar") })
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -92,6 +113,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.core)
     testImplementation(libs.junit)
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.androidx.recyclerview)
@@ -119,4 +141,3 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("org.greenrobot:eventbus:3.2.0")
 }
-

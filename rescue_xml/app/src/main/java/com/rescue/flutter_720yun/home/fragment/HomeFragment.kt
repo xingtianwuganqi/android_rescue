@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rescue.flutter_720yun.ads.NativeFeedAdapter
+import com.rescue.flutter_720yun.ads.FeedAdPlacement
 import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.home.activity.LoginActivity
 import com.rescue.flutter_720yun.home.adapter.HomeListAdapter
@@ -49,6 +51,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: HomeListAdapter
+    private var nativeAdAdapter: NativeFeedAdapter? = null
     private val homeViewModel: HomeViewModel by lazy {
         ViewModelProvider(this)[HomeViewModel::class.java]
     }
@@ -123,7 +126,14 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
         context?.let {
             adapter = HomeListAdapter(mutableListOf(), it, this)
-            recyclerView.adapter = adapter
+            val placement = when (homeViewModel.pageType) {
+                "0" -> FeedAdPlacement.HOME
+                "1" -> FeedAdPlacement.SEARCH
+                "2" -> FeedAdPlacement.LOCAL
+                else -> null
+            }
+            nativeAdAdapter = placement?.let { NativeFeedAdapter(requireActivity(), viewLifecycleOwner, adapter, it) }
+            recyclerView.adapter = nativeAdAdapter ?: adapter
         }
 
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
@@ -200,6 +210,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
                     }else{
                         adapter.addItems(it.data)
                     }
+                    nativeAdAdapter?.pageLoaded(it.data.size, homeViewModel.refreshState.value == RefreshState.REFRESH)
                 }
                 is UiState.Error -> {
                     showError(it.message)
@@ -296,11 +307,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
     // 收藏
     private fun collectionActionNetworking(model: HomeListModel?) {
         homeViewModel.collectionActionNetworking(model)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     // 更新item
@@ -430,9 +436,16 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
+    override fun onDestroyView() {
+        nativeAdAdapter?.destroy()
+        nativeAdAdapter = null
+        _binding?.recyclerview?.adapter = null
+        _binding = null
+        super.onDestroyView()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this)
         }
