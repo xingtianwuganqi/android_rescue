@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class BaseResponse<T> (
     val code: Int,
     var data: T,
-    val message: String
+    val message: String,
+    val meta: FeedMeta? = null
 )
 
 
@@ -78,6 +79,8 @@ data class HomeListModel (
     val commNum: Int?,
     val views_num: Int?,
     val collection_num: Int?,
+    val promotion: com.rescue.flutter_720yun.promotion.models.PromotionSummary? = null,
+    var workflow_status: String? = null,
 ): Parcelable
 
 

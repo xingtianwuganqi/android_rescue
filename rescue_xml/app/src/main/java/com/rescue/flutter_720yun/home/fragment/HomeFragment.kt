@@ -197,6 +197,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
             it.toastString()
         }
 
+        com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.changes.observe(viewLifecycleOwner) {
+            if(homeViewModel.pageType in listOf("0","2")) refreshData()
+        }
         homeViewModel.uiState.observe(viewLifecycleOwner) {
             when (it) {
                 is UiState.FirstLoading -> {
@@ -219,6 +222,10 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onTopicPublished(event: com.rescue.flutter_720yun.promotion.TopicPublishedEvent) {
+        if(homeViewModel.pageType in listOf("0","2")) refreshData()
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginEvent(event: LoginEvent) {
         refreshData()

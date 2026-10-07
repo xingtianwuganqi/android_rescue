@@ -15,6 +15,14 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 interface HomeService {
+    @FormUrlEncoded @POST("api/v1/topicdetail/")
+    suspend fun topicPreview(@FieldMap dic: Map<String,@JvmSuppressWildcards Any?>): retrofit2.Response<BaseResponse<HomeListModel>>
+
+    @FormUrlEncoded @POST("api/v1/topiclist/")
+    suspend fun promotionFeed(@FieldMap dic: Map<String,@JvmSuppressWildcards Any?>): retrofit2.Response<com.rescue.flutter_720yun.home.models.FeedResponse>
+    @FormUrlEncoded @POST("api/v2/addresstopiclist/")
+    suspend fun localPromotionFeed(@FieldMap dic: Map<String,@JvmSuppressWildcards Any?>): retrofit2.Response<com.rescue.flutter_720yun.home.models.FeedResponse>
+
     @FormUrlEncoded
     @POST("api/v1/gettaglist/")
     fun getTagsNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>
@@ -26,7 +34,7 @@ interface HomeService {
 
     @FormUrlEncoded
     @POST("api/v1/releasetopic/")
-    fun releaseTopic(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+    fun releaseTopic(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<com.rescue.flutter_720yun.home.models.ReleaseTopicResult>>
 
     @FormUrlEncoded
     @POST("/api/v2/addresstopiclist/")

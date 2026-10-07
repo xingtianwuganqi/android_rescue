@@ -9,6 +9,10 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface UserService {
+    @FormUrlEncoded
+    @POST("api/v1/authpublishlist/")
+    fun ownPublishNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>
+
 
     @FormUrlEncoded
     @POST("api/v2/getuserpublish/")

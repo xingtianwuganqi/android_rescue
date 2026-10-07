@@ -1,0 +1,7 @@
+allprojects {
+    afterEvaluate { project ->
+        if (project.name == 'app') {
+            project.android.sourceSets.test.java.srcDir(new File(project.rootDir, 'qa/promotion/kotlin'))
+        }
+    }
+}

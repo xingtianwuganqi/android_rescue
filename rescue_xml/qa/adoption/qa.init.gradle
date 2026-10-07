@@ -1,0 +1,13 @@
+allprojects {
+    afterEvaluate { project ->
+        if (project.name == 'app') {
+            def qaRoot = new File(project.rootDir, 'qa/adoption')
+            project.android.sourceSets.test.java.srcDir(new File(qaRoot, 'kotlin'))
+            project.android.sourceSets.test.resources.srcDir(new File(qaRoot, 'resources'))
+            project.tasks.withType(Test).configureEach {
+                systemProperty 'kotlinx.coroutines.fast.service.loader', 'false'
+                systemProperty 'qa.adoption.location', new File(project.projectDir, 'src/main/res/raw/location.json').absolutePath
+            }
+        }
+    }
+}

@@ -85,8 +85,12 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
                 dic["page"] = page
                 dic["size"] = 10
                 dic["userId"] = userId
-                Log.d("TAG","$dic")
-                val response = appService.userPublishNetworking(dic).awaitResp()
+
+                val session=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
+                val requestedUser=userId
+                val own=requestedUser!=null && requestedUser==com.rescue.flutter_720yun.util.UserManager.userId
+                val response = (if(own) appService.ownPublishNetworking(dic) else appService.userPublishNetworking(dic)).awaitResp()
+                if(session!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value || requestedUser!=userId) return@launch
                 _isFirstLoading.value = false
                 if (response.code == 200) {
                     val items = when (response.data) {
@@ -103,6 +107,11 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
                             emptyList()
                         }
                     }
+                    _isLastPage.value=items.size<10
+                    if(own) items.filter { it.is_complete==true && it.topic_id!=null }.forEach { item ->
+                        item.workflow_status=runCatching { com.rescue.flutter_720yun.adoption.repository.AdoptionRepository().state(item.topic_id!!).workflow_status }.getOrNull()
+                    }
+                    if(session!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) return@launch
                     if (items.isNotEmpty()) {
                         _uiState.value = UiState.Success(items)
                         page += 1
@@ -154,7 +163,7 @@ class UserTopicViewModel<T>: ViewModel(), CommonViewModelInterface {
                 dic["page"] = page
                 dic["size"] = 10
                 dic["userId"] = userId
-                Log.d("TAG","$dic")
+
                 val response = appService.userShowPublishNetworking(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {

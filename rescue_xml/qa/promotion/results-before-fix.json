@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-05",
+  "scope": "Production coordinator + Retrofit with simulated SDK events and SharedPreferences memory/disk model; not real Android SDK",
+  "summary": {
+    "tests": 78,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0
+  },
+  "backend": {
+    "total_unique_tests": 33,
+    "sqlite": {
+      "passed": 29,
+      "initially_skipped_mysql": 4
+    },
+    "mysql": {
+      "passed": 4,
+      "skipped": 0,
+      "database": "new temporary isolated database via Unix socket; service shut down after tests"
+    },
+    "failures": 0
+  },
+  "suites": [
+    {
+      "name": "com.rescue.flutter_720yun.ExampleUnitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionContractTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionRepositoryTest",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.qa.AdoptionFlowAuditTest",
+      "tests": "19",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdLayoutTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdPlacementTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.home.FeedCursorTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionRepositoryTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.qa.PromotionCoordinatorAuditTest",
+      "tests": "15",
+      "failures": "3",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": [
+        {
+          "name": "rewardMustBeDurablySavedBeforeRestoringAfterCommitFailure",
+          "message": "java.lang.AssertionError: Recovered reward was submitted without retrying its failed disk commit"
+        },
+        {
+          "name": "failedBackoffPersistenceMustNotAllowImmediateRateLimitReplay",
+          "message": "java.lang.AssertionError: Failed disk write erased Retry-After protection expected:<1> but was:<2>"
+        },
+        {
+          "name": "businessRefusalMustRefreshEligibilityWithoutClaimingSuccess",
+          "message": "java.lang.AssertionError: A business refusal must refresh eligibility expected:<2> but was:<1>"
+        }
+      ]
+    }
+  ],
+  "baseline": {
+    "tests": 44,
+    "failures": 0,
+    "debug_build": "passed"
+  }
+}

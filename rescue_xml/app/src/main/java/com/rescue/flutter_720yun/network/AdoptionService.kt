@@ -17,9 +17,9 @@ interface AdoptionService {
         @Query("status") status: String?, @Query("page") page: Int, @Query("size") size: Int = 10): Response<V2Response<V2Page<AdoptionApplication>>>
     @GET("api/v2/adoption-applications/{id}") suspend fun application(@Header("Authorization") auth: String, @Path("id") id: Int): Response<V2Response<AdoptionApplication>>
     @PATCH("api/v2/adoption-applications/{id}") suspend fun action(@Header("Authorization") auth: String, @Path("id") id: Int,
-        @Body body: ApplicationAction): Response<V2Response<AdoptionApplication>>
+        @Body body: ApplicationAction, @Header("Idempotency-Key") key: String? = null): Response<V2Response<AdoptionApplication>>
     @POST("api/v2/adoptions/{id}/status") suspend fun topicAction(@Header("Authorization") auth: String, @Path("id") id: Int,
-        @Body body: TopicAction): Response<V2Response<ApplicationState>>
+        @Body body: TopicAction, @Header("Idempotency-Key") key: String): Response<V2Response<ApplicationState>>
     @GET("api/v2/adoption-notifications") suspend fun notifications(@Header("Authorization") auth: String, @Query("page") page: Int,
         @Query("size") size: Int = 10, @Query("role") role: String? = null, @Query("topic_id") topic: Int? = null,
         @Query("unread") unread: Boolean? = null): Response<V2Response<V2Page<AdoptionNotification>>>

@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-05",
+  "scope": "Post-fix Android regression: production coordinator + Retrofit, simulated SDK events and SharedPreferences memory/disk; ownership gate unit tests; not real Android SDK",
+  "summary": {
+    "tests": 84,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "build": "Debug APK assembleDebug passed",
+  "backend_previous_audit": {
+    "total_unique_tests": 33,
+    "sqlite": {
+      "passed": 29,
+      "initially_skipped_mysql": 4
+    },
+    "mysql": {
+      "passed": 4,
+      "skipped": 0,
+      "database": "new temporary isolated database via Unix socket; service shut down after tests"
+    },
+    "failures": 0
+  },
+  "backend_note": "No backend changes during this fix; the prior 33 passing backend tests were not rerun.",
+  "suites": [
+    {
+      "name": "com.rescue.flutter_720yun.ExampleUnitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionContractTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionRepositoryTest",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.qa.AdoptionFlowAuditTest",
+      "tests": "19",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdLayoutTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdPlacementTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FullscreenOwnershipTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.home.FeedCursorTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionRepositoryTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.qa.PromotionCoordinatorAuditTest",
+      "tests": "18",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    }
+  ]
+}

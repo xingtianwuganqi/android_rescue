@@ -311,22 +311,17 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
             }
         }
 
-        viewModel.releaseSuccess.observe(this) {
-            if (it == 200) {
-                LoadingDialog.hide()
-                BaseApplication.context.resources.getString(R.string.release_success).toastString()
-                Log.d("TAG","${BaseApplication.context.resources.getString(R.string.release_success)}")
-                GlobalScope.launch(Dispatchers.Main) {
-                    delay(2000)
-                    sendResultAndFinish()
-                    finish()
-                }
-            }else{
-                LoadingDialog.hide()
-                BaseApplication.context.resources.getString(R.string.release_fail).toastString()
-                Log.d("TAG","${BaseApplication.context.resources.getString(R.string.release_fail).toastString()}")
-
-            }
+        viewModel.releaseSuccess.observe(this) { code ->
+            if(code==null) return@observe
+            viewModel.consumeReleaseSuccess()
+            LoadingDialog.hide()
+            if(code==200) {
+                val result=Intent(this,PublishSuccessActivity::class.java)
+                viewModel.releasedTopicId?.let { result.putExtra("topic_id",it) }
+                startActivity(result)
+                sendResultAndFinish()
+                finish()
+            } else resources.getString(R.string.release_fail).toastString()
         }
     }
 

@@ -23,6 +23,7 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
         if(isMyApplications) ViewModelProvider(this)[com.rescue.flutter_720yun.adoption.viewmodels.AdoptionMyApplicationsViewModel::class.java]
         else ViewModelProvider(this)[AdoptionApplicationsViewModel::class.java]
     }
+    private val actionFlow by lazy { com.rescue.flutter_720yun.adoption.ui.AdoptionActionFlow(this,vm,isMyApplications) { refreshLists() } }
     private var contactDialog: androidx.appcompat.app.AlertDialog? = null
     private lateinit var reminderAdapter: AdoptionReminderAdapter
     private var observing=false
@@ -33,6 +34,7 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
         val topic=intent.getIntExtra("topic_id",0)
         if(intent.hasExtra("topic_id") && topic<=0) { notice("帖子参数无效"); finish(); return }
         vm.topic=topic.takeIf { it>0 }
+        com.rescue.flutter_720yun.util.UserManager.sessionRevision.observe(this) { actionFlow.dismiss();contactDialog?.dismiss();contactDialog=null }
         setupList(); observe(vm, false); observeLists(); requireLogin()
     }
     private fun setupList() {
@@ -47,7 +49,7 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
         adapter=AdoptionApplicationAdapter({ app -> AdoptionApplicationSheet.newInstance(app.application_id,!isMyApplications)
             .show(supportFragmentManager,"application") },{ app -> app.topic?.takeUnless { it.unavailable || it.is_delete==0 }?.let {
                 startActivity(Intent(this,HomeDetailActivity::class.java).putExtra("topic_id",it.topic_id)) } },
-            copyContact=if(isMyApplications) { app -> contactDialog=com.rescue.flutter_720yun.adoption.ui.AdoptionContactCopy.prompt(this,vm,app.application_id) { fresh -> vm.items.value=vm.items.value.orEmpty().map { if(it.application_id==fresh.application_id) fresh else it } } } else null)
+            copyContact=if(isMyApplications) { app -> com.rescue.flutter_720yun.adoption.ui.AdoptionContactCopy.copy(this,vm,app.application_id) { fresh -> vm.items.value=vm.items.value.orEmpty().map { if(it.application_id==fresh.application_id) fresh else it } } } else null, action={ app,code -> actionFlow.perform(app,code) }, busy={ vm.busy.value==true },previews={ vm.previewImages.value.orEmpty() },missingPreview={ vm.loadPreview(it) })
         findViewById<RecyclerView>(R.id.adoption_list).apply { layoutManager=LinearLayoutManager(this@AdoptionApplicationsActivity); adapter=this@AdoptionApplicationsActivity.adapter }
         findViewById<Button>(R.id.adoption_refresh).setOnClickListener { refreshLists() }
         findViewById<Button>(R.id.adoption_more).setOnClickListener { vm.load(false) }
@@ -64,9 +66,13 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
     }
     private fun observeLists() {
         if(observing) return; observing=true
+        vm.previewImages.observe(this) { updateLists() }
         vm.items.observe(this) { updateLists() }
         vm.busy.observe(this) { updateLists() }
-        vm.error.observe(this) { updateLists() }
+        vm.error.observe(this) { error ->
+            updateLists()
+            if(error?.status==409) window.decorView.post { if(lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) refreshLists() }
+        }
         vm.reminders.observe(this) { updateLists() }
         vm.reminderBusy.observe(this) { updateLists() }
         vm.reminderError.observe(this) { updateLists() }
@@ -90,6 +96,7 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
             text=error?.message.orEmpty()+"\n请点击重试"
         }
         findViewById<Button>(R.id.adoption_more).apply { visibility=if(!empty && vm.hasMore) View.VISIBLE else View.GONE; isEnabled=!busy }
+        findViewById<LinearLayout>(R.id.adoption_reminder_container).visibility = if(vm.reminders.value.isNullOrEmpty() && vm.reminderBusy.value != true && vm.reminderError.value == null) View.GONE else View.VISIBLE
         val counts=vm.reminderCounts.value
         val number=if(isMyApplications) counts?.mine_unread_count else counts?.received_unread_count
         findViewById<TextView>(R.id.adoption_reminder_status).text=when {
@@ -116,7 +123,7 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
         if(id>0 && !focused) { focused=true; AdoptionApplicationSheet.newInstance(id,!isMyApplications).show(supportFragmentManager,"application") }
     }
     override fun onPause() {
-        contactDialog?.dismiss(); contactDialog=null
+        actionFlow.dismiss(); contactDialog?.dismiss(); contactDialog=null
         vm.stopReminders()
         vm.readMessage.value=null
         if(isMyApplications) { vm.cancelWork(); vm.items.value=emptyList(); vm.initialized=false }

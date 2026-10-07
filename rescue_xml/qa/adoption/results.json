@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-05",
+  "phase": "after fixes",
+  "scope": "JVM + MockWebServer; not Android UI",
+  "summary": {
+    "tests": 63,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "backend": {
+    "suite": "apps.adoption_v2.tests",
+    "tests": 57,
+    "failures": 0,
+    "database": "isolated SQLite in memory"
+  },
+  "debug_build": "passed",
+  "suites": [
+    {
+      "name": "com.rescue.flutter_720yun.ExampleUnitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionContractTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionRepositoryTest",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.qa.AdoptionFlowAuditTest",
+      "tests": "19",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdLayoutTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdPlacementTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.home.FeedCursorTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionRepositoryTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    }
+  ]
+}

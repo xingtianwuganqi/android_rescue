@@ -94,7 +94,8 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 .into(imgView)
         }
         imgView.scaleType = ImageView.ScaleType.CENTER_CROP
-        timeText.text = "${item?.create_time?.formatTime()}•${item?.address_info}"
+        timeText.text = "${item?.create_time?.formatTime()}•${item?.address_info}" +
+            if(item?.promotion?.is_promoted==true) " · ${item.promotion.label ?: "推广"}" else ""
 
         content.text = item?.content
 

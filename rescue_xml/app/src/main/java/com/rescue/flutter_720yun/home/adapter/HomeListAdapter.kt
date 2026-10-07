@@ -37,7 +37,7 @@ class HomeListAdapter(private var list: MutableList<HomeListModel>,
     fun refreshItem(newList: List<HomeListModel>) {
         list.clear()
         list.addAll(newList)
-        notifyItemRangeChanged(0, newList.size) // 刷新一个范围内的项。
+        notifyDataSetChanged() // 刷新一个范围内的项。
     }
 
     fun addItems(newList: List<HomeListModel>) {
@@ -48,7 +48,7 @@ class HomeListAdapter(private var list: MutableList<HomeListModel>,
 
     fun uploadItem(item: HomeListModel) {
         val position = list.indexOfFirst { it.topic_id == item.topic_id }
-        if (list.isNotEmpty()) {
+        if (position>=0) {
             list[position] = item
             notifyItemChanged(position)
         }

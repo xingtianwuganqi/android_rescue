@@ -60,6 +60,11 @@
                     android:layout_gravity="center"
                     />
             </LinearLayout>
+            <TextView android:id="@+id/promotion_status" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:padding="8dp" android:textSize="12sp" android:textColor="@color/color_system" android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/promotion_action" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textSize="12sp" android:text="观看视频，增加曝光"
+                android:backgroundTint="@color/color_system" app:cornerRadius="5dp" android:visibility="gone" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

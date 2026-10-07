@@ -10,7 +10,10 @@ import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 
 object TakuAds {
     private var initialized = false
-    internal var fullscreenPresented = false
+    private val fullscreenOwnership = FullscreenOwnership()
+    internal val fullscreenPresented get() = fullscreenOwnership.presented
+    internal fun acquireFullscreen(token: Any) = fullscreenOwnership.acquire(token)
+    internal fun releaseFullscreen(token: Any) = fullscreenOwnership.release(token)
 
     /** Call from a foreground Activity after privacy consent, including first-run acceptance. */
     fun initialize(context: Context): Boolean {

@@ -22,7 +22,7 @@ class AdoptionReminderAdapter(private val click: (AdoptionNotification) -> Unit)
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val item=items[position]; holder.root.removeAllViews()
         val time=runCatching { OffsetDateTime.parse(item.created_at).atZoneSameInstant(ZoneId.systemDefault())
-            .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")) }.getOrNull() ?: item.created_at.orEmpty()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) }.getOrNull() ?: item.created_at.orEmpty()
         holder.root.label(item.message.orEmpty()+"\n"+time)
         holder.root.button(if(reading==item.id) "处理中…" else "查看提醒") { click(item) }.isEnabled=reading==null
     }

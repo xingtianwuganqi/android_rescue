@@ -10,7 +10,7 @@ import kotlinx.coroutines.CancellationException
 import retrofit2.Response
 
 class AdoptionError(val http: Int, val errorCode: String? = null, override val message: String,
-    val fields: Map<String, String> = emptyMap()) : Exception(message)
+    val fields: Map<String, String> = emptyMap(), val code: Int = http, val retryAfter: Long? = null) : Exception(message) { val status: Int get()=if(http==200) code else http }
 
 object AdoptionErrors {
     fun parse(http: Int, text: String?): AdoptionError {
@@ -22,8 +22,9 @@ object AdoptionErrors {
         } }.getOrNull().orEmpty()
         return AdoptionError(http, string(data, "error_code"), string(json, "message") ?: when(http) {
             401 -> "登录已失效，请重新登录"; 403 -> "当前账号无权执行此操作"; 404 -> "资源或新版服务暂不可用"
-            409 -> "状态已变化，请刷新后重试"; else -> "请求失败，请稍后重试"
-        }, errors)
+            409 -> "状态已变化，请刷新后重试"; else -> "服务暂不可用，请稍后重试"
+        }, errors, code=runCatching { json?.get("code")?.asInt }.getOrNull() ?: http,
+            retryAfter=runCatching { data?.get("retry_after")?.asLong }.getOrNull())
     }
 }
 
@@ -40,18 +41,33 @@ class AdoptionRepository(
     private suspend fun <T> request(call: suspend (String) -> Response<V2Response<T>>): T {
         val identity = account()
         val token = identity.token ?: throw AdoptionError(401, message = "请先登录")
-        val response = call("Bearer $token") // Retrofit suspend requests cancel the underlying Call.
+        val response = try { call("Bearer $token") } catch(e: com.google.gson.JsonParseException) {
+            if(identity != account()) throw CancellationException("Account changed")
+            throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+        } // Retrofit suspend requests cancel the underlying Call.
         if (identity != account())
             throw CancellationException("Account changed")
         val body = response.body()
-        if (!response.isSuccessful || body?.code != 200) {
+        if(response.code()==200 && body==null) throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+        if (response.code() != 200 || body?.code != 200) {
             val error = if(response.isSuccessful && body != null)
-                AdoptionError(body.code, message = body.message ?: "请求失败，请刷新后重试")
+                AdoptionErrors.parse(response.code(), com.google.gson.JsonObject().apply {
+                    addProperty("code",body.code);addProperty("message",body.message);add("data",body.errorData)
+                }.toString())
             else AdoptionErrors.parse(response.code(), response.errorBody()?.string())
-            if(error.http == 401) invalidateLogin()
+            if(error.status == 401) invalidateLogin()
             throw error
         }
         return body.data ?: throw AdoptionError(502, message = "服务返回了无效数据，请重试")
+    }
+    suspend fun preview(topic: Int): String? {
+        val identity=account()
+        val params=mutableMapOf<String,Any?>("topic_id" to topic)
+        identity.token?.let { params["token"]=it }
+        val result=com.rescue.flutter_720yun.network.ServiceCreator.create<com.rescue.flutter_720yun.network.HomeService>().topicPreview(params)
+        ensureAccount(identity)
+        if(result.code()!=200 || result.body()?.code!=200) return null
+        return (result.body()?.data?.imgs.orEmpty()+result.body()?.data?.preview_img.orEmpty()).firstOrNull { it.isNotBlank() }
     }
     suspend fun profile() = request { service.profile(it) }
     suspend fun saveProfile(body: ProfileWrite) = request { service.saveProfile(it, body) }
@@ -59,9 +75,9 @@ class AdoptionRepository(
     suspend fun apply(topic: Int, key: String, body: ApplicationWrite) = request { service.apply(it, topic, key, body) }
     suspend fun received(topic: Int?, status: String, page: Int) = request { service.received(it, topic, status, page) }
     suspend fun application(id: Int) = request { service.application(it, id) }
-    suspend fun action(id: Int, body: ApplicationAction) = request { service.action(it, id, body) }
+    suspend fun action(id: Int, body: ApplicationAction, key: String? = null) = request { service.action(it, id, body, key) }
     suspend fun mine(status: String, page: Int) = request { service.mine(it, status.takeIf { value -> value.isNotBlank() }, page) }
-    suspend fun topicAction(topic: Int, body: TopicAction) = request { service.topicAction(it, topic, body) }
+    suspend fun topicAction(topic: Int, body: TopicAction, key: String = java.util.UUID.randomUUID().toString()) = request { service.topicAction(it, topic, body, key) }
     suspend fun notifications(page: Int) = request { service.notifications(it, page) }
     suspend fun unread() = request { service.unread(it) }
     suspend fun read(id: Int) = request { service.read(it, id) }

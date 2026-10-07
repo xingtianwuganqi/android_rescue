@@ -37,17 +37,18 @@ class ForegroundSplashObserver(application: Application) : Application.ActivityL
         }
     }
     override fun onActivityResumed(activity: Activity) {
+        com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.restore()
         resumed = WeakReference(activity)
         if (!background) return
         background = false
-        if (!eligible || TakuAds.fullscreenPresented || activity is SupportActivity ||
+        if (!eligible || com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.busy || TakuAds.fullscreenPresented || activity is SupportActivity ||
             BuildConfig.TAKU_SPLASH_ID.isBlank() || !TakuAds.initialize(activity)) return
         eligible = false
         val reference = WeakReference(activity)
         val deadline = SystemClock.elapsedRealtime() + 3_000
         fun presentWhenStable() {
             val host = reference.get() ?: return
-            if (resumed?.get() !== host || host.isFinishing || host.isDestroyed || TakuAds.fullscreenPresented) return
+            if (resumed?.get() !== host || host.isFinishing || host.isDestroyed || com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.busy || TakuAds.fullscreenPresented) return
             if (host.hasWindowFocus()) host.startActivity(Intent(host, WarmSplashActivity::class.java))
             else if (SystemClock.elapsedRealtime() < deadline) handler.postDelayed({ presentWhenStable() }, 300)
         }

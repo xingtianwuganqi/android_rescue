@@ -50,72 +50,58 @@ class HomeViewModel : ViewModel() {
 
     private val appService = ServiceCreator.create<HomeService>()
 
-    fun loadListData(refresh: RefreshState) {
-        viewModelScope.launch {
-            if (_isLoading.value == true) {
-                return@launch
-            }
-            if (refresh == RefreshState.REFRESH) {
-                page = 1
-                _isLastPage.value = false
-            }
-            if (refresh == RefreshState.MORE && _isLastPage.value == true) {
-                return@launch
-            }
-            if (_isFirstLoading.value == true) {
-                _uiState.value = UiState.FirstLoading
-            }
-            _isLoading.value = true
-            _refreshState.value = refresh
+    private val feedRepository=com.rescue.flutter_720yun.home.repository.FeedRepository()
+    private val feedCursor=com.rescue.flutter_720yun.home.models.FeedCursor()
+    private var feedJob: kotlinx.coroutines.Job?=null
+    private var feedGeneration=0L
+    private var feedCity: String?=null
+    private val sessionObserver=androidx.lifecycle.Observer<Long> {
+        feedJob?.cancel();feedGeneration++;feedCursor.reset();_isLoading.value=false
+        _refreshState.value=RefreshState.REFRESH;_uiState.value=UiState.Success(emptyList())
+        _isFirstLoading.value=true
+    }
+    init { com.rescue.flutter_720yun.util.UserManager.sessionRevision.observeForever(sessionObserver) }
+    override fun onCleared() {
+        com.rescue.flutter_720yun.util.UserManager.sessionRevision.removeObserver(sessionObserver)
+        super.onCleared()
+    }
+    fun loadListData(refresh: RefreshState) = loadFeed(null,refresh)
+    private fun loadFeed(city: String?,requested: RefreshState) {
+        val refresh=if(city!=feedCity) RefreshState.REFRESH else requested
+        if(refresh==RefreshState.MORE && (_isLoading.value==true || !feedCursor.hasMore)) return
+        if(refresh==RefreshState.REFRESH) {
+            feedJob?.cancel();feedCursor.reset();feedCity=city;_isLastPage.value=false
+        }
+        val generation=++feedGeneration
+        val session=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
+        _refreshState.value=refresh;_isLoading.value=true
+        if(_isFirstLoading.value==true) _uiState.value=UiState.FirstLoading
+        feedJob=viewModelScope.launch {
+            var expired=false
             try {
-                val dic = paramDic
-                dic["page"] = page
-                dic["size"] = 10
-                dic["order"] = 0
-                val response = appService.getTopicList(dic).awaitResp()
-                _isFirstLoading.value = false
-                if (response.code == 200) {
-                    var items = when (response.data) {
-                        is List<*> -> {
-                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
-                            (homeList ?: emptyList())
-                        }
-                        is Map<*, *> -> {
-                            emptyList()
-                        }// data 为 {}，返回空列表
-                        else -> {
-                            emptyList()
-                        }
-                    }
-                    val topicIds = SharedPreferencesUtil.getStringSet("black_home_list", BaseApplication.context)
-                    items = items.filter {
-                        topicIds?.contains("${it.topic_id}") != true
-                    }
-                    if (items.isNotEmpty()) {
-                        page += 1
-                        _uiState.value = UiState.Success(items)
-                    }else{
-                        if (page == 1) {
-                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
-                            _uiState.value = UiState.Error(noMoreData)
-                        }else{
-                            _isLastPage.value = true
-                        }
-                    } 
-                }else{
-                    if (page == 1) {
-                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                        _uiState.value = UiState.Error(noMoreData)
-                    }
+                val result=feedRepository.page(city,feedCursor.nextPage,feedCursor.snapshot)
+                if(generation!=feedGeneration || session!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) return@launch
+                val black=SharedPreferencesUtil.getStringSet("black_home_list",BaseApplication.context)
+                val accepted=feedCursor.accept(result.meta,result.items).filter { black?.contains("${it.topic_id}")!=true }
+                _isFirstLoading.value=false;_isLastPage.value=!feedCursor.hasMore
+                // An empty page still completes successfully and advances the snapshot cursor.
+                _uiState.value=UiState.Success(accepted)
+            } catch(e: kotlinx.coroutines.CancellationException) { throw e }
+            catch(e: Exception) { if(generation==feedGeneration) {
+                val error=e as? com.rescue.flutter_720yun.adoption.repository.AdoptionError
+                expired=error?.errorCode in listOf("FEED_SNAPSHOT_EXPIRED","FEED_SNAPSHOT_MISMATCH")
+                if(!expired) {
+                    if(_isFirstLoading.value==true) _uiState.value=UiState.Error(error?.message ?: "列表加载失败，请点击重试")
+                    else _errorMsg.value=error?.message ?: "加载失败，请重试"
                 }
-            }catch (e: Exception) {
-                if (page == 1) {
-                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                    _uiState.value = UiState.Error(noMoreData)
+            } }
+            finally { if(generation==feedGeneration) {
+                _isLoading.value=false
+                if(expired) {
+                    _refreshState.value=RefreshState.REFRESH;_uiState.value=UiState.Success(emptyList())
+                    loadFeed(city,RefreshState.REFRESH)
                 }
-            }finally {
-                _isLoading.value = false
-            }
+            } }
         }
     }
 
@@ -188,73 +174,9 @@ class HomeViewModel : ViewModel() {
     }
 
     fun localListNetworking(address: String, refresh: RefreshState) {
-        viewModelScope.launch {
-            try {
-                if (_isLoading.value == true) {
-                    return@launch
-                }
-                _isLoading.value = true
-                if (refresh == RefreshState.REFRESH) {
-                    page = 1
-                    _isLastPage.value = false
-                    cityName = address
-                }
-                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
-                    return@launch
-                }
-                if (_isFirstLoading.value == true) {
-                    _uiState.value = UiState.FirstLoading
-                }
-                _refreshState.value = refresh
-
-                val dic = paramDic
-                dic["address"] = address
-                dic["page"] = page
-                dic["size"] = 10
-                Log.d("TAG","dic is $dic")
-                val response = appService.localTopicList(dic).awaitResp()
-                _isFirstLoading.value = false
-                if (response.code == 200) {
-                    val items = when (response.data) {
-                        is List<*> -> {
-                            val homeList = convertAnyToList(response.data, HomeListModel::class.java)
-                            (homeList ?: emptyList())
-                        }
-                        is Map<*, *> -> {
-                            emptyList()
-                        }// data 为 {}，返回空列表
-                        else -> {
-                            emptyList()
-                        }
-                    }
-                    if (items.isNotEmpty()) {
-                        page += 1
-                        _uiState.value = UiState.Success(items)
-                    }else{
-                        if (page == 1) {
-                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
-                            _uiState.value = UiState.Error(noMoreData)
-                        }else{
-                            _isLastPage.value = true
-                        }
-                    }
-                }else{
-                    if (page == 1) {
-                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
-                        _uiState.value = UiState.Error(noMoreData)
-                    }
-                }
-            }catch (e: Exception) {
-                if (page == 1) {
-                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_more_data)
-                    _uiState.value = UiState.Error(noMoreData)
-                }
-            }finally {
-                _isLoading.value = false
-            }
-        }
+        cityName=address
+        loadFeed(address,refresh)
     }
-
 
     // 用户收藏
     fun loadUserCollection(refresh: RefreshState) {

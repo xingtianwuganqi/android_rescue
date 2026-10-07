@@ -40,6 +40,11 @@ class ReleaseTopicViewModel: ViewModel() {
     private val _checkCode = MutableLiveData<Int?>()
     private val _uploadToken = MutableLiveData<String>()
     private val _imageUploadCompletion = MutableLiveData<Int?>() // 1：成功，2：失败
+    var releasedTopicId: Int? = null
+        private set
+    private var published=false
+    private var publishing=false
+    fun consumeReleaseSuccess() { _releaseSuccess.value=null }
     private val _releaseSuccess = MutableLiveData<Int?>()
 
     val checkCode: LiveData<Int?> get() = _checkCode
@@ -172,6 +177,9 @@ class ReleaseTopicViewModel: ViewModel() {
     }
 
     fun releaseTopicNetworking() {
+        if(published || publishing) return
+        publishing=true
+        val identity=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
         viewModelScope.launch {
             try {
                 val dic = paramDic
@@ -187,15 +195,21 @@ class ReleaseTopicViewModel: ViewModel() {
                     photo.id
                 }.joinToString(",")
                 val response = appService.releaseTopic(dic).awaitResp()
+                if(identity!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) return@launch
+                if(response.code==200) {
+                    if(published) return@launch
+                    published=true
+                    releasedTopicId=response.data?.topic_id?.takeIf { it>0 }
+                }
                 _releaseSuccess.value = response.code
                 if (response.code == 200) {
                     cleanImageUploadCompletion()
+                    releaseInfo.content=null;releaseInfo.contact=null;releaseInfo.photos.clear();releaseInfo.address=null
+                    org.greenrobot.eventbus.EventBus.getDefault().post(com.rescue.flutter_720yun.promotion.TopicPublishedEvent())
                 }
             }catch (e: Exception) {
-                Log.d("TAG", "release topic error: $e")
-            }finally {
-
-            }
+                if(identity==com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) _releaseSuccess.value=500
+            }finally { publishing=false }
         }
     }
 

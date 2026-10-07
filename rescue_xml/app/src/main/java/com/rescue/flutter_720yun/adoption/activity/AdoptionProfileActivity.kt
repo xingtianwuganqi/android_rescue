@@ -90,7 +90,7 @@ class AdoptionProfileActivity : AdoptionActivity() {
         }
         pick("选择省份", regions.toList()) { province ->
             pick("选择城市", province.children.orEmpty()) { city ->
-                pick("选择区县", city.children.orEmpty()) { district ->
+                pick("选择区县", AdoptionRegions.districts(city)) { district ->
                     vm.city = city.name; vm.district = district.name; fill()
                 }
             }

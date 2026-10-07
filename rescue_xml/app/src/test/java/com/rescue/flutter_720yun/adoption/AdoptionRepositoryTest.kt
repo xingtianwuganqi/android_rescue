@@ -28,7 +28,7 @@ class AdoptionRepositoryTest {
             override fun callFailed(call: Call, ioe: IOException) { failedCall.countDown() }
         }).build()
         val service=Retrofit.Builder().baseUrl(server.url("/")).client(client)
-            .addConverterFactory(GsonConverterFactory.create()).build().create(AdoptionService::class.java)
+            .addConverterFactory(GsonConverterFactory.create(com.rescue.flutter_720yun.network.AdoptionServiceCreator.gson)).build().create(AdoptionService::class.java)
         repo=AdoptionRepository(service, { identity.get() }, { logouts++ })
     }
     @After fun close() { server.shutdown() }

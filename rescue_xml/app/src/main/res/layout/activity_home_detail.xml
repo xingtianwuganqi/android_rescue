@@ -28,6 +28,12 @@
             android:background="@color/color_eee"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/promotion_button"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="15dp" android:layout_marginEnd="15dp"
+            android:text="观看视频，增加曝光" android:backgroundTint="@color/color_system"
+            app:cornerRadius="5dp" android:visibility="gone" />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/get_contact_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

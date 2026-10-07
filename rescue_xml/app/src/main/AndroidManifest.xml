@@ -28,6 +28,7 @@
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <activity android:name=".home.activity.PublishSuccessActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionMyApplicationsActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionProfileActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionApplicationsActivity" android:exported="false" />

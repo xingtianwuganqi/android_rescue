@@ -9,6 +9,20 @@ import com.rescue.flutter_720yun.adoption.ui.AdoptionNotificationChanges
 import kotlinx.coroutines.*
 
 open class AdoptionApplicationsViewModel(private val saved: SavedStateHandle) : AdoptionViewModel() {
+    val previewImages=MutableLiveData<Map<Int,String>>(emptyMap())
+    private val previewRequested=mutableSetOf<Int>()
+    private val previewJobs=mutableListOf<Job>()
+    fun loadPreview(topicId: Int) {
+        if(topicId<=0 || !previewRequested.add(topicId)) return
+        val session=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
+        previewJobs+=viewModelScope.launch {
+            try {
+                val image=repository.preview(topicId)
+                if(session==com.rescue.flutter_720yun.util.UserManager.sessionRevision.value && image!=null)
+                    previewImages.value=previewImages.value.orEmpty()+(topicId to image)
+            } catch(e: CancellationException) { throw e } catch(e: Exception) { /* keep placeholder */ }
+        }
+    }
     val items = MutableLiveData<List<AdoptionApplication>>(emptyList())
     var topic: Int? = null
     protected var mine = false
@@ -20,16 +34,24 @@ open class AdoptionApplicationsViewModel(private val saved: SavedStateHandle) : 
     var hasMore = true
     var initialized = false
     private var applicationLastRefresh=true
+    private var applicationScope: Triple<String, Int?, String>? = null
     fun retryApplications() = load(applicationLastRefresh)
     fun load(refresh: Boolean = true) {
-        if(refresh) cancelWork()
-        if(!refresh && !hasMore) return
-        applicationLastRefresh=refresh
-        val filter=status; val requestedTopic=topic; val next=if(refresh) 1 else page+1
+        val scope = Triple(role, topic, status)
+        val scopeChanged = applicationScope != scope
+        val reload = refresh || scopeChanged || !initialized
+        if(reload) cancelWork()
+        if(scopeChanged) {
+            applicationScope = scope
+            items.value = emptyList(); page = 0; hasMore = true; initialized = false
+        }
+        if(!reload && !hasMore) return
+        applicationLastRefresh=reload
+        val filter=status; val requestedTopic=topic; val next=if(reload) 1 else page+1
         run {
             val data=if(mine) repository.mine(filter,next) else repository.received(requestedTopic,filter,next)
-            if(filter != status || requestedTopic != topic) return@run
-            items.value=(if(refresh) data.items.orEmpty() else items.value.orEmpty()+data.items.orEmpty()).distinctBy { it.application_id }
+            if(scope != Triple(role, topic, status)) return@run
+            items.value=(if(reload) data.items.orEmpty() else items.value.orEmpty()+data.items.orEmpty()).distinctBy { it.application_id }
             page=next; hasMore=data.has_more; initialized=true
         }
     }
@@ -98,9 +120,10 @@ open class AdoptionApplicationsViewModel(private val saved: SavedStateHandle) : 
         reminderOperation++; readOperation++; reminderJob?.cancel(); readJob?.cancel()
         reminderBusy.value=false; readingId.value=null
     }
-    override fun clearUnavailableState() { items.value=emptyList(); initialized=false; page=0; hasMore=true }
+    override fun clearUnavailableState() { applicationScope=null; items.value=emptyList(); initialized=false; page=0; hasMore=true }
     override fun clearPrivateState() {
-        stopReminders(); items.value=emptyList(); page=0; hasMore=true; initialized=false
+        previewJobs.forEach { it.cancel() };previewJobs.clear();previewRequested.clear();previewImages.value=emptyMap()
+        stopReminders(); applicationScope=null; items.value=emptyList(); page=0; hasMore=true; initialized=false
         reminders.value=emptyList(); reminderCounts.value=null; reminderPage=0; reminderHasMore=false
         reminderError.value=null; readMessage.value=null; reminderFailedAppend=false
     }

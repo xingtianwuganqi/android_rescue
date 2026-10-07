@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-05",
+  "scope": "JVM + MockWebServer; not Android UI or live backend state transitions",
+  "suites": [
+    {
+      "name": "com.rescue.flutter_720yun.ExampleUnitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionContractTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.AdoptionRepositoryTest",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.adoption.qa.AdoptionFlowAuditTest",
+      "tests": "14",
+      "failures": "4",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": [
+        {
+          "name": "everyCityMustOfferACompletableDistrictSelection",
+          "message": "java.lang.AssertionError: Mandatory district picker has no options: [广东省/东莞市, 广东省/中山市, 海南省/儋州市, 甘肃省/嘉峪关市]"
+        },
+        {
+          "name": "failedFilterChangeMustNotShowPreviousFilterApplications",
+          "message": "java.lang.AssertionError: Ended filter still shows applying rows after load failure"
+        },
+        {
+          "name": "endedIdempotentReplayMustNotReportNewApplicationSuccess",
+          "message": "java.lang.AssertionError: Ended replay is not a new active application. Actual: com.rescue.flutter_720yun.adoption.viewmodels.AdoptionDetailEvent$Applied@6b53bcc2"
+        },
+        {
+          "name": "failedPostSuccessRefreshMustNotLeaveCanApplyState",
+          "message": "java.lang.AssertionError: POST succeeded but stale pre-submit state still permits applying"
+        }
+      ]
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdLayoutTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.ads.FeedAdPlacementTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.home.FeedCursorTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    },
+    {
+      "name": "com.rescue.flutter_720yun.promotion.PromotionRepositoryTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "failed_cases": []
+    }
+  ]
+}

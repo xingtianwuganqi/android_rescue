@@ -43,6 +43,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     private var deleteDialog: AlertDialog? = null
     private lateinit var adapter: HomeDetailAdapter
     private lateinit var imageAdapter: HomeDetailAdapter
+    private lateinit var promotionEntry: com.rescue.flutter_720yun.promotion.PromotionEntry
     private lateinit var adoptionFlow: com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +57,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         viewModel.topicId = topic
         adoptionFlow = com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow(this, binding.getContactBtn)
         adoptionFlow.setTopic(topic)
+        promotionEntry=com.rescue.flutter_720yun.promotion.PromotionEntry(this,binding.promotionButton,topic,"my_posts")
+        ViewModelProvider(this)[com.rescue.flutter_720yun.adoption.viewmodels.AdoptionDetailViewModel::class.java].state.observe(this) { state ->
+            promotionEntry.setOwner(state?.can_manage==true,state?.workflow_status)
+        }
         viewModel.topicFrom = intent.getIntExtra("topic_from", 0)
 
         addViewAction()

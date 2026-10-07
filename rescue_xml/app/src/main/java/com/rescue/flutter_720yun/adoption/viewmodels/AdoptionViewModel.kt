@@ -6,6 +6,9 @@ import com.rescue.flutter_720yun.util.UserManager
 import kotlinx.coroutines.*
 
 open class AdoptionViewModel : ViewModel() {
+    private val actionKeys=mutableMapOf<String,String>()
+    fun operationKey(fingerprint: String)=actionKeys.getOrPut(fingerprint) { java.util.UUID.randomUUID().toString() }
+    fun operationSucceeded(fingerprint: String) { actionKeys.remove(fingerprint) }
     val repository = AdoptionRepository()
     val busy = MutableLiveData(false)
     val error = MutableLiveData<AdoptionError?>()
@@ -16,7 +19,7 @@ open class AdoptionViewModel : ViewModel() {
     private val accountObserver = Observer<Long> {
         if(it == accountRevision) return@Observer
         accountRevision = it
-        cancelWork(); error.value = null
+        cancelWork(); actionKeys.clear();error.value = null
         clearPrivateState(); revision.value = (revision.value ?: 0) + 1
     }
     init { UserManager.sessionRevision.observeForever(accountObserver) }
@@ -30,7 +33,7 @@ open class AdoptionViewModel : ViewModel() {
         job = viewModelScope.launch {
             try { action() }
             catch(cancel: CancellationException) { throw cancel }
-            catch(e: AdoptionError) { if(operation == currentOperation) { busy.value = false; if(e.http==403) clearPrivateState() else if(e.http==404) clearUnavailableState(); error.value = e } }
+            catch(e: AdoptionError) { if(operation == currentOperation) { busy.value = false; if(e.status==403) clearPrivateState() else if(e.status==404) clearUnavailableState(); error.value = e } }
             catch(e: Exception) { if(operation == currentOperation) { busy.value = false; error.value = AdoptionError(0, message = "网络结果未知，请刷新状态后重试") } }
             finally { if(operation == currentOperation) busy.value = false }
         }

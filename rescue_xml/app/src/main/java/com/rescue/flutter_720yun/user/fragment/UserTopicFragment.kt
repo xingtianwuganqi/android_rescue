@@ -42,6 +42,7 @@ class UserTopicFragment: Fragment() {
     private var _binding: FragmentUserTopicBinding? = null
     private val binding get() = _binding!!
     private var from: Int? = null
+    private var promotionDialog: androidx.appcompat.app.AlertDialog? = null
 
 
     // 处理反向传值
@@ -70,7 +71,12 @@ class UserTopicFragment: Fragment() {
             intent.putExtra("topic_id", item.topic_id)
             intent.putExtra("topic_from", 1)
             detailActivityLauncher.launch(intent)
-        })
+        }, promote={ item -> item.topic_id?.let { topic ->
+            promotionDialog=androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setMessage("观看视频后，该帖子将获得一小时优先展示。再次观看成功将重新计算推广时间，是否继续？")
+                .setNegativeButton("取消") { d,_ -> d.dismiss() }
+                .setPositiveButton("观看视频") { d,_ -> d.dismiss();com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.start(requireActivity(),topic,"my_posts") }.show()
+        } })
     }
     private val showAdapter by lazy {
         UserShowListAdapter(mutableListOf(), { item ->
@@ -118,6 +124,18 @@ class UserTopicFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         addViewModelObserver()
+        com.rescue.flutter_720yun.util.UserManager.sessionRevision.observe(viewLifecycleOwner) { promotionDialog?.dismiss();promotionDialog=null;adapter.cleanItems() }
+        com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.changes.observe(viewLifecycleOwner) {
+            if(from==0) loadData(RefreshState.REFRESH)
+        }
+        com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.updates.observe(viewLifecycleOwner) { update ->
+            adapter.notifyDataSetChanged()
+            if(update.account==com.rescue.flutter_720yun.util.UserManager.userId && update.message!=null &&
+                lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                android.widget.Toast.makeText(requireContext(),update.message,android.widget.Toast.LENGTH_LONG).show()
+                com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.updates.value=update.copy(message=null)
+            }
+        }
 
         binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
         binding.refreshLayout.setOnRefreshListener {
@@ -260,6 +278,12 @@ class UserTopicFragment: Fragment() {
         binding.errorView.text = error
     }
 
+    override fun onPause() { promotionDialog?.dismiss();promotionDialog=null;super.onPause() }
+    override fun onResume() {
+        super.onResume()
+        com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.restore()
+        if(_binding!=null && from==0) loadData(RefreshState.REFRESH)
+    }
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

@@ -29,3 +29,5 @@ data class CoachReleaseInfo(
 data class UploadTokenModel(
     val token: String
 ): Parcelable
+
+data class ReleaseTopicResult(val topic_id: Int?)

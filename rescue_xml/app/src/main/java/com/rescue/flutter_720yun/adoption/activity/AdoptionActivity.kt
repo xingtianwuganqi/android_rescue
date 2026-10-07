@@ -35,11 +35,11 @@ open class AdoptionActivity : BaseActivity() {
     protected fun observe(vm: AdoptionViewModel, replaceContentOnError: Boolean = true) {
         vm.error.observe(this) { error -> if(error != null) {
             notice(error.message)
-            if(replaceContentOnError && error.http in listOf(403,404)) {
+            if(replaceContentOnError && error.status in listOf(403,404)) {
                 content.removeAllViews(); content.label(error.message)
                 content.button("重新加载") { onAuthenticated() }
             }
-            if(error.http == 401 && lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) requireLogin()
+            if(error.status == 401 && lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) requireLogin()
         } }
         UserManager.sessionRevision.observe(this) session@{ current ->
             if(current == observedSession) return@session

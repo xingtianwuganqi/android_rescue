@@ -63,7 +63,7 @@ class UserViewModel: ViewModel(), CommonViewModelInterface {
             try {
                 val dic = paramDic
                 dic["userId"] = _userIdLiveData.value
-                Log.d("TAG", "$dic")
+
                 val response = appService.userIdGetUserInfo(dic).awaitResp()
                 if (response.code == 200) {
                     _userInfo.value = response.data
@@ -108,8 +108,12 @@ class UserViewModel: ViewModel(), CommonViewModelInterface {
                 dic["page"] = page
                 dic["size"] = 10
                 dic["userId"] = _userIdLiveData.value
-                Log.d("TAG","$dic")
-                val response = appService.userPublishNetworking(dic).awaitResp()
+
+                val session=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
+                val requestedUser=_userIdLiveData.value
+                val own=requestedUser!=null && requestedUser==com.rescue.flutter_720yun.util.UserManager.userId
+                val response = (if(own) appService.ownPublishNetworking(dic) else appService.userPublishNetworking(dic)).awaitResp()
+                if(session!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value || requestedUser!=_userIdLiveData.value) return@launch
                 _isFirstLoading.value = false
                 if (response.code == 200) {
                     val items = when (response.data) {
@@ -126,6 +130,11 @@ class UserViewModel: ViewModel(), CommonViewModelInterface {
                             emptyList()
                         }
                     }
+                    _isLastPage.value=items.size<10
+                    if(own) items.filter { it.is_complete==true && it.topic_id!=null }.forEach { item ->
+                        item.workflow_status=runCatching { com.rescue.flutter_720yun.adoption.repository.AdoptionRepository().state(item.topic_id!!).workflow_status }.getOrNull()
+                    }
+                    if(session!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) return@launch
                     if (items.isNotEmpty()) {
                         _uiState.value = UiState.Success(items)
                         page += 1
@@ -177,7 +186,7 @@ class UserViewModel: ViewModel(), CommonViewModelInterface {
                 dic["page"] = page
                 dic["size"] = 10
                 dic["userId"] = _userIdLiveData.value
-                Log.d("TAG","$dic")
+
                 val response = appService.userShowPublishNetworking(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {
