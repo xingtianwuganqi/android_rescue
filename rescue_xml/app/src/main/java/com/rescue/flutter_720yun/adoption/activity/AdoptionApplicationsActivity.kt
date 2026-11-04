@@ -2,6 +2,11 @@ package com.rescue.flutter_720yun.adoption.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.Gravity
+import android.graphics.Typeface
+import androidx.appcompat.widget.Toolbar
+import com.rescue.flutter_720yun.adoption.ui.AdoptionFilterBar
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import android.widget.ProgressBar
 import com.rescue.flutter_720yun.adoption.adapter.AdoptionReminderAdapter
 import android.widget.Button
@@ -18,6 +23,7 @@ import com.rescue.flutter_720yun.adoption.viewmodels.AdoptionApplicationsViewMod
 import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 
 open class AdoptionApplicationsActivity : AdoptionActivity() {
+    override val contentLayoutRes: Int get() = R.layout.activity_adoption_applications
     protected open val isMyApplications = false
     private val vm: AdoptionApplicationsViewModel by lazy {
         if(isMyApplications) ViewModelProvider(this)[com.rescue.flutter_720yun.adoption.viewmodels.AdoptionMyApplicationsViewModel::class.java]
@@ -31,6 +37,12 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
     private var focused=false
     override fun onCreate(state: Bundle?) {
         super.onCreate(state); focused = state?.getBoolean("focused") ?: false; setupToolbar(if(isMyApplications) "我的申请" else "收到的申请")
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        baseBinding.toolbar.addView(TextView(this).apply {
+            text=if(isMyApplications) "我的申请" else "收到的申请"
+            textSize=20f; setTextColor(android.graphics.Color.BLACK); setTypeface(null,Typeface.BOLD)
+            gravity=Gravity.CENTER; maxLines=1; ellipsize=android.text.TextUtils.TruncateAt.END
+        }, Toolbar.LayoutParams(-2,-1,Gravity.CENTER))
         val topic=intent.getIntExtra("topic_id",0)
         if(intent.hasExtra("topic_id") && topic<=0) { notice("帖子参数无效"); finish(); return }
         vm.topic=topic.takeIf { it>0 }
@@ -40,18 +52,20 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
     private fun setupList() {
         content.removeAllViews()
         layoutInflater.inflate(R.layout.adoption_list_content,content,true)
-        val filters=findViewById<LinearLayout>(R.id.adoption_filters)
-        val options = (if(isMyApplications) listOf("" to "全部") else emptyList()) +
-            listOf("applying" to "申请中", "communicating" to "沟通中", "ended" to "已结束")
-        for((code,label) in options) {
-            filters.addView(Button(this).apply { text=label; tag=code; isSelected=code==vm.status; isEnabled=code!=vm.status; setOnClickListener { vm.status=code; for(i in 0 until filters.childCount) { val child=filters.getChildAt(i); child.isSelected=child.tag==code; child.isEnabled=child.tag!=code }; vm.load() } },LinearLayout.LayoutParams(0,-2,1f))
+        findViewById<AdoptionFilterBar>(R.id.adoption_filters).apply {
+            select(vm.status)
+            onSelectionChanged={ code -> vm.status=code; vm.load() }
         }
         adapter=AdoptionApplicationAdapter({ app -> AdoptionApplicationSheet.newInstance(app.application_id,!isMyApplications)
             .show(supportFragmentManager,"application") },{ app -> app.topic?.takeUnless { it.unavailable || it.is_delete==0 }?.let {
                 startActivity(Intent(this,HomeDetailActivity::class.java).putExtra("topic_id",it.topic_id)) } },
             copyContact=if(isMyApplications) { app -> com.rescue.flutter_720yun.adoption.ui.AdoptionContactCopy.copy(this,vm,app.application_id) { fresh -> vm.items.value=vm.items.value.orEmpty().map { if(it.application_id==fresh.application_id) fresh else it } } } else null, action={ app,code -> actionFlow.perform(app,code) }, busy={ vm.busy.value==true },previews={ vm.previewImages.value.orEmpty() },missingPreview={ vm.loadPreview(it) })
         findViewById<RecyclerView>(R.id.adoption_list).apply { layoutManager=LinearLayoutManager(this@AdoptionApplicationsActivity); adapter=this@AdoptionApplicationsActivity.adapter }
-        findViewById<Button>(R.id.adoption_refresh).setOnClickListener { refreshLists() }
+        findViewById<SmartRefreshLayout>(R.id.adoption_pull_refresh).apply {
+            setEnableLoadMore(false)
+            setOnRefreshListener { refreshLists() }
+            setPrimaryColorsId(R.color.adoption_page_background,R.color.color_system)
+        }
         findViewById<Button>(R.id.adoption_more).setOnClickListener { vm.load(false) }
         reminderAdapter=AdoptionReminderAdapter { vm.readReminder(it) }
         findViewById<RecyclerView>(R.id.adoption_reminder_list).apply {
@@ -89,6 +103,7 @@ open class AdoptionApplicationsActivity : AdoptionActivity() {
         if(content.findViewById<RecyclerView>(R.id.adoption_list)==null || !::adapter.isInitialized || !::reminderAdapter.isInitialized) return
         adapter.submit(vm.items.value.orEmpty()); reminderAdapter.submit(vm.reminders.value.orEmpty(),vm.readingId.value)
         val busy=vm.busy.value==true; val empty=vm.items.value.isNullOrEmpty(); val error=vm.error.value
+        if(!busy && vm.reminderBusy.value!=true) findViewById<SmartRefreshLayout>(R.id.adoption_pull_refresh).finishRefresh()
         findViewById<ProgressBar>(R.id.adoption_list_loading).visibility=if(busy && empty) View.VISIBLE else View.GONE
         findViewById<TextView>(R.id.adoption_list_empty).visibility=if(!busy && empty && error==null) View.VISIBLE else View.GONE
         findViewById<TextView>(R.id.adoption_list_error).apply {

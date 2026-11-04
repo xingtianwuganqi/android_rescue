@@ -1,0 +1,10 @@
+{
+  "base_url": "http://test.rxswift.cn/",
+  "http_checks": 25,
+  "http_passed": 17,
+  "http_failed": 8,
+  "android_tests": 6,
+  "android_failures": 2,
+  "device_ui_tested": false,
+  "authenticated_business_tested": false
+}

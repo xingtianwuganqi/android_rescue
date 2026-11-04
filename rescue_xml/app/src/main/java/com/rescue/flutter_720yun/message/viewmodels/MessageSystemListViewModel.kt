@@ -1,114 +1,46 @@
 package com.rescue.flutter_720yun.message.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.rescue.flutter_720yun.BaseApplication
-import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.message.models.MessageSingleListModel
+import androidx.lifecycle.*
+import com.rescue.flutter_720yun.findpet.FindPetRepository
 import com.rescue.flutter_720yun.message.models.MessageSystemListModel
-import com.rescue.flutter_720yun.network.MessageService
-import com.rescue.flutter_720yun.network.ServiceCreator
-import com.rescue.flutter_720yun.network.awaitResp
-import com.rescue.flutter_720yun.show.models.CommentListModel
-import com.rescue.flutter_720yun.util.CommonViewModelInterface
-import com.rescue.flutter_720yun.util.RefreshState
-import com.rescue.flutter_720yun.util.UiState
-import com.rescue.flutter_720yun.util.convertAnyToList
-import com.rescue.flutter_720yun.util.paramDic
-import kotlinx.coroutines.launch
+import com.rescue.flutter_720yun.util.*
+import kotlinx.coroutines.*
 
-class MessageSystemListViewModel: ViewModel(), CommonViewModelInterface {
-    private val appService = ServiceCreator.create<MessageService>()
-
-    private val _isLoading = MutableLiveData(false)
-    private val _isFirstLoading = MutableLiveData(false)
-    private val _isLastPage = MutableLiveData(false)
-    private val _refreshState = MutableLiveData<RefreshState>()
-    private val _uiState = MutableLiveData<UiState<List<MessageSystemListModel>>>()
-
-
-    override val isLoading: LiveData<Boolean>
-        get() = _isLoading
-
-    override val isFirstLoading: LiveData<Boolean>
-        get() = _isFirstLoading
-
-    override val isLastPage: LiveData<Boolean>
-        get() = _isLastPage
-
-    override val refreshState: LiveData<RefreshState>
-        get() = _refreshState
-
-    val uiState get() = _uiState
-
-    private var page: Int = 1
-
-    fun systemMessageListNetworking(refresh: RefreshState) {
-        viewModelScope.launch {
-            try {
-                if (_isLoading.value == true) {
-                    return@launch
-                }
-                if (refresh == RefreshState.REFRESH) {
-                    page = 1
-                    _isLastPage.value = false
-                }
-                if (refresh == RefreshState.MORE && _isLastPage.value == true) {
-                    return@launch
-                }
-                if (_isFirstLoading.value == true) {
-                    _uiState.value = UiState.FirstLoading
-                }
-                _isLoading.value = true
-                _refreshState.value = refresh
-                val dic = paramDic
-//                dic["page"] = page
-//                dic["size"] = 10
-                Log.d("TAG","system message dic is $dic")
-                val response = appService.systemMessageList(dic).awaitResp()
-                _isFirstLoading.value = false
-                if (response.code == 200) {
-                    val items = when (response.data) {
-                        is List<*> -> {
-                            val homeList = convertAnyToList(response.data, MessageSystemListModel::class.java)
-                            (homeList ?: emptyList())
-                        }
-                        is Map<*, *> -> {
-                            emptyList()
-                        }// data 为 {}，返回空列表
-                        else -> {
-                            emptyList()
-                        }
-                    }
-                    if (items.isNotEmpty()) {
-                        page += 1
-                        _uiState.value = UiState.Success(items)
-                    }else{
-                        if (page == 1) {
-                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                            _uiState.value = UiState.Error(noMoreData)
-                        }else{
-                            _isLastPage.value = true
-                        }
-                    }
-                }else{
-                    if (page == 1) {
-                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                        _uiState.value = UiState.Error(noMoreData)
-                    }
-                }
-
-            }catch (_: Exception) {
-                if (page == 1) {
-                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                    _uiState.value = UiState.Error(noMoreData)
-                }
-            }finally {
-                _isLoading.value = false
-            }
+/** Original system notification query still marks its notifications read server-side. */
+class MessageSystemListViewModel : ViewModel(), CommonViewModelInterface {
+    private val source=FindPetRepository()
+    private val loading=MutableLiveData(false)
+    override val isLoading: LiveData<Boolean> = loading
+    override val isFirstLoading: LiveData<Boolean> = MutableLiveData(true)
+    override val isLastPage: LiveData<Boolean> = MutableLiveData(true)
+    private val refresh=MutableLiveData(RefreshState.REFRESH)
+    override val refreshState: LiveData<RefreshState> = refresh
+    val uiState=MutableLiveData<UiState<List<MessageSystemListModel>>>()
+    private var job: Job?=null
+    private var generation=0L
+    private var session=UserManager.sessionRevision.value
+    private val observer=Observer<Long> { current ->
+        if(current!=session) {
+            session=current;generation++;job?.cancel();loading.value=false
+            uiState.value=UiState.Success(emptyList())
+            if(UserManager.isLogin) systemMessageListNetworking(RefreshState.REFRESH) else uiState.value=UiState.Error("请登录后查看")
         }
     }
+    init { UserManager.sessionRevision.observeForever(observer) }
+    fun systemMessageListNetworking(state: RefreshState) {
+        if(!UserManager.isLogin || loading.value==true) return
+        val request=++generation
+        loading.value=true;refresh.value=RefreshState.REFRESH
+        if(uiState.value !is UiState.Success) uiState.value=UiState.FirstLoading
+        job=viewModelScope.launch {
+            try {
+                val items=source.notifications()
+                if(request!=generation) return@launch
+                uiState.value=UiState.Success(items)
+            } catch(e: CancellationException) { throw e }
+            catch(e: Exception) { if(request==generation) uiState.value=UiState.Error(e.message ?: "消息加载失败，请重试") }
+            finally { if(request==generation) loading.value=false }
+        }
+    }
+    override fun onCleared() { UserManager.sessionRevision.removeObserver(observer);super.onCleared() }
 }

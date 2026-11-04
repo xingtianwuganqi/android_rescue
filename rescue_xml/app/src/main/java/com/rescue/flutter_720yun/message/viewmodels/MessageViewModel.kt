@@ -11,10 +11,11 @@ import com.rescue.flutter_720yun.util.*
 import kotlinx.coroutines.*
 
 class MessageViewModel : ViewModel() {
-    private val appService = ServiceCreator.create<MessageService>()
     private val adoption = AdoptionRepository()
+    private val findPet = com.rescue.flutter_720yun.findpet.FindPetRepository()
     private fun entries() = listOf(
         MessageListModel("icon_message_sys", "系统消息", category="system"),
+        MessageListModel("icon_message_find_pet", "我的找宠", unread=null, category="my_find_pet"),
         MessageListModel("icon_message_sys", "我的申请", unread=null, category="my_applications"),
         MessageListModel("icon_message_sys", "收到的申请", unread=null, category="received_applications"),
         MessageListModel("icon_message_like", BaseApplication.context.getString(R.string.like_action), category="like"),
@@ -24,6 +25,8 @@ class MessageViewModel : ViewModel() {
     private val _messageList = MutableLiveData(entries())
     val messageList: LiveData<List<MessageListModel>> = _messageList
     val unreadModel = MutableLiveData<MessageUnreadModel?>()
+    val adoptionUnreadError=MutableLiveData<String?>()
+    val findPetUnreadError=MutableLiveData<String?>()
     val badgeTotal = MutableLiveData(0)
     private var adoptionTotal: Int? = null
     private fun updateBadge() {
@@ -44,40 +47,66 @@ class MessageViewModel : ViewModel() {
     }
     private var oldJob: Job? = null
     private var adoptionJob: Job? = null
+    private var findPetRevision = com.rescue.flutter_720yun.findpet.FindPetChanges.revision.value
+    private val findPetObserver = Observer<Long> { revision ->
+        if(revision!=findPetRevision) {
+            findPetRevision=revision
+            if(UserManager.isLogin) {
+                if(com.rescue.flutter_720yun.findpet.FindPetChanges.readWasUnread) {
+                    _messageList.value=_messageList.value?.map { row ->
+                        if(row.category=="my_find_pet") row.copy(unread=row.unread?.let { (it-1).coerceAtLeast(0) }) else row
+                    }
+                    updateBadge()
+                }
+                unreadMessageNumberNetworking()
+            }
+        }
+    }
     private val accountObserver = Observer<Long> {
         oldJob?.cancel(); adoptionJob?.cancel()
-        unreadModel.value = null; adoptionTotal=null; _messageList.value = entries(); badgeTotal.value=0
+        findPetUnreadError.value=null
+        adoptionUnreadError.value=null;unreadModel.value = null; adoptionTotal=null; _messageList.value = entries(); badgeTotal.value=0
         if(UserManager.isLogin) unreadMessageNumberNetworking()
     }
-    init { UserManager.sessionRevision.observeForever(accountObserver); com.rescue.flutter_720yun.adoption.ui.AdoptionNotificationChanges.revision.observeForever(changesObserver) }
+    init { UserManager.sessionRevision.observeForever(accountObserver); com.rescue.flutter_720yun.adoption.ui.AdoptionNotificationChanges.revision.observeForever(changesObserver); com.rescue.flutter_720yun.findpet.FindPetChanges.revision.observeForever(findPetObserver) }
     fun unreadMessageNumberNetworking() {
         if(!UserManager.isLogin) return
         val session=UserManager.sessionRevision.value
         oldJob?.cancel()
         oldJob = viewModelScope.launch {
+            findPetUnreadError.value=null
             try {
-                val response=appService.unreadMessageNumber(paramDic).awaitResp()
+                val data=findPet.systemUnread()
                 if(session != UserManager.sessionRevision.value) return@launch
-                if(response.code==200) {
-                    unreadModel.value=response.data
-                    val values=mapOf("system" to response.data.sys_unread,"like" to response.data.like_unread,
-                        "collection" to response.data.collec_unread,"comment" to response.data.com_unread)
+                run {
+                    unreadModel.value=data
+                    val values=mapOf("system" to data.sys_unread,"like" to data.like_unread,
+                        "collection" to data.collec_unread,"comment" to data.com_unread,
+                        "my_find_pet" to (data.find_pet_unread ?: 0))
                     _messageList.value=_messageList.value?.map { it.copy(unread=values[it.category] ?: it.unread) }; updateBadge()
                 }
-            } catch(e: CancellationException) { throw e } catch(e: Exception) { /* Existing counts retry on foreground. */ }
+            } catch(e: CancellationException) { throw e } catch(e: Exception) {
+                if(session==UserManager.sessionRevision.value) findPetUnreadError.value="消息提醒统计更新失败，请点击重试"
+            }
         }
         adoptionJob?.cancel()
         adoptionJob=viewModelScope.launch {
+            adoptionUnreadError.value=null
             try {
                 val counts=adoption.classifiedUnread()
+                if(session!=UserManager.sessionRevision.value) return@launch
+                adoptionUnreadError.value=null
                 adoptionTotal=counts.unread_count
                 _messageList.value=_messageList.value?.map { when(it.category) {
                     "my_applications" -> it.copy(unread=counts.mine_unread_count)
                     "received_applications" -> it.copy(unread=counts.received_unread_count)
                     else -> it
                 } }; updateBadge()
-            } catch(e: CancellationException) { throw e } catch(e: Exception) { /* No payload logging; retry on foreground. */ }
+            } catch(e: CancellationException) { throw e } catch(e: Exception) {
+                if(session==UserManager.sessionRevision.value) adoptionUnreadError.value="申请提醒统计更新失败，请点击重试"
+            }
         }
+
     }
-    override fun onCleared() { com.rescue.flutter_720yun.adoption.ui.AdoptionNotificationChanges.revision.removeObserver(changesObserver); UserManager.sessionRevision.removeObserver(accountObserver); super.onCleared() }
+    override fun onCleared() { com.rescue.flutter_720yun.findpet.FindPetChanges.revision.removeObserver(findPetObserver); com.rescue.flutter_720yun.adoption.ui.AdoptionNotificationChanges.revision.removeObserver(changesObserver); UserManager.sessionRevision.removeObserver(accountObserver); super.onCleared() }
 }

@@ -126,6 +126,12 @@
     <string name="drawer_adopt">"领养相关"</string>
     <string name="drawer_guideline">宠物领养防骗指南</string>
     <string name="drawer_description">领养说明</string>
+    <string name="adoption_profile_title">领养资料</string>
+    <string name="adoption_profile_purpose">一份资料，多次复用。资料供你确认申请的送养人参考，既有申请保留申请时快照。</string>
+    <string name="adoption_flow_title">领养流程说明</string>
+    <string name="adoption_flow_contact_note">联系方式仅在你同意沟通后向申请人展示。</string>
+    <string name="adoption_flow_link">查看完整领养流程 ›</string>
+    <string name="adoption_flow_load_error">领养流程说明暂时无法打开，请点击重试。</string>
     <string name="drawer_protocol">领养协议</string>
 
     <string name="show_release_add">添加话题 ></string>

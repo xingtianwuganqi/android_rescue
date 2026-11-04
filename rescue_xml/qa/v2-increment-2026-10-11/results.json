@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-11",
+  "jvm": {
+    "tests": 110,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "debug_build": "passed",
+  "android_test_source_compile": "passed",
+  "device_tests": {
+    "total": 8,
+    "executed": 0,
+    "reason": "INSTALL_FAILED_USER_RESTRICTED: Install canceled by user"
+  },
+  "debug_apk_installed": true
+}

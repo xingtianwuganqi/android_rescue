@@ -339,4 +339,26 @@ class PromotionCoordinatorAuditTest {
         assertEquals(0, server.requestCount)
         assertEquals(2, Coordinator.updates.value?.account)
     }
+    @Test fun unauthorizedPausesPendingRewardUntilOriginalAccountReauthenticates() {
+        val a=attempt()
+        reply("""{"error_code":"AUTH_REQUIRED"}""",401)
+        event(a,RewardedAdEvent.Reward)
+        val deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(5)
+        while(UserManager.userId!=null && System.nanoTime()<deadline) Thread.sleep(5)
+        assertNull(UserManager.userId)
+        val pending=store.records().single()
+        assertEquals(a.key,pending.reward_attempt_id);assertEquals("pending",pending.retry_state)
+        Coordinator.restore();Thread.sleep(100);assertEquals(1,server.requestCount)
+        changeAccount(2,300);Thread.sleep(100);assertEquals(1,server.requestCount)
+        assertEquals(a.key,store.records().single().reward_attempt_id)
+        // Move the original retry deadline into the past, simulating the wait without sleeping two minutes.
+        store.put(pending.copy(next_retry_at=System.currentTimeMillis()-1))
+        reply(state);reply(success);reply(state)
+        changeAccount(1,301);waitFor("succeeded")
+        val requests=List(server.requestCount) { server.takeRequest() }
+        val posts=requests.filter { it.method=="POST" }
+        assertEquals(2,posts.size);assertEquals(a.key,posts.last().getHeader("Idempotency-Key"))
+        assertEquals("Bearer qa-1",posts.last().getHeader("Authorization"))
+        assertTrue(store.records().isEmpty())
+    }
 }

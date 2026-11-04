@@ -8,7 +8,7 @@ import com.rescue.flutter_720yun.show.fragment.ShowFragment
 
 class UserCollectionAdapter(fragmentActivity: FragmentActivity): FragmentStateAdapter(fragmentActivity) {
 
-    val list = listOf(HomeFragment.newInstance("3"), ShowFragment.newInstance(-1))
+    val list = listOf(HomeFragment.newInstance("3"), ShowFragment.newInstance(-1), com.rescue.flutter_720yun.home.fragment.FindPetFragment.collections())
 
     override fun getItemCount(): Int {
         return list.size

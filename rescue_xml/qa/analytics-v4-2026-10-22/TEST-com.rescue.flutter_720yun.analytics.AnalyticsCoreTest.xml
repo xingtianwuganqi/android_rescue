@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" tests="27" skipped="0" failures="0" errors="0" timestamp="2026-10-22T06:27:35" hostname="Jing-de-MacBook-Pro.local" time="0.032">
+  <properties/>
+  <testcase name="payloadHasOnlyWhitelistedTopLevelKeysAndIntegerObjectId" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.011"/>
+  <testcase name="exactlyThirtyMinutesBackgroundOpensNewSessionWithSequenceOne" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="publishFormPageAndTypeMustMatch" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="rewardUsesOriginalAttemptUuidAndSceneWithNoInventedPage" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.002"/>
+  <testcase name="unknownFieldsFreeTextAndWrongCaseAreRejected" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="anonymousLoginKeepsInstallationAndSessionWithNewToken" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="logoutRotatesSessionButNotInstallation" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="logoutWhileDisabledStillEndsExistingSession" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="foregroundIdleChangesSessionOnlyAtNextInteraction" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="preferenceWriteFailureDoesNotBreakBusinessInteractionOrReuseSequences" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="integerSequenceExhaustionRotatesSession" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="persistedAccountSwitchIsRecognizedAfterRestart" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="tokenRotationDoesNotChangeSession" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="requiredAuthAndSuccessObjectIdsCannotBeFaked" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="sequenceIsSerializedUnderConcurrentCreation" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.009"/>
+  <testcase name="messageListsRequireEnumeratedSubtypeAndOtherPagesRejectIt" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="accountSwitchRotatesSessionAndPreservesFrozenOldIdentity" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="disabledCollectionDoesNotCreateOrPersistEvents" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="shortBackgroundKeepsSessionAndDoesNotOpenAgain" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="byteLimitsAreMeasuredInUtf8" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="coldOpenIsOnceAndRestoredSessionStillRecordsColdOpen" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="pageExposureDedupesConfigPermissionsAndRefreshButCountsReturnAndListSwitch" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.001"/>
+  <testcase name="unsupportedPageDoesNotInventReferrer" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="loginFailureRequiresReason" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="shortBackgroundKeepsSessionEvenWhenPreviousInteractionWasLongAgo" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="continuousInteractionDoesNotHardRotateAtThirtyMinutes" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <testcase name="automaticCompletionsCannotExtendIdleTime" classname="com.rescue.flutter_720yun.analytics.AnalyticsCoreTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,32 @@
+{
+  "tests": 6,
+  "failures": 2,
+  "errors": 0,
+  "skipped": 0,
+  "cases": [
+    {
+      "name": "realFeedMetadataAndNextPageWorkWithProductionCursor",
+      "passed": true
+    },
+    {
+      "name": "legacyInfoExpiredTokenMustTriggerLoginInsteadOfAccountRestriction",
+      "passed": false
+    },
+    {
+      "name": "v3InvalidTokenIsRecognizedAsLoginExpired",
+      "passed": true
+    },
+    {
+      "name": "actualAnalyticsTransportMustReachAcceptedEndpoint",
+      "passed": false
+    },
+    {
+      "name": "publicFindListParsesWithProductionRepository",
+      "passed": true
+    },
+    {
+      "name": "v2InvalidTokenIsRecognizedAsLoginExpired",
+      "passed": true
+    }
+  ]
+}

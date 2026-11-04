@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" tests="51" skipped="0" failures="0" errors="0" timestamp="2026-10-20T00:47:57" hostname="192.168.0.103" time="1.33">
+  <properties/>
+  <testcase name="markReadPostsOnlyEmptyJson" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.007"/>
+  <testcase name="unavailableHistoryCanBeReadWithoutOpeningPrivateTopic" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.016"/>
+  <testcase name="duplicateLikeTapsMakeOnlyOneWrite" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.221"/>
+  <testcase name="messageAssociationIsNotUsedForReadOrTopicNavigation" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.021"/>
+  <testcase name="effectiveUsesOriginalOneAndTwo" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.007"/>
+  <testcase name="formSaveUsesOriginalFieldsAndOptionalCityId" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.005"/>
+  <testcase name="publicCollectUsesFindIdAndCollectMark" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="oldSystemUnread401DoesNotLogOutNewAccount" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.21"/>
+  <testcase name="repeatedReadDoesNotDecrementUnreadTwice" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.02"/>
+  <testcase name="legacyEmptyObjectAndArrayAreSuccessfulButBusinessErrorIsNot" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.008"/>
+  <testcase name="successfulReadStaysReadWhenTargetRefreshFails" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="appendedDuplicatesAreMergedByRecommendationId" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.013"/>
+  <testcase name="originalNotificationsKeepHistoricalTextWithoutRecommendationRouting" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.004"/>
+  <testcase name="infoUsesOriginalBodyTokenAndRecognizesOnlyLegacy207AsAbsent" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.006"/>
+  <testcase name="switchingSessionClearsPrivateHistoryAndNavigation" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.007"/>
+  <testcase name="independentFindPetUnreadUsesOriginalBodyToken" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.005"/>
+  <testcase name="closedPublicRowsNeverExposeCachedContact" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.004"/>
+  <testcase name="successfulWriteFollowedByFailedReloadNeverPostsAgain" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.021"/>
+  <testcase name="notificationRouteResolvesRealTargetFromSecondHistoryPage" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.025"/>
+  <testcase name="readFailureKeepsUnreadAndDoesNotNavigate" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="absentOrNullFindPetUnreadIsZeroForOlderBackend" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.005"/>
+  <testcase name="municipalCityIdsUseBothBundledCatalogues" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.007"/>
+  <testcase name="oldAccount401CannotInvalidateNewAccount" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.21"/>
+  <testcase name="invalidFindIdStopsAllInteractionRequests" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.001"/>
+  <testcase name="originalUnreadUsesBodyTokenAndKeepsSystemTotal" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.005"/>
+  <testcase name="unknownWriteOutcomeQueriesInfoBeforeAnotherConfirmation" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.015"/>
+  <testcase name="recommendationsUseBearerAndNeverAutoRead" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.003"/>
+  <testcase name="active401InvalidatesOnlyCurrentIdentity" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.004"/>
+  <testcase name="wrongReadTargetAndFalseReadAreRejected" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.005"/>
+  <testcase name="refreshFailurePreservesHistoryAndNextPage" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.019"/>
+  <testcase name="http200BusinessRejectionIsNotSuccess" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.003"/>
+  <testcase name="publicRefreshFailureKeepsSuccessfulPageAndCanAppend" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.02"/>
+  <testcase name="editorGetFailureNeverEnablesSave" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.007"/>
+  <testcase name="publicListAllowsAnonymousWithoutBearerOrBodyToken" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.004"/>
+  <testcase name="twoDistrictsOfSameCityResolveToSameCityCode" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.004"/>
+  <testcase name="publicLikeUpdatesOnlyOnSuccessUsingReturnedState" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.02"/>
+  <testcase name="ambiguousCountyOrMismatchedProvinceOmitsCityId" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.003"/>
+  <testcase name="editorSaveDoesNotCreateAnAdoptionApplication" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.013"/>
+  <testcase name="latestUnavailableRecommendationReplacesStalePublicCardBeforeNavigation" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="closingRequeriesActualRequestBeforeReturningSuccess" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.015"/>
+  <testcase name="oldAccountSuccessfulUnreadResponseCannotOverwriteNewAccount" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.204"/>
+  <testcase name="systemNotificationReadDoesNotChangeRecommendationState" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="malformedEnvelopeAndNonJsonAreNotEmptySuccess" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.007"/>
+  <testcase name="deniedContactNeverCopiesPrivateRawContact" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.015"/>
+  <testcase name="noRequestAndClosedAreSuccessfulStatesNotErrors" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="recommendationUnreadIsIndependentAndAddedOnceToMessageBadge" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.001"/>
+  <testcase name="findContactUsesTypeTwoAndActualReturnedContactOnly" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="unavailableFlagOverridesPublicStatusAndPicture" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.001"/>
+  <testcase name="collectionListUsesLegacyWrappedFindInfo" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.004"/>
+  <testcase name="successfulReadNavigatesWithoutApplyingOrAuthorizing" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.014"/>
+  <testcase name="publicAppendFailureRetriesSamePageAndDeduplicatesIds" classname="com.rescue.flutter_720yun.findpet.qa.FindPetFlowTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

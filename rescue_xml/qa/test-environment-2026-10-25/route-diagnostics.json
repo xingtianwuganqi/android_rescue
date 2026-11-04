@@ -1,0 +1,26 @@
+[
+  {
+    "name": "analytics_route_diagnostic",
+    "method": "GET",
+    "path": "api/v4/analytics/events/",
+    "started_at": "2026-10-25T06:29:03.282113+00:00",
+    "http": 404,
+    "content_type": "text/html; charset=utf-8",
+    "server_date": "Sun, 25 Oct 2026 06:29:03 GMT",
+    "response_bytes": 179,
+    "json": false,
+    "elapsed_ms": 85
+  },
+  {
+    "name": "analytics_route_diagnostic",
+    "method": "OPTIONS",
+    "path": "api/v4/analytics/events",
+    "started_at": "2026-10-25T06:29:03.367356+00:00",
+    "http": 404,
+    "content_type": "text/html; charset=utf-8",
+    "server_date": "Sun, 25 Oct 2026 06:29:03 GMT",
+    "response_bytes": 179,
+    "json": false,
+    "elapsed_ms": 107
+  }
+]

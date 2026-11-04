@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-19",
+  "jvm": {
+    "tests": 155,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "debug_build": "passed",
+  "android_test_source_compile": "passed",
+  "device_validation": "not_run_no_device",
+  "backend_validation": "not_run"
+}

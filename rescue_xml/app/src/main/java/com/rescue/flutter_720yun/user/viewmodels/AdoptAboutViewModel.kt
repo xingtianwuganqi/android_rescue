@@ -15,6 +15,8 @@ class AdoptAboutViewModel: ViewModel() {
                 BaseApplication.context.resources.getString(R.string.drawer_guideline)),
             MessageListModel("icon_mi_inter",
                 BaseApplication.context.resources.getString(R.string.drawer_description)),
+            MessageListModel("icon_adoption_flow",
+                BaseApplication.context.resources.getString(R.string.adoption_flow_title), category = "adoption_flow"),
 //            MessageListModel("icon_mi_ad_xy",
 //                BaseApplication.context.resources.getString(R.string.drawer_protocol)),
         )

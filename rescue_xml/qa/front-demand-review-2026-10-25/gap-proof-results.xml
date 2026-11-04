@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rescue.flutter_720yun.review.FrontDemandGapProofTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-25T06:11:53" hostname="192.168.0.105" time="0.321">
+  <properties/>
+  <testcase name="read404CurrentlyLeavesUnavailableRecommendationPublic" classname="com.rescue.flutter_720yun.review.FrontDemandGapProofTest" time="0.321"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

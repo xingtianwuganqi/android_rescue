@@ -41,6 +41,7 @@
         <activity
             android:name=".user.activity.AdoptAboutActivity"
             android:exported="false" />
+        <activity android:name=".findpet.MyFindPetActivity" android:exported="false" />
         <activity
             android:name=".user.activity.WebPageActivity"
             android:exported="false" />

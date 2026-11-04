@@ -23,4 +23,26 @@ class FeedCursorTest {
         cursor.reset();assertNull(cursor.snapshot)
         assertEquals(listOf(9),cursor.accept(meta(1,false,"new"),listOf(topic(9))).map { it.topic_id })
     }
+    @Test fun threePagesSurviveFailedSameRangeRefreshAndDedupeOnFourthPage() {
+        val batches=FeedBatches()
+        repeat(3) { index -> batches.current.accept(meta(index+1,true),listOf(topic(index+1))) }
+        val old=batches.current
+        val refresh=batches.candidate(true)
+        assertNull(refresh.snapshot);assertEquals(1,refresh.nextPage)
+        // Simulate transport failure: the disposable candidate never commits.
+        assertSame(old,batches.current);assertEquals("batch",old.snapshot);assertEquals(4,old.nextPage)
+        assertEquals(listOf(9),old.accept(meta(4,false),listOf(topic(1),topic(9))).map { it.topic_id })
+    }
+    @Test fun successfulEmptyRefreshAtomicallyReplacesOldSeenAndHasMore() {
+        val batches=FeedBatches();batches.current.accept(meta(1,false),listOf(topic(9)))
+        val fresh=batches.candidate(true);fresh.accept(meta(1,true,"new"),emptyList());batches.commit(fresh)
+        assertEquals("new",batches.current.snapshot);assertTrue(batches.current.hasMore)
+        assertEquals(listOf(9),batches.current.accept(meta(2,false,"new"),listOf(topic(9))).map { it.topic_id })
+    }
+    @Test fun rangeChangeAndSnapshotInvalidationCannotRestorePreviousBatch() {
+        val batches=FeedBatches();batches.current.accept(meta(1,true),listOf(topic(9)))
+        batches.invalidate()
+        assertNull(batches.current.snapshot);assertEquals(1,batches.current.nextPage)
+        assertNotSame(batches.current,batches.candidate(true))
+    }
 }

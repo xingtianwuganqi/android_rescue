@@ -90,7 +90,7 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
         button.isEnabled = vm.busy.value != true
     }
     private fun click() {
-        if(!UserManager.isLogin) { vm.pendingLogin = true; login.launch(Intent(host, LoginActivity::class.java)); return }
+        if(!UserManager.isLogin) { com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick();vm.pendingLogin = true; login.launch(Intent(host, LoginActivity::class.java)); return }
         val state = vm.state.value ?: run { refresh(); return }
         if(state.workflow_status !in listOf("open","adopted","closed")) { refresh();return }
         when {

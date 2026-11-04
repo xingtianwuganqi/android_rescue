@@ -39,6 +39,7 @@ import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
              when(position) {
                  0 -> tab.text = "领养"
                  1 -> tab.text = "秀宠"
+                 2 -> tab.text = "找宠"
              }
          }.attach()
          viewPager.offscreenPageLimit = 3

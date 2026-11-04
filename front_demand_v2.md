@@ -1,8 +1,8 @@
 # Android V2 开发需求：领养流程、消息与激励视频曝光
 
-修订日期：2026-10-04。业务基线：`/Users/jingjun/Desktop/Githup/LaveCat/front_demand_v2.md`；Android工程：`/Users/jingjun/Desktop/Githup/android_rescue/rescue_xml`。后端契约：`/Users/jingjun/Desktop/Githup/rest_framework/API_v2.md`，产品基线：同目录 `Demand_v2.md`。推广接口基线：`/Users/jingjun/Desktop/Githup/rest_framework/API_promotion.md`；客户端参考：`/Users/jingjun/Desktop/Githup/LaveCat/demand_ad.md`。
+修订日期：2026-10-11。业务基线：`/Users/jingjun/Desktop/Githup/LaveCat/front_demand_v2.md`；Android工程：`/Users/jingjun/Desktop/Githup/android_rescue/rescue_xml`。后端契约：`/Users/jingjun/Desktop/Githup/rest_framework/API_v2.md`，产品基线：同目录 `Demand_v2.md`。推广接口基线：`/Users/jingjun/Desktop/Githup/rest_framework/API_promotion.md`；客户端参考：`/Users/jingjun/Desktop/Githup/LaveCat/demand_ad.md`。
 
-已核对当前Android代码：V2资料、申请列表、申请详情及网络模块已经存在，本文件描述在这些模块上继续调整的要求。本次仅更新 Android 开发需求文档，不表示已完成 Android 新流程/推广编码、构建、真机验收或生产部署。第 3 节为原有改造清单，2026-10-04 的接口与实现核对补充见第 10、11 节；发生差异时以后两节及最新后端契约为准。
+已核对当前Android代码：V2资料、申请列表、申请详情及网络模块已经存在，本文件描述在这些模块上继续调整的要求。本次仅更新 Android 开发需求文档，不表示已完成 Android 新流程/推广编码、构建、真机验收或生产部署。第 3 节为历史改造清单，第 10、11 节为 2026-10-04 基线；第 12 节为 2026-10-09 对当前 iOS/Android 源码的增量核对，标明已实现和待同步项。第 13 节补充 2026-10-11 的领养资料入口和领养流程说明；对应内容以第 13 节及最新后端契约为准，其他增量继续沿用第 12 节。
 
 ## 1. 业务范围
 
@@ -19,7 +19,7 @@
 - “我的申请”进入申请人列表，独立显示本人提醒的未读角标。
 - “收到的申请”进入送养人列表，独立显示收到申请相关提醒的未读角标。
 - 不再显示独立“申请通知”入口或要求用户先进入通知页再找申请。
-- 个人页只保留“领养资料”；移除“我的申请”“收到的申请”两个入口。
+- 个人页保留“领养资料”，设置页也增加同名入口，复用同一资料页；移除个人页“我的申请”“收到的申请”两个入口。
 - 本人原帖“管理申请”仍可进入收到的申请列表，带topic_id过滤。
 - 消息Tab角标合计旧系统/点赞/收藏/评论未读及两类申请未读，不重复计算申请总数和分类数。
 
@@ -41,7 +41,7 @@ iOS的App角标在Android对应系统通知/启动器支持的桌面角标；应
 | res/layout/adoption_list_content.xml | 当前仅筛选、状态文本、RecyclerView及底部按钮；增加顶部提醒列表及独立Loading/Empty/Error区域 |
 | java/.../network/AdoptionService.kt、adoption/repository/AdoptionRepository.kt | 现有notifications只传page/size；新增可选role、topic_id、unread参数，未读查询支持分类字段 |
 | java/.../adoption/models/AdoptionModels.kt | AdoptionNotification增加kind/role（保留created_at），UnreadCount增加两类计数；兼容旧后端时新增字段可为空，不默认0掩盖缺失 |
-| java/.../MainActivity.kt | 增加或调整消息Tab badge，来源为旧未读合计加申请总未读；移除账号切换后的旧角标 |
+| java/.../MainActivity.kt | 增加或调整消息Tab badge，来源为旧未读合计加可见申请总未读（第12节）；移除账号切换后的旧角标 |
 | java/.../message/activity/AdoptionNotificationsActivity.kt及对应ViewModel | 不再作为独立入口；可复用通知加载逻辑，已有外部Intent可转发到对应申请列表，转发后仍鉴权 |
 
 现有 `AdoptionProfileActivity/AdoptionProfileViewModel`、`HomeDetailActivity/HomeDetailViewModel`、`AdoptionDetailFlow`、`AdoptionServiceCreator`、`AdoptionViewModel` 和 `AdoptionActivity` 的V2流程继续复用。新顶部提醒项可新增 `AdoptionReminderAdapter` 与item XML；不要求再创建一套个人资料、申请或通知Activity。
@@ -66,7 +66,7 @@ iOS的App角标在Android对应系统通知/启动器支持的桌面角标；应
 
 进入列表、刷新、查看申请详情均不自动标记未点击通知已读。后端application.unread/read_at是旧申请查看字段，不是两类通知角标来源；只使用Notification.read及未读统计。
 
-通知和申请条目各自分页，各自有has_more、加载中及失败重试。分页过程中不能因当前页无某类提醒就把该类别角标清零；角标来自服务端统计，头部按需加载更多。按通知id合并防重复，多页历史申请及终态申请仍参与旧后端归类。
+通知和申请条目各自分页，各自有has_more、加载中及失败重试。分页过程中不能因当前页无某类提醒就把该类别角标清零；角标来自完整未读集合按第12节规则计算的可见统计，头部按需加载更多。按通知id合并防重复，多页历史申请及终态申请仍参与旧后端归类。
 
 ### 4.3 加载、空页及错误
 
@@ -86,9 +86,9 @@ Android沿用现有项目的空数据文字、字号、颜色及居中布局，�
 
 role=mine表示当前账号是该申请的申请人；received表示当前账号是该通知收件人但不是申请人。**不能按kind或target判断身份**，例如送养人的结束提醒target仍可能为topic_detail。分类完全由后端关联身份判断，不接受请求体user_id指定其他账号。
 
-列表响应同时有unread_count、mine_unread_count、received_unread_count，统计涵盖当前role/topic_id范围全部未读记录，不依赖返回页数；两类之和等于该范围unread_count。无筛选接口保留原总数含义，新字段不影响已有iOS调用。查询不会写Notification.read_at。
+列表响应同时有unread_count、mine_unread_count、received_unread_count，原始统计涵盖当前role/topic_id范围全部未读记录，不依赖返回页数；原始两类之和等于该范围unread_count。第12节新增送养人提醒隐藏规则后，界面使用过滤后的可见未读数，不直接显示这些原始统计。无筛选接口保留原总数含义，新字段不影响已有iOS调用。查询不会写Notification.read_at。
 
-建议Android消息页用无筛选unread-count直接取两类角标；本人列表顶部用role=mine&unread=true；收到列表用role=received&unread=true，可带topic_id。原帖筛选只影响该列表提醒，不把过滤后的局部计数覆盖消息页的全局角标。
+接口支持时，列表可用role=mine/received&unread=true，可带topic_id；消息页角标必须按第12节统一的可见提醒规则计算，未经展示过滤的unread-count不能直接作为最终角标。原帖筛选只影响该列表提醒，不把过滤后的局部计数覆盖消息页的全局角标。
 
 旧部署兼容与最新iOS文档一致：若响应没有role/分类计数，前端分页查询unread=true全部通知，并分页查询本人的全部“我的申请”记录，按application_id是否属于本人拆分；其余归收到的申请，单帖再按topic_id过滤。不能只查第一页、只查applying或直接用当前可见申请页。老服务会忽略新query参数，缺role时不能误把未筛选响应当已筛选。归类完成之前不显示猜测的分类数。新接口上线后不必每次拉全部申请历史。
 
@@ -108,7 +108,7 @@ role=mine表示当前账号是该申请的申请人；received表示当前账号
 | 同意/拒绝/结束/放弃 | PATCH adoption-applications/{application_id}，action及申请version；拒绝使用action=end、end_note="拒绝沟通申请"，没有独立reject动作 |
 | 完成/关闭 | POST adoptions/{topic_id}/status，action、confirmed及workflow version；完成带实际application_id和独立Idempotency-Key |
 
-资料四组必填：age整数1–120，城市/区县，住房，工作状态；经验选填最多200字，不收精确地址/公司/收入/新手机号。housing_type枚举owned/whole_rent/shared_rent/with_family/dormitory/other；employment_status为employed/self_employed/student/not_working/retired。
+资料四组必填：age整数10–100（客户端填写范围；后端协议范围仍为1–120），城市/区县，住房，工作状态；经验选填最多200字，不收精确地址/公司/收入/新手机号。housing_type枚举owned/whole_rent/shared_rent/with_family/dormitory/other；employment_status为employed/self_employed/student/not_working/retired。
 
 首次GET profile=null进入资料页，保存不自动申请；已有完整资料直接确认分享后申请。已有资料PUT带version，缺项PROFILE_REQUIRED补齐，变更PROFILE_CHANGED重新查询确认。申请保存快照，修改只用于新申请。资料地区选择与首页同城local_city隔离。
 
@@ -125,10 +125,10 @@ role=mine表示当前账号是该申请的申请人；received表示当前账号
 ## 8. 联调验收
 
 1. 消息顺序为系统消息、我的申请、收到的申请、点赞、收藏、评论；个人页仅保留资料，无独立申请通知入口。
-2. 两类提醒各自位于对应列表顶部，正文/时间齐全；单帖提醒按topic_id隔离，同一账号兼任申请人/送养人不混类。
+2. 两类提醒各自位于对应列表顶部，正文/时间齐全；单帖提醒按topic_id隔离，同一账号兼任申请人/送养人不混类；收到的申请隐藏communicate/refresh，所有相关角标同步排除。
 3. 送养人结束提醒即使target=topic_detail仍归收到的申请；覆盖多页通知、多页和终态申请，分类数不只计首页。
 4. 点击一条成功只减少对应类别，重试幂等；失败保留提醒，进入/刷新/看详情不自动读通知。
-5. 两类未读合计与服务端总数一致；消息Tab旧未读加申请总未读一次，单帖局部统计不覆盖全局；无许可仍站内可处理。
+5. 两类可见未读合计等于过滤后的申请提醒总数，可能小于服务端原始总数；消息Tab旧未读加可见申请总未读一次，单帖局部统计不覆盖全局；无许可仍站内可处理。
 6. 首次转圈、空数据“暂无数据 / 请点击重试”、失败点击重试；顶部有提醒时不被空页挡住，追加失败保留列表。
 7. 资料首次填写/复用、无短信申请、多人沟通、完成联动及topic.contact_info保持原V2规则，原发布/列表/广告回归。
 8. 越权通知/帖子筛选拒绝，退出切号清数据与角标；后台/旋转/返回不重复提交，日志不含私人数据。
@@ -354,7 +354,7 @@ scene 仅允许 `my_posts`、`publish_success`，本人详情复用 my_posts，�
 
 先按城市筛选，有效推广全部按 `update_time DESC,id DESC` 排在普通帖前，无固定第2/4位、无容量/排队、推广可占多页。普通帖按 `create_time DESC,id DESC` 确定分页范围，再只打乱该页普通帖；混合页推广位置不动。服务端固定顺序，Android 不二次排序/洗牌；原生广告行在业务顺序后插入，分页 size/page/去重只按业务帖子，不按含广告行的 adapter itemCount。
 
-- 快照有效30分钟，后续页保持同一账号、城市、size和 snapshot_id；刷新第一页建立新批次并替换旧数据。筛城市、切号/登录身份改变、size改变或推广成功后主动刷新需清掉旧快照，异步返回按批次校验。
+- 快照有效30分钟，后续页保持同一账号、城市、size和 snapshot_id；刷新第一页成功后才建立新批次并替换旧数据；同账号/城市刷新失败保留旧快照、成功页码和去重集合。筛城市、切号/登录身份改变、size改变或明确快照失效立即作废旧批次，异步返回按批次校验。推广成功触发重载时也先暂存新请求上下文，首屏成功才替换，详见第12节。
 - 快照固定整批顺序、页内随机结果及捕获的推广有效期，续期不延长旧快照窗口；新推广/续期排序在刷新第一页后体现，不自动滚到顶部。
 - 每页读取仍过滤删除、账号限制与推广失效，不从其他页补齐；不足一页甚至空页不能判断结束，唯一以 meta.has_more 决定继续。total 是原快照条数。按 topic_id 去重并保留服务端顺序，追加失败不清已有页。
 - 409 FEED_SNAPSHOT_EXPIRED/FEED_SNAPSHOT_MISMATCH 清快照并从第一页重载，不能把新首屏追加到旧批次。原列表错误解析也要保留业务JSON错误体，支持此分流。
@@ -394,3 +394,172 @@ Android 当前 UserTopicViewModel 调用 UserService.userPublishNetworking，路
 9. 接口200/code200后再查当前状态，历史重放已过期不宣称新增一小时；联系隐私、消息未读、原发布/浏览/收藏/搜索/广告回归。
 
 实施顺序：补领养DTO/版本与幂等头 → 卡片操作与确认 → 推广接口/奖励协调器与恢复 → 我的发布、发布成功页、本人详情入口 → 首页/同城快照 → 真机SDK及后端联调。上线前确认服务端新版接口、领养及推广迁移已完成；没有广告平台服务端验签或推广启用开关作为本方案前置条件。本次文档核对不代替 Android 编码、构建或真机广告验收。
+
+
+## 12. 最近调整的增量同步（2026-10-09）
+
+核对范围：当前 iOS 工作区源码（含未提交调整）、iOS 领养/推广 2026-10-05 审计修复记录、Android `rescue_xml` 当前源码（最近提交 f372a6a，2026-10-07）及其 QA 修复记录。本节同步需求与技术细节，不将已有 Android 实现重新标为待新建。海外版需求已在同目录 `overseas_demand.md` 单独同步，继续以该文件为准。
+
+### 12.1 同步状态与优先顺序
+
+| 调整 | Android 当前核对结果 | 本次要求 |
+| --- | --- | --- |
+| 年龄10–100与资料表单强调 | AdoptionProfileActivity仍标注/校验1–120，表单为原默认样式 | 更新填写范围、错误提示及表单视觉，见12.2 |
+| 收到申请隐藏communicate/refresh及角标 | NotificationClassification只有归属分类；Repository有直接返回服务端分类计数的分支 | 增加统一可见性过滤并覆盖全部未读入口，见12.3 |
+| 新版分享海报 | HomeDetailActivity未接入相应分享/海报导出，未见等价渲染模块 | 添加分享入口、独立海报渲染及保存，见12.4 |
+| 首页/同城同范围刷新失败保留快照 | HomeViewModel在请求前feedCursor.reset()，失败保留画面却丢分页上下文 | 新首屏成功后才提交新批次，见12.5 |
+| 申请终态幂等、写成功后刷新失败、筛选分页、资料面板重试 | Android qa/adoption/FIXES.md已记录实现，当前源码已存在对应逻辑 | 保留并回归，不重复重写接口/流程 |
+| 推广拒绝后资格刷新、奖励落盘失败、全屏占用隔离 | Android qa/promotion/FIXES.md已记录实现 | 保留并回归；不以iOS旧审计的问题描述误判Android尚未修复 |
+| 激励视频与热启动开屏互斥、成功页回前台刷新 | ForegroundSplashObserver已有busy/fullscreen拦截，PromotionEntry.onResume会恢复及刷新 | 覆盖外部跳转返回与跨日；沿用已有实现 |
+| 推广401恢复 | PromotionRepository已有账号校验后失效登录处理；协调器保留pending | 核验原账号重新登录提示/恢复，不能把iOS旧版静默401问题直接套为Android缺失 |
+
+本轮优先补四项明确差异：资料输入、提醒可见性、快照刷新、分享海报。前3项沿用原接口；海报为本地生成，不新增后端海报API，不修改领养或推广请求字段。
+
+### 12.2 领养资料：年龄和表单视觉
+
+客户端新填写/保存只接受周岁整数 **10–100（含边界）**，统一字段标题“年龄（周岁，10–100）”、本地错误“请输入10–100的整数年龄”；trim后解析整数，拒绝空值、小数、负数及超界输入。修改 AdoptionProfileActivity 的提示与1..120判断，并核对 ViewModel/其他入口的重复校验。
+
+最新 iOS 的年龄值采用18pt粗体；城市/区县、住房、工作已选值用18pt粗体，未选提示用16pt常规。Android对应用sp及本项目字体样式，保留现有枚举、城市选择和“全市”兼容实现，不能因样式调整重建地区规则。保存按钮居中，主题色背景、白色半粗体文字、圆角，禁用文字减弱，保证键盘出现时可滚动至保存按钮；加载/保存期间不能连点。
+
+重要协议区分：当前后端serializers/ProfileWrite和profile完整性检查仍允许 **1–120**，本次10–100是客户端输入策略，不宣称后端已经收窄，不修改既有profile_snapshot。服务端返回历史范围外资料时仍正常解析/回填；用户保存时提示修改年龄。申请前的is_complete/missing_fields以服务端为准，不能因客户端显示范围擅自把历史完整资料变成PROFILE_REQUIRED，也不自动改写年龄。
+
+### 12.3 送养人提醒可见性与未读计数
+
+新版展示规则：同意沟通及重新同意联系的 `kind=communicate/refresh` 仅在申请人的“我的申请”显示；当通知归属于送养人的“收到的申请”时，隐藏这两类。**先按身份归类，再按kind过滤**；仍不能单独用kind/target推断身份。其他未知kind正常保留，不将所有沟通相关通知一律隐藏。
+
+统一谓词：`visible = role != "received" || kind !in {"communicate","refresh"}`。同一规则必须覆盖顶部提醒、消息页两类入口、消息Tab、支持的桌面角标及单帖提醒统计；本人mine提醒不受该隐藏规则影响。过滤只改变客户端展示，不批量标记隐藏通知已读、不删服务端通知记录。
+
+当前后端role/query和分类计数属于原始通知数据，不带本次可见性过滤。不能仅过滤当前页items后继续显示服务端原始received_unread_count，也不能直接用raw unread_count加到消息Tab。建议：
+
+1. 分页拉取当前账号全部未读通知。服务端有可信role时按其身份归类；旧部署缺role时分页获取本人全部申请历史（包括终态），按application_id归属拆分，沿用已有兼容算法。
+2. 按通知id去重、移除已读，再执行统一可见性谓词，计算全局mine/received/total；若获取不完整/失败，保留最后成功结果并提示重试，不能用当前页数量覆盖全局角标。
+3. 单帖列表在归属/可见过滤后按topic_id限定。列表提醒分页可基于完整可见集合切页，或按服务端has_more继续获取以填充；某页全部被隐藏不能当作无更多。全局角标不被单帖计数覆盖。
+4. 单条已读成功后重新计算可见计数；失败保留可见提醒。进入/刷新仍不自动已读。未来只有服务端明确返回同规则的可见统计时才可恢复直接取数捷径。
+
+修改 `adoption/models/AdoptionReminders.kt` 的NotificationClassification并为新/旧后端共用；`AdoptionRepository.classifiedUnread/reminderPage` 两个直接返回原始分类统计的分支都要处理，不能只修legacyUnread。MessageViewModel、申请ViewModel、MainActivity继续消费同一个有效统计结果，账号revision保护不变。第5节中的原始计数恒等式是协议事实，界面恒等式改为 `可见mine+可见received=可见total`，可小于后端raw total。
+
+### 12.4 帖子分享海报与保存
+
+当前iOS新增独立 `TopicSharePosterRenderer.swift`，Android需在原HomeDetailActivity接入相应分享菜单及本地Bitmap/Canvas渲染器（建议TopicSharePosterRenderer.kt），不截整张详情页，不把作者资料/联系方式/申请信息、广告行或页面操作按钮画进海报。
+
+海报顺序与样式：
+
+- 白底，顶部圆角App图标、主标题“帮宠物找个家”、副标题“真命天喵 App”；使用项目正式App品牌图，不使用系统默认图标占位。
+- 送养状态条：workflow_status=open为“送养中”，adopted为“送养已结束 · 已完成送养”，closed为“送养已结束 · 已关闭送养”。V2状态优先于旧is_complete；缺V2且旧is_complete=true显示“送养已结束”，缺V2且旧未完成不凭空宣称送养中。未登录不为导出强制登录；删除/不可用帖停止导出。
+- 介绍由有效标签名用“ · ”连接，接两行分隔后的正文；空标签/正文不额外占位。正常内容完整显示；超长介绍最多约8行、末尾省略号，并显示“完整介绍请在 App 中查看”。截断保留完整中文/emoji组合，不按UTF-16任意切断。
+- 使用原帖imgs的第一张有效图片，支持绝对URL或项目图片前缀；按原宽高比等比完整显示、圆角，不拉伸/裁剪主体。无图提示“帖子暂无可导出的图片”，下载/解码/生成失败提示“图片生成失败”，结束loading。
+- 图片下方显示“打开真命天喵 App，搜索「真实topic_id」查看详情”；编号更大、粗体、主题色。缺失/非正ID不猜测帖子1，不写虚假编号。
+- 带二维码版本底部为分隔线、“扫码下载真命天喵 App”“最新状态以 App 内为准”和现有下载二维码。二维码是App下载入口，不改成帖子详情二维码；缩放保留清晰边缘与留白，实际扫码验证目标地址不变。
+
+导出对齐iOS的390逻辑宽、左右20间距、3倍输出（1170px宽），高度按内容和图片比例计算；文字布局用Android StaticLayout/等价工具，耗时下载/解码放后台，主线程只更新UI。过大或异常图片要按目标分辨率解码，避免直接持有原图和无限高Bitmap导致OOM；失败恢复按钮，不保存半张海报。资源以 `LoveCat/Assets.xcassets/share_app_icon.imageset` 与 `wx_url.imageset` 的现有品牌/二维码为参考，Android导入等价资源并验证清晰度。
+
+分享菜单提供“生成海报”“分享链接”“复制链接”，取消关闭；正式版分享链接仍使用系统分享，链接沿用当前环境的 `/api/topic/info/{topic_id}/`，只使用真实有效ID。iOS DEBUG“分享链接”分支当前用于导出不带二维码版本，这是调试行为；Android可在调试构建提供同等验证入口，不替代正式分享链接。无二维码版本保留图标、正文、照片、状态和搜索编号，移除整个下载底部（二维码及两行说明），不能只抹二维码留大空白。
+
+保存通过Android现有媒体权限/MediaStore适配各系统版本；仅保存最终生成的图片，用户拒绝权限或写入失败提示“保存失败”，成功提示“成功保存到相册”。不在生成前提示保存成功，不申请与保存无关的账号/广告权限。重复点击禁用，页面离开/目标帖子变化使旧下载结果失效，不能把旧图片导出到新帖子；生成时绑定topic、图片和已核对状态，资源删除/不可用停止。
+
+### 12.5 首页/同城：刷新失败保留可续页的旧批次
+
+iOS审计已修复“旧列表仍在但快照被刷新清掉”的问题；Android当前HomeViewModel.loadFeed在每次REFRESH请求前调用feedCursor.reset()，需要同步。
+
+同一账号/同城/size的主动刷新使用临时新FeedCursor，请求固定page=1且snapshot=null；拿到有效meta和data且账号/请求generation仍匹配后，才原子替换当前cursor、seen集合、成功页码、hasMore及UI数据。网络/5xx/解析失败保留最后成功cursor和画面，加载结束后仍可按旧snapshot/nextPage追加，不因失败刷新把它当新第一页。
+
+真正的账号/城市/size切换必须清空旧上下文，不能复用旧页；FEED_SNAPSHOT_EXPIRED/MISMATCH也立即作废并重载首屏。新范围或已失效快照首屏失败时只能重试首屏，不追加旧页。新首屏失败不恢复跨账号/跨城数据。成功空页也按meta提交新cursor，has_more=true允许继续；旧请求晚到不能覆盖新刷新。修改HomeViewModel与FeedCursor，首页/同城使用同一行为，保留现有服务端排序和广告插入规则。
+
+### 12.6 已同步修复的保留与验收
+
+不重复实现Android现有终态申请重放判定、独立操作幂等键、同筛选失败保留数据、新筛选失败重试首屏、写成功后状态刷新失败仍保留已提交状态、资料面板加载失败重试。私人请求/响应及原帖图片回退继续不记录联系或资料原文，避免新海报/提醒调试日志输出token或私人字段。
+
+推广协调器保留Android已有落盘失败重试、同UUID恢复、429等待、业务拒绝后刷新、全屏引用token隔离和晚到回调保护；401后暂停无效凭据重试，保留原账号奖励，提供明确登录失效/重新登录提示，原账号恢复认证后才继续。成功页回前台及跨上海自然日刷新资格，视频跳出App再回来不插入热启动开屏。已有本地QA通过记录不能替代本轮真机回归。
+
+新增验收：
+
+1. 年龄9/101/小数失败，10/100成功；历史后端资料仍可解析，保存时提示修正，不改已有快照；键盘与已选值样式正确。
+2. mine的communicate/refresh显示，received同类隐藏；同账号兼任两角色、多页未读/终态申请、新旧后端字段、单帖筛选、已读失败均覆盖。列表与所有角标一致，隐藏记录不被自动已读。
+3. 已加载三页后同范围刷新失败，再追加仍携带原snapshot及正确页码；刷新成功只替换一次，新账号/城市/快照409绝不恢复旧数据，空页按has_more续页。
+4. 海报短/长/空正文、横/竖图、emoji、open/adopted/closed、旧状态回退、真实编号、缺图/缺资源/下载失败均验证；不带二维码版本无下载区，带码版本扫码地址不变，无私人资料/广告。
+5. 正式分享/复制链接用真实编号和当前环境；保存权限拒绝、失败、成功、连点和离开页面均恢复正确状态，普通浏览/领养/推广不受影响。
+
+本次仅将新增差异写入front_demand_v2.md。未修改Android代码、现有QA报告、用户的overseas_demand.md，也未将iOS测试数量计作Android本轮通过数量；实际编码后运行对应单元/流程测试、构建及真机分享/广告验收。
+
+
+## 13. 领养资料与领养流程说明（2026-10-11）
+
+本次依据当前 iOS 的 `AdoptionProfileController.swift`、`SettingViewReactor.swift/SettingViewController.swift`、`AdoptAboutViewController.swift`、`ReleaseTopicViewController.swift` 及 `LoveCat/File/adoptionFlow.html` 同步文档。Android 已有领养资料页，本节补齐资料入口与用户说明，不创建另一套资料、帖子或申请接口。第12节中“Android年龄仍为1–120”的描述是2026-10-09核对时的记录；当前工作区已使用ProfileInputPolicy及10–100校验，继续保留。
+
+### 13.1 领养资料：用途、字段及入口
+
+资料页用于让送养人了解申请人的基本情况，一份资料可多次申请复用。页面说明对齐“资料供你确认申请的送养人参考，既有申请保留申请时快照。”；修改仅影响之后的新申请，不修改已提交申请的profile_snapshot，不标示为平台审核、评分或认证。
+
+| 字段 | 填写与显示规则 |
+| --- | --- |
+| 年龄 | 必填，周岁整数10–100；数字输入，标题/错误提示与ProfileInputPolicy一致；客户端范围与后端1–120的协议区别沿用12.2 |
+| 城市 / 区县 | 必填，复用当前地区选择；无区县目录城市的“全市”兼容继续保留，与首页同城筛选独立 |
+| 住房情况 | 必填，自有住房、整租、合租、与家人同住、宿舍、其他；对应housing_type原枚举 |
+| 工作状态 | 必填，在职、自由职业/个体经营、学生、暂未工作、退休；对应employment_status原枚举 |
+| 养宠经验 | 选填，最多200字；不新增详细地址、公司、收入、手机号或验证码 |
+
+入口统一复用 `AdoptionProfileActivity`：
+
+- “我的 → 领养资料”保留。
+- **“设置 → 领养资料”新增**，放在修改密码之前，使用已有领养资料图标；需登录，沿用现有登录及账号revision保护，不再建第二份表单或资料缓存。
+- 帖子详情申请时缺资料/缺项，通过“没有领养资料，需要填写后再申请。”弹窗进入，仍是同一页。
+
+进入GET `/api/v2/adoption-profile/me`，不存在显示空表，存在回填。首次保存PUT不带旧version，更新带当前version；字段、HTTP/业务错误处理沿用第6/9节。加载未成功、保存中禁用保存；错误保留表单并提供重试。保存成功返回原入口：从设置返回设置，从个人页返回个人页，从帖子进入则返回原帖并刷新状态。**保存资料不等于提交申请**，不自动申请、不自动弹领养须知、不因浏览流程说明触发PUT/POST。用户再次点击申请才重新查询并确认。
+
+表单视觉沿用12.2及Android已实现样式：年龄/已选值18sp粗体，未选提示16sp常规，保存按钮主题色、白字、居中、圆角；键盘出现仍可滚动。账号退出/切换清掉表单私人内容和待返回目标，旧账号请求不更新新页面。
+
+### 13.2 领养相关列表：新增说明页
+
+在现有 `AdoptAboutActivity/AdoptAboutViewModel` 的“领养相关”列表中，保留“宠物领养防骗指南”“领养说明”，在“领养说明”后新增 **“领养流程说明”**。使用独立流程图标，可参考iOS `icon_adoption_flow.imageset`；保留Android现有领养协议入口状态，不因本次说明同步改变协议功能。
+
+说明页标题“领养流程说明”，副标题“先申请，再沟通；实际接宠后，由送养人确认完成送养。”，品牌“真命天喵 · 帮宠物找个家”。将iOS本地 `LoveCat/File/adoptionFlow.html` 作为内容和布局基线，Android实现时放入 `rescue_xml/app/src/main/assets/adoptionFlow.html`，本地加载 `file:///android_asset/adoptionFlow.html`；离线可读、不要求登录、不新增远程说明接口。
+
+复用现有本地HTML页面容器，但当前UserAccountSafeActivity固定标题“账号安全”且注册了注销账号JS桥，流程页需要显式设置正确title，并只提供阅读能力，不能因复用容器显示账号安全标题或触发注销动作。可在已有容器增加受控的说明页模式，或复用不带账号操作的通用WebView容器。返回回到原入口，不更改资料/申请/发布状态。
+
+### 13.3 发布页：联系方式下方说明链接
+
+送养发布页在联系方式输入框正下方增加小号说明：
+
+> 联系方式仅在你同意沟通后向申请人展示。 查看完整领养流程 ›
+
+说明正文灰色，链接“查看完整领养流程 ›”用主题色可点击，允许多行；对应iOS12pt，Android使用12sp并适配大字体。点击先收起键盘/输入焦点，再打开与13.2同一份本地流程页；不提交帖子、不清草稿、不改变联系方式、图片、标签、地区等已输入内容。返回继续原发布页，链接与发布按钮互不替代；流程资源缺失显示可理解错误，不跳错误网页。
+
+该说明描述**新版领养申请链路**：同意沟通后通过本人申请列表/详情展示联系。后台仍保留旧GetContact与历史获取记录，不能把文案理解为删除旧通路、全平台必须经同意才可获取，或额外新增手机号验证。开发接口和兼容规则继续以第1/6/10节为准。
+
+### 13.4 说明页内容：从发布到接宠
+
+流程图以纵向六步卡片和箭头展示，适配手机宽度、可滚动，不使用横向超宽图；浅色背景、白色圆角分区、绿色强调色，字体与间距参考adoptionFlow.html。
+
+1. **送养人发布帖子**：填写宠物介绍、图片、地区与联系方式。
+2. **领养人提交申请**：登录 → 填写或复用领养资料 → 阅读领养须知 → 继续申请。首次资料保存返回后需再次点击申请。
+3. **送养人审核申请**：在“消息 → 收到的申请”查看申请人及其提交申请时的资料。
+4. **同意沟通，开放联系方式**：领养人在“消息 → 我的申请”查看、复制该帖送养人联系。
+5. **双方沟通，确认实际接宠**：确认宠物情况、领养条件与交接安排。
+6. **送养人确认完成送养**：选择实际接宠的沟通中申请 → 完成送养 → 整帖结束，其他有效申请自动结束。
+
+后续分区保持与iOS说明页一致：
+
+- **送养人怎么操作**：真实发布信息；收到申请后同意沟通或拒绝申请；同意会开放该帖联系并提醒申请人；实际交接后选择实际接宠人完成。强调“同意沟通”不等于完成领养，“结束沟通”只结束该份申请。
+- **领养人怎么操作**：缺资料先填写、保存返回后再次申请；阅读须知并继续申请；从“我的申请”看进展，沟通中查看/复制联系；不再考虑时确认放弃。放弃、拒绝或结束沟通不直接表示整帖已送养。
+- **怎样区分几种状态**：申请中=已提交等待处理；沟通中=已同意开放联系；已结束/被拒绝=该份申请终止；送养已结束=整帖完成或关闭、不再接受新申请。状态来自服务端，不能只以can_apply=false或单份ended判断整帖结束；历史获取记录显示规则不随说明页变更。
+- **如果暂时不再送养**：本人详情管理菜单“关闭送养”结束整帖有效申请并停止展示联系，不伪造完成领养；与选择实际接宠人后的“完成送养”明确区分。
+- **交接前的小提醒**：如实说明健康、性格和照护需要；了解双方领养条件；沟通后仍可结束申请；交接前确认身份和宠物情况，警惕押金、定金等提前转账；实际接宠后再确认完成。
+
+结束页脚“帮宠物找个家，让每一次申请都有清楚的进展。”。说明中的资料指申请时快照，不公开联系方式或私人表单。完成为送养人自行确认，不表述为平台已核实交接。原《领养说明》、防骗指南和须知保留各自入口，不用新流程页替换原须知或绕过“继续申请”确认。
+
+### 13.5 Android开发对应文件及验收
+
+路径相对 `rescue_xml/app/src/main`：
+
+| 文件/模块 | 同步要求 |
+| --- | --- |
+| java/.../user/viewmodels/UserSettingViewModel.kt、user/activity/UserSettingActivity.kt | 设置首项增加领养资料及登录路由；当前点击按位置0/1/2/3分派，新增后需调整全部位置或改用稳定类型，不能点资料误进改密码、点安全误登出 |
+| java/.../adoption/activity/AdoptionProfileActivity.kt、adoption/viewmodels/AdoptionProfileViewModel.kt、models/ProfileInputPolicy.kt | 复用现有资料页及规则，更新用途说明并核对多入口返回、保存/加载锁和账号隔离；保留已完成的年龄/样式调整 |
+| java/.../user/viewmodels/AdoptAboutViewModel.kt、user/activity/AdoptAboutActivity.kt | 新增流程说明项、独立图标和本地HTML导航，保留原列表项路由 |
+| java/.../home/activity/ReleaseTopicActivity.kt、res/layout/activity_release_topic.xml | contact_edit下方加说明和链接，打开前收起键盘，返回保留发布草稿 |
+| assets/adoptionFlow.html（新增）、res/drawable中的流程图标、res/values/strings.xml | 同步流程正文/六步图、标题及链接文案；本地资源打包，不依赖网络 |
+| 本地WebView页面容器 | 接收受控页面title/本地路径，说明模式只读，正确返回，不沿用账号安全或注销JS操作 |
+
+验收覆盖：设置与个人页均打开同一资料；未登录正确登录/取消；资料GET失败可重试，保存成功回原入口且不自动申请；设置新增条目后原改密码/反馈/账号安全/退出登录路由不串位；流程说明从领养相关与发布页打开同一内容、离线可读、标题正确；六步图和双方操作/状态/关闭/防骗说明完整；长文字与大字体不横向溢出；发布页查看后保留全部草稿和照片、不重复发布；原须知、旧获取联系兼容、单份结束与整帖结束语义不变。
+
+本次仅更新需求文档，Android现有未提交代码与其他文档继续保留；未复制HTML/图标到Android工程、未实施上述新增入口或进行构建/真机验收。

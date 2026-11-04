@@ -24,5 +24,6 @@ data class FindPetModel(
     var collectionNum: Int?,
     var commNum: Int?,
     var contact_info: String?,
-    var getedcontact: Boolean?
+    var getedcontact: Boolean?,
+    var city_id: String? = null
 ): Parcelable

@@ -142,24 +142,30 @@ class AdoptionRepositoryTest {
         val json=JsonParser.parseString(server.takeRequest().body.readUtf8()).asJsonObject
         assertEquals(12,json["version"].asInt); assertEquals(501,json["application_id"].asInt)
     }
-    @Test fun classifiedCountsUseNativeFieldsWithoutFetchingHistory()=runBlocking {
-        reply("""{"unread_count":5,"mine_unread_count":2,"received_unread_count":3}""")
-        val counts=repo.classifiedUnread(); assertEquals(5,counts.unread_count)
-        assertEquals(2,counts.mine_unread_count); assertEquals(3,counts.received_unread_count)
-        assertEquals(1,server.requestCount)
+    @Test fun nativeVisibleCountsScanAllUnreadPagesWithoutFetchingHistory()=runBlocking {
+        reply("""{"items":[{"id":1,"role":"mine","kind":"communicate"},{"id":2,"role":"received","kind":"communicate"},{"id":3,"role":"received","kind":"new"}],"has_more":true,"unread_count":99,"mine_unread_count":40,"received_unread_count":59}""")
+        reply("""{"items":[{"id":3,"role":"received","kind":"new"},{"id":4,"role":"mine","kind":"refresh"},{"id":5,"role":"received","kind":"refresh"},{"id":6,"role":"received","kind":"ended"},{"id":7,"role":"received","read":true},{"id":8,"role":"received","kind":"unknown"}],"has_more":false}""")
+        val counts=repo.classifiedUnread()
+        assertEquals(5,counts.unread_count);assertEquals(2,counts.mine_unread_count);assertEquals(3,counts.received_unread_count)
+        assertEquals(2,server.requestCount)
+        repeat(2) { index -> val url=server.takeRequest().requestUrl!!
+            assertEquals("/api/v2/adoption-notifications",url.encodedPath)
+            assertEquals("true",url.queryParameter("unread"));assertEquals("${index+1}",url.queryParameter("page"))
+            assertNull(url.queryParameter("role"));assertNull(url.queryParameter("topic_id"))
+        }
     }
     @Test fun missingClassificationCountsRemainUnknown()=runBlocking {
         reply("""{"unread_count":5}""")
         val counts=repo.unread(); assertNull(counts.mine_unread_count); assertNull(counts.received_unread_count)
     }
     @Test fun nativeReminderScopeIsIndependentOfApplicationStatusAndVisiblePage()=runBlocking {
-        reply("""{"items":[],"page":3,"size":10,"has_more":false,"unread_count":4,"mine_unread_count":0,"received_unread_count":4}""")
+        reply("""{"items":[{"id":1,"role":"received","topic_id":33,"kind":"communicate"},{"id":2,"role":"received","topic_id":33,"kind":"refresh"}],"has_more":true,"unread_count":90,"received_unread_count":90,"mine_unread_count":0}""")
+        reply("""{"items":[{"id":3,"role":"received","topic_id":33,"kind":"ended"},{"id":4,"role":"received","topic_id":34},{"id":5,"role":"mine","topic_id":33,"kind":"refresh"}],"has_more":false}""")
         val data=repo.reminderPage("received",33,3)
-        assertTrue(data.items.isEmpty()); assertEquals(4,data.counts.received_unread_count)
-        val url=server.takeRequest().requestUrl!!
-        assertEquals("received",url.queryParameter("role")); assertEquals("33",url.queryParameter("topic_id"))
-        assertEquals("true",url.queryParameter("unread")); assertEquals("3",url.queryParameter("page"))
-        assertNull(url.queryParameter("status"))
+        assertTrue(data.items.isEmpty());assertEquals(1,data.counts.received_unread_count);assertFalse(data.hasMore)
+        repeat(2) { val url=server.takeRequest().requestUrl!!
+            assertNull(url.queryParameter("role"));assertNull(url.queryParameter("topic_id"));assertNull(url.queryParameter("status"))
+        }
     }
     @Test fun nativeRoleDoesNotFollowTargetAndQueriesNeverMarkRead()=runBlocking {
         reply("""{"items":[{"id":21,"role":"received","kind":"ended","target":"topic_detail","read":false,"message":"申请已结束","created_at":"2026-10-02T10:00:00+08:00"}],"page":1,"has_more":false,"unread_count":1,"mine_unread_count":0,"received_unread_count":1}""")
@@ -168,26 +174,36 @@ class AdoptionRepositoryTest {
         assertEquals("GET",server.takeRequest().method); assertEquals(1,server.requestCount)
     }
     @Test fun legacyReminderClassificationScansAllHistoryAndNotificationPages()=runBlocking {
-        reply("""{"items":[{"id":91,"read":false}],"page":1,"has_more":false}""") // Old backend ignores role/topic query.
-        reply("""{"items":[{"application_id":1,"status":"applying"}],"page":1,"has_more":true}""")
-        reply("""{"items":[{"application_id":88,"status":"ended"}],"page":2,"has_more":false}""")
-        reply("""{"items":[{"id":1,"application_id":88,"topic_id":33,"target":"application_management","read":false},{"id":2,"application_id":99,"topic_id":33,"target":"topic_detail","read":false}],"page":1,"has_more":true}""")
-        reply("""{"items":[{"id":2,"application_id":99,"topic_id":33,"target":"topic_detail","read":false},{"id":3,"application_id":99,"topic_id":34,"read":false},{"id":4,"application_id":99,"topic_id":33,"read":true}],"page":2,"has_more":false}""")
+        reply("""{"items":[{"id":1,"application_id":88,"topic_id":33,"kind":"communicate","target":"application_management"},{"id":2,"application_id":99,"topic_id":33,"kind":"ended","target":"topic_detail"}],"has_more":true}""")
+        reply("""{"items":[{"id":2,"application_id":99,"topic_id":33,"kind":"ended"},{"id":3,"application_id":99,"topic_id":34},{"id":4,"application_id":99,"topic_id":33,"read":true},{"id":5,"application_id":99,"topic_id":33,"kind":"refresh"}],"has_more":false}""")
+        reply("""{"items":[{"application_id":1,"status":"applying"}],"has_more":true}""")
+        reply("""{"items":[{"application_id":88,"status":"ended"}],"has_more":false}""")
         val page=repo.reminderPage("received",33,1)
-        assertEquals(listOf(2),page.items.map { it.id }); assertEquals(1,page.counts.received_unread_count)
-        val requests=(1..5).map { server.takeRequest() }
-        assertEquals("received",requests[0].requestUrl!!.queryParameter("role"))
-        assertNull(requests[1].requestUrl!!.queryParameter("status")); assertEquals("2",requests[2].requestUrl!!.queryParameter("page"))
-        assertNull(requests[3].requestUrl!!.queryParameter("role")); assertNull(requests[3].requestUrl!!.queryParameter("topic_id"))
-        assertEquals("2",requests[4].requestUrl!!.queryParameter("page"))
+        assertEquals(listOf(2),page.items.map { it.id });assertEquals(1,page.counts.received_unread_count)
+        val requests=(1..4).map { server.takeRequest() }
+        assertNull(requests[0].requestUrl!!.queryParameter("role"));assertNull(requests[0].requestUrl!!.queryParameter("topic_id"))
+        assertEquals("2",requests[1].requestUrl!!.queryParameter("page"))
+        assertNull(requests[2].requestUrl!!.queryParameter("status"));assertEquals("2",requests[3].requestUrl!!.queryParameter("page"))
     }
     @Test fun legacyGlobalCountsIncludeTerminalHistoryAndBothRoles()=runBlocking {
-        reply("""{"unread_count":3}""")
-        reply("""{"items":[{"application_id":88,"status":"ended"}],"page":1,"has_more":false}""")
-        reply("""{"items":[{"id":1,"application_id":88,"read":false},{"id":2,"application_id":99,"target":"topic_detail","read":false},{"id":3,"application_id":100,"read":false}],"page":1,"has_more":false}""")
+        reply("""{"items":[{"id":1,"application_id":88,"kind":"refresh"},{"id":2,"application_id":99,"kind":"communicate","target":"topic_detail"},{"id":3,"application_id":100,"kind":"ended"}],"has_more":false}""")
+        reply("""{"items":[{"application_id":88,"status":"ended"}],"has_more":false}""")
         val counts=repo.classifiedUnread()
-        assertEquals(1,counts.mine_unread_count); assertEquals(2,counts.received_unread_count)
-        assertEquals(3,counts.unread_count)
+        assertEquals(1,counts.mine_unread_count);assertEquals(1,counts.received_unread_count);assertEquals(2,counts.unread_count)
+    }
+    @Test fun malformedUnreadCollectionCannotResetVisibleCounts()=runBlocking {
+        reply("{}")
+        assertEquals(502,error { repo.classifiedUnread() }.status)
+    }
+    @Test fun laterUnreadPageFailureNeverReturnsPartialCounts()=runBlocking {
+        reply("""{"items":[{"id":1,"role":"mine"}],"has_more":true}""")
+        reply("{}",503)
+        assertEquals(503,error { repo.classifiedUnread() }.status)
+    }
+    @Test fun mixedNativeAndLegacyRolesKeepTrustedIdentity()=runBlocking {
+        reply("""{"items":[{"id":1,"role":"received","application_id":88,"kind":"communicate"},{"id":2,"application_id":88,"kind":"communicate"}],"has_more":false}""")
+        reply("""{"items":[{"application_id":88,"status":"ended"}],"has_more":false}""")
+        assertEquals(UnreadCount(1,1,0),repo.classifiedUnread())
     }
     @Test fun singleReadUsesOnlyClickedIdAndPermissionFailureKeepsLogin()=runBlocking {
         reply("{}",403); assertEquals(403,error { repo.read(21) }.http); assertEquals(0,logouts)

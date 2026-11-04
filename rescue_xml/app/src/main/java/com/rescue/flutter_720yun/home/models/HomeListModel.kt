@@ -81,6 +81,8 @@ data class HomeListModel (
     val collection_num: Int?,
     val promotion: com.rescue.flutter_720yun.promotion.models.PromotionSummary? = null,
     var workflow_status: String? = null,
+    val is_delete: Int? = null,
+    val unavailable: Boolean = false,
 ): Parcelable
 
 

@@ -22,6 +22,7 @@ object UserManager {
         editor.putString("userinfo", Gson().toJson(info))
         editor.apply()
         _userInfo = info
+        com.rescue.flutter_720yun.analytics.AnalyticsManager.identityChanged()
         if (changed) sessionRevision.value = (sessionRevision.value ?: 0) + 1
     }
 
@@ -39,6 +40,7 @@ object UserManager {
 
     fun logout() {
         _userInfo = null
+        com.rescue.flutter_720yun.analytics.AnalyticsManager.identityChanged()
         val sharedPreferences = BaseApplication.context.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         val edit = sharedPreferences.edit()
         edit.remove("userinfo")

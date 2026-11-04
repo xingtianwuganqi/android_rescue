@@ -1,6 +1,7 @@
 package com.rescue.flutter_720yun.promotion.repository
 
 import com.rescue.flutter_720yun.adoption.models.V2Response
+import com.rescue.flutter_720yun.adoption.ui.notice
 import com.rescue.flutter_720yun.adoption.repository.*
 import com.rescue.flutter_720yun.network.*
 import com.rescue.flutter_720yun.promotion.models.*
@@ -10,7 +11,9 @@ import retrofit2.Response
 
 class PromotionRepository(private val service: PromotionService=AdoptionServiceCreator.retrofit.create(PromotionService::class.java),
     private val account: () -> AdoptionAccount={ AdoptionAccount(UserManager.userId,UserManager.token,UserManager.sessionRevision.value) },
-    private val invalidate: () -> Unit={ UserManager.logout(); org.greenrobot.eventbus.EventBus.getDefault().post(com.rescue.flutter_720yun.home.models.LoginEvent(null)) }) {
+    private val invalidate: () -> Unit={
+        com.rescue.flutter_720yun.BaseApplication.context.notice("登录已失效，请重新登录。已保存的奖励可在原账号登录后恢复。")
+        UserManager.logout(); org.greenrobot.eventbus.EventBus.getDefault().post(com.rescue.flutter_720yun.home.models.LoginEvent(null)) }) {
     private suspend fun <T> request(call: suspend (String)->Response<V2Response<T>>): T {
         val identity=account()
         val token=identity.token ?: throw AdoptionError(401,message="请先登录")

@@ -26,7 +26,8 @@ class FeedRepository(private val service: HomeService=ServiceCreator.create()) {
             }
             throw error
         }
-        val items=if(body.data?.isJsonArray==true) Gson().fromJson<List<HomeListModel>>(body.data,object:TypeToken<List<HomeListModel>>(){}.type) else emptyList()
+        if(body.data?.isJsonArray!=true) throw AdoptionError(502,message="服务返回了无效列表，请稍后重试")
+        val items=Gson().fromJson<List<HomeListModel>>(body.data,object:TypeToken<List<HomeListModel>>(){}.type)
         val meta=body.meta ?: throw AdoptionError(502,message="推广列表服务暂不可用，请稍后重试")
         return FeedPage(items,meta)
     }

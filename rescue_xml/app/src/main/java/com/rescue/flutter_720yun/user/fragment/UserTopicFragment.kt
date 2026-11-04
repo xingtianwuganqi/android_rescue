@@ -75,7 +75,7 @@ class UserTopicFragment: Fragment() {
             promotionDialog=androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setMessage("观看视频后，该帖子将获得一小时优先展示。再次观看成功将重新计算推广时间，是否继续？")
                 .setNegativeButton("取消") { d,_ -> d.dismiss() }
-                .setPositiveButton("观看视频") { d,_ -> d.dismiss();com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.start(requireActivity(),topic,"my_posts") }.show()
+                .setPositiveButton("观看视频") { d,_ -> d.dismiss();com.rescue.flutter_720yun.analytics.AnalyticsManager.rewardClick(topic,"my_posts");com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.start(requireActivity(),topic,"my_posts") }.show()
         } })
     }
     private val showAdapter by lazy {

@@ -89,6 +89,7 @@ class UserAccountSafeActivity : BaseActivity() {
         builder.setCancelable(false)
         builder.setPositiveButton(resources.getString(R.string.confirm), DialogInterface.OnClickListener { dialogInterface, i ->
             LoadingDialog.show(this)
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.track("logOff",interactive=true)
             viewModel.deleteAccountNetworking()
         })
         builder.setNegativeButton(resources.getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->

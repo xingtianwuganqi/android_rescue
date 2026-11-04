@@ -9,12 +9,16 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -47,6 +51,7 @@ import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.dateFormatter
 import com.rescue.flutter_720yun.util.randomString
 import com.rescue.flutter_720yun.util.toastString
+import com.rescue.flutter_720yun.user.activity.WebPageActivity
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
@@ -224,6 +229,24 @@ class ReleaseTopicActivity : BaseActivity(), TagListClickListener, ReleaseImageC
 
 
     override fun addViewAction() {
+        val note = getString(R.string.adoption_flow_contact_note) + " "
+        val link = getString(R.string.adoption_flow_link)
+        binding.adoptionFlowNote.text = SpannableString(note + link).apply {
+            setSpan(object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    val focused = currentFocus
+                    (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+                        .hideSoftInputFromWindow(focused?.windowToken ?: binding.root.windowToken, 0)
+                    focused?.clearFocus()
+                    startActivity(WebPageActivity.adoptionFlowIntent(this@ReleaseTopicActivity))
+                }
+                override fun updateDrawState(ds: TextPaint) {
+                    ds.color = ContextCompat.getColor(this@ReleaseTopicActivity, R.color.color_system)
+                    ds.isUnderlineText = false
+                }
+            }, note.length, note.length + link.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        binding.adoptionFlowNote.movementMethod = LinkMovementMethod.getInstance()
         binding.addTags.setOnClickListener {
             val intent = Intent(this, TagListActivity::class.java)
             tagSelectLauncher.launch(intent)

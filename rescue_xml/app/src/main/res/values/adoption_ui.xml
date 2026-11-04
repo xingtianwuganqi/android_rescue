@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="adoption_page_background">#F5F5F5</color>
+    <color name="adoption_panel_background">#F3F2F7</color>
+    <color name="adoption_card_border">#E6E6E8</color>
+    <color name="adoption_text_secondary">#8E8E93</color>
+    <color name="adoption_filter_background">#EEEEF0</color>
+    <color name="adoption_status_background">#ECECEE</color>
+    <color name="adoption_communicating_background">#EAF5EE</color>
+    <color name="adoption_communicating_text">#36835A</color>
+    <color name="adoption_applying_background">#FFF4DF</color>
+    <string name="adoption_filter_all">全部</string>
+    <string name="adoption_filter_applying">申请中</string>
+    <string name="adoption_filter_communicating">沟通中</string>
+    <string name="adoption_filter_ended">已结束</string>
+    <string name="adoption_profile_snapshot_label">申请时资料 · 用户填写</string>
+    <string name="adoption_owner_contact_label">送养人联系方式</string>
+    <string name="adoption_no_contact">暂无已获取的联系方式</string>
+    <string name="adoption_profile_unavailable">资料已不可用</string>
+    <string name="adoption_applicant_unavailable">账号或资料已不可用</string>
+    <string name="adoption_topic_unavailable">帖子已删除或不可用</string>
+    <string name="adoption_view_topic">查看原帖：%1$s</string>
+    <string name="adoption_view_snapshot">查看申请时资料</string>
+    <string name="adoption_topic_fallback">帖子 %1$d</string>
+    <style name="AdoptionCardText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionCardSecondary" parent="AdoptionCardText">
+        <item name="android:textColor">@color/adoption_text_secondary</item>
+    </style>
+</resources>

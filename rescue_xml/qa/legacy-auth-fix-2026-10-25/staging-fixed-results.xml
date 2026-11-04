@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rescue.flutter_720yun.staging.StagingContractTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-25T06:38:02" hostname="192.168.0.105" time="0.593">
+  <properties/>
+  <testcase name="legacyInfoExpiredTokenMustTriggerLoginInsteadOfAccountRestriction" classname="com.rescue.flutter_720yun.staging.StagingContractTest" time="0.593"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -61,6 +61,7 @@ class AdoptAboutActivity : BaseActivity(), MessageListItemClickListener {
                 intent.putExtra("localUrl","file:///android_asset/lyinstruction.html")
                 startActivity(intent)
             }
+            2 -> startActivity(WebPageActivity.adoptionFlowIntent(this))
             else -> {
 
             }

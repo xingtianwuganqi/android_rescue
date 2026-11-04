@@ -155,6 +155,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
 
         binding.tip.setOnClickListener {
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.publishClick("adoption")
             activity?.let { it1 ->
                 lazyLogin(it1) {
                     val intent = Intent(activity, ReleaseTopicActivity::class.java)
@@ -164,7 +165,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
 
         addListObserver()
-        if (homeViewModel.uiState.value !is UiState.Success) {
+        if (homeViewModel.isFirstLoading.value==true || homeViewModel.uiState.value !is UiState.Success) {
             loadData(RefreshState.REFRESH)
         }
     }
@@ -208,12 +209,12 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
                 is UiState.Success -> {
                     showSuccess()
-                    if (homeViewModel.refreshState.value == RefreshState.REFRESH) {
+                    if (homeViewModel.pageType in listOf("0","2") || homeViewModel.refreshState.value == RefreshState.REFRESH) {
                         adapter.refreshItem(it.data)
                     }else{
                         adapter.addItems(it.data)
                     }
-                    nativeAdAdapter?.pageLoaded(it.data.size, homeViewModel.refreshState.value == RefreshState.REFRESH)
+                    nativeAdAdapter?.pageLoaded(if(homeViewModel.pageType in listOf("0","2")) homeViewModel.feedChunkSize else it.data.size, homeViewModel.refreshState.value == RefreshState.REFRESH)
                 }
                 is UiState.Error -> {
                     showError(it.message)
@@ -352,6 +353,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             // 点赞
             likeActionNetworking(model)
         }else{
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
             val intent = Intent(activity, LoginActivity::class.java)
             startActivity(intent)
         }
@@ -362,6 +364,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             // 收藏
             collectionActionNetworking(model)
         }else{
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
             val intent = Intent(activity, LoginActivity::class.java)
             startActivity(intent)
         }
@@ -375,6 +378,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             intent.putExtra("toUid", model?.userInfo?.id)
             startActivity(intent)
         }else{
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
             val intent = Intent(activity, LoginActivity::class.java)
             startActivity(intent)
         }

@@ -200,6 +200,8 @@ class ReleaseTopicViewModel: ViewModel() {
                     if(published) return@launch
                     published=true
                     releasedTopicId=response.data?.topic_id?.takeIf { it>0 }
+                    releasedTopicId?.let { id -> com.rescue.flutter_720yun.analytics.AnalyticsManager.track("publish_success","publish_adoption",
+                        mapOf("publish_type" to "adoption","object_id" to id.toLong())) }
                 }
                 _releaseSuccess.value = response.code
                 if (response.code == 200) {

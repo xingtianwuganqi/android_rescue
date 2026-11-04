@@ -174,6 +174,7 @@ fun lazyLogin(activity: Context, callback: () -> Unit) {
     if (UserManager.isLogin) {
         callback()
     }else{
+        com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
         val intent = Intent(activity, LoginActivity::class.java)
         activity.startActivity(intent)
     }

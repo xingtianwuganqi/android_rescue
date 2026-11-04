@@ -73,7 +73,7 @@ class AdoptionRepository(
     suspend fun saveProfile(body: ProfileWrite) = request { service.saveProfile(it, body) }
     suspend fun state(topic: Int) = request { service.state(it, topic) }
     suspend fun apply(topic: Int, key: String, body: ApplicationWrite) = request { service.apply(it, topic, key, body) }
-    suspend fun received(topic: Int?, status: String, page: Int) = request { service.received(it, topic, status, page) }
+    suspend fun received(topic: Int?, status: String, page: Int) = request { service.received(it, topic, status.takeIf(String::isNotBlank), page) }
     suspend fun application(id: Int) = request { service.application(it, id) }
     suspend fun action(id: Int, body: ApplicationAction, key: String? = null) = request { service.action(it, id, body, key) }
     suspend fun mine(status: String, page: Int) = request { service.mine(it, status.takeIf { value -> value.isNotBlank() }, page) }
@@ -85,51 +85,39 @@ class AdoptionRepository(
     private fun ensureAccount(identity: AdoptionAccount) {
         if(identity != account()) throw CancellationException("Account changed")
     }
-    private suspend fun legacyUnread(): List<AdoptionNotification> {
-        val identity = account()
-        val own = mutableSetOf<Int>()
-        var page = 1
+    /** Raw counts cannot express client visibility. Load every page before publishing counts. */
+    private suspend fun visibleUnread(): List<AdoptionNotification> {
+        val identity=account()
+        val notifications=linkedMapOf<Int,AdoptionNotification>()
+        var page=1
         do {
             ensureAccount(identity)
-            val batch = mine("", page++) // All statuses and every historical page.
-            own.addAll(batch.items.orEmpty().map { it.application_id })
-            val more = batch.has_more
+            val batch=request { service.notifications(it,page++,unread=true) }
+            val items=batch.items ?: throw AdoptionError(502,message="提醒数据暂不可用，请点击重试")
+            items.forEach { notifications[it.id]=it }
+            val more=batch.has_more
         } while(more)
-        val notifications = linkedMapOf<Int, AdoptionNotification>()
-        page = 1
-        do {
-            ensureAccount(identity)
-            val batch = request { service.notifications(it, page++, unread = true) }
-            batch.items.orEmpty().forEach { notifications[it.id] = it }
-            val more = batch.has_more
-        } while(more)
-        ensureAccount(identity)
-        return NotificationClassification.classify(notifications.values.toList(), own)
-    }
-    suspend fun classifiedUnread(): UnreadCount {
-        val identity = account()
-        val counts = unread()
-        if(counts.mine_unread_count != null && counts.received_unread_count != null &&
-            counts.mine_unread_count + counts.received_unread_count == counts.unread_count) return counts
-        ensureAccount(identity)
-        return NotificationClassification.counts(legacyUnread()).also { ensureAccount(identity) }
-    }
-    suspend fun reminderPage(role: String, topic: Int?, page: Int): ReminderPage {
-        require(role == "mine" || role == "received")
-        val identity = account()
-        val batch = request { service.notifications(it, page, role = role, topic = topic, unread = true) }
-        val counts = UnreadCount(batch.unread_count ?: -1, batch.mine_unread_count, batch.received_unread_count)
-        if(counts.mine_unread_count != null && counts.received_unread_count != null &&
-            counts.mine_unread_count + counts.received_unread_count == counts.unread_count &&
-            (if(role=="mine") counts.received_unread_count==0 else counts.mine_unread_count==0) &&
-            batch.items.orEmpty().all { it.role==role && (topic==null || it.topic_id==topic) }) {
-            return ReminderPage(batch.items.orEmpty().filter { !it.read && it.role == role && (topic == null || it.topic_id == topic) }
-                .distinctBy { it.id }, page, batch.has_more, counts)
+        val own=mutableSetOf<Int>()
+        if(notifications.values.any { !it.read && it.role !in listOf("mine","received") }) {
+            page=1
+            do {
+                ensureAccount(identity)
+                val batch=mine("",page++) // Include terminal applications and all history pages.
+                own.addAll((batch.items ?: throw AdoptionError(502,message="申请归属暂不可用，请点击重试")).map { it.application_id })
+                val more=batch.has_more
+            } while(more)
         }
         ensureAccount(identity)
-        val filtered = legacyUnread().filter { it.role == role && (topic == null || it.topic_id == topic) }
+        return NotificationClassification.visibleUnread(NotificationClassification.classify(notifications.values.toList(),own))
+    }
+    suspend fun classifiedUnread(): UnreadCount = NotificationClassification.counts(visibleUnread())
+    suspend fun reminderPage(role: String, topic: Int?, page: Int): ReminderPage {
+        require(role in listOf("mine","received") && page>0)
+        val identity=account()
+        val filtered=visibleUnread().filter { it.role==role && (topic==null || it.topic_id==topic) }
         ensureAccount(identity)
-        val start = (page - 1) * 10
-        return ReminderPage(filtered.drop(start).take(10), page, start + 10 < filtered.size, NotificationClassification.counts(filtered))
+        val start=(page-1).toLong()*10
+        return ReminderPage(if(start>=filtered.size) emptyList() else filtered.drop(start.toInt()).take(10),
+            page,start+10<filtered.size,NotificationClassification.counts(filtered))
     }
 }

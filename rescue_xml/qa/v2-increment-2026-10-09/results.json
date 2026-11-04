@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-09",
+  "timezone": "Asia/Shanghai",
+  "scope": "front_demand_v2.md section 12",
+  "jvm": {
+    "tests": 104,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "apk_build": "passed",
+  "device_tests": {
+    "compiled": 4,
+    "executed": 0
+  },
+  "lint": {
+    "errors": 6,
+    "warnings": 257,
+    "new_module_errors": 0
+  },
+  "qr_source_and_import_payload": "https://xingtianwuganqi.github.io/autodownload/index.html",
+  "connected_devices": 0,
+  "production_writes": false
+}

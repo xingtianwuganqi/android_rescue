@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         binding.drawerRecyclerview.adapter = adapter
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.root.post { com.rescue.flutter_720yun.analytics.AnalyticsPages.visible(this) }
             val searchBtn = binding.searchButton
             when (destination.id) {
                 R.id.navigation_home -> {

@@ -13,6 +13,7 @@ import com.rescue.flutter_720yun.adoption.viewmodels.AdoptionViewModel
 import com.rescue.flutter_720yun.adoption.ui.*
 
 open class AdoptionActivity : BaseActivity() {
+    protected open val contentLayoutRes: Int = R.layout.activity_adoption_container
     protected lateinit var content: LinearLayout
     private var loginPending = false
     private var observedSession = UserManager.sessionRevision.value
@@ -22,7 +23,7 @@ open class AdoptionActivity : BaseActivity() {
         if(UserManager.isLogin) onAuthenticated() else finish()
     }
     override fun onCreate(state: Bundle?) {
-        super.onCreate(state); loginPending = state?.getBoolean("login_pending") ?: false; setContentLayout(R.layout.activity_adoption_container)
+        super.onCreate(state); loginPending = state?.getBoolean("login_pending") ?: false; setContentLayout(contentLayoutRes)
         content = findViewById(R.id.adoption_content)
     }
     override fun onSaveInstanceState(outState: Bundle) { outState.putBoolean("login_pending", loginPending); super.onSaveInstanceState(outState) }

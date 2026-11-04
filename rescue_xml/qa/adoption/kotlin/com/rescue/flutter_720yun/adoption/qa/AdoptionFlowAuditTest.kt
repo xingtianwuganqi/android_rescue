@@ -215,14 +215,15 @@ class AdoptionFlowAuditTest {
     }
     @Test fun failedReminderAppendKeepsSuccessfulPageAndCounts() {
         val vm = tracked(AdoptionApplicationsViewModel(SavedStateHandle()))
-        reply("""{"items":[{"id":21,"role":"received","read":false}],"page":1,"has_more":true,"unread_count":11,"mine_unread_count":0,"received_unread_count":11}""")
+        val reminders=(21..31).joinToString(",") { """{"id":$it,"role":"received","read":false}""" }
+        reply("""{"items":[$reminders],"page":1,"has_more":false,"unread_count":11,"mine_unread_count":0,"received_unread_count":11}""")
         vm.loadReminders(); reminderIdle(vm)
         reply("{}", 503)
         vm.loadReminders(false); reminderIdle(vm)
-        assertEquals(21, vm.reminders.value!!.single().id)
+        assertEquals((21..30).toList(), vm.reminders.value!!.map { it.id })
         assertEquals(11, vm.reminderCounts.value?.received_unread_count)
         assertTrue(vm.reminderHasMore)
-        assertEquals("2", requests().last().requestUrl!!.queryParameter("page"))
+        assertEquals("1", requests().last().requestUrl!!.queryParameter("page"))
     }
     @Test fun everyCityMustOfferACompletableDistrictSelection() {
         val regions = Gson().fromJson(File(System.getProperty("qa.adoption.location")).readText(), Array<AddressItem>::class.java)
@@ -255,6 +256,19 @@ class AdoptionFlowAuditTest {
         assertEquals(1, vm.page)
         assertTrue(vm.hasMore)
     }
+    @Test fun bothApplicationListsDefaultToAllWithoutSendingAnEmptyStatus() {
+        val received = tracked(AdoptionApplicationsViewModel(SavedStateHandle()))
+        val mine = tracked(AdoptionMyApplicationsViewModel(SavedStateHandle()))
+        for (vm in listOf(received, mine)) {
+            assertEquals("", vm.status)
+            reply("""{"items":[$applying],"has_more":false,"page":1}""")
+            vm.load(); idle(vm)
+        }
+        val calls = requests()
+        assertEquals(listOf("/api/v2/adoptions/mine/applications", "/api/v2/adoption-applications/mine"), calls.map { it.requestUrl!!.encodedPath })
+        assertTrue(calls.all { it.requestUrl!!.queryParameter("status") == null })
+        assertTrue(calls.all { it.requestUrl!!.queryParameter("page") == "1" })
+    }
     @Test fun invalidApplyReplyMustNotReportSuccess() {
         val vm = detail()
         reply(open); reply("{}"); vm.submit(profile, ""); idle(vm)
@@ -282,5 +296,105 @@ class AdoptionFlowAuditTest {
         assertNull(vm.error.value)
         assertEquals(501, vm.application.value?.application_id)
         assertEquals(listOf("GET", "GET", "GET"), requests().map { it.method })
+    }
+    @Test fun directProfileSaveRejectsClientOutOfRangeWithoutRequest() {
+        val vm=tracked(AdoptionProfileViewModel())
+        for(value in listOf("9","101","10.5")) {
+            vm.age=value;vm.save();idle(vm)
+            assertEquals("请输入10–100的整数年龄",vm.error.value?.fields?.get("age"))
+        }
+        assertEquals(0,server.requestCount)
+    }
+    @Test fun historicalCompleteProfileIsNotChangedByLoading() {
+        val vm=tracked(AdoptionProfileViewModel())
+        reply("""{"profile":{"age":120},"is_complete":true,"version":4}""")
+        vm.load();idle(vm)
+        assertEquals("120",vm.age);assertTrue(vm.data.value!!.is_complete)
+        vm.save();idle(vm);assertEquals(1,server.requestCount)
+        assertEquals("请输入10–100的整数年龄",vm.error.value?.message)
+    }
+    @Test fun failedInitialProfileLoadCannotWriteAnUnversionedUpdate() {
+        val vm = tracked(AdoptionProfileViewModel())
+        reply("{}", 503); vm.load(); idle(vm)
+        vm.age = "28"; vm.city = "上海市"; vm.district = "浦东新区"
+        vm.save(); idle(vm)
+        assertFalse(vm.loaded)
+        assertFalse(vm.saved.value == true)
+        assertEquals("请先成功加载领养资料后再保存", vm.error.value?.message)
+        assertEquals(listOf("GET"), requests().map { it.method })
+    }
+    @Test fun failedReloadKeepsDraftButLocksSaveUntilSuccessfulRetry() {
+        val vm = tracked(AdoptionProfileViewModel())
+        reply(completeProfile); vm.load(); idle(vm)
+        vm.experience = "未保存的养宠经历"
+        reply("{}", 503); vm.load(preserveDraft = true); idle(vm)
+        assertEquals("未保存的养宠经历", vm.experience)
+        assertFalse(vm.loaded)
+        vm.save(); idle(vm)
+        assertEquals(2, server.requestCount)
+        reply(completeProfile); vm.load(preserveDraft = true); idle(vm)
+        assertTrue(vm.loaded)
+        assertEquals("未保存的养宠经历", vm.experience)
+        assertTrue(requests().all { it.method == "GET" })
+    }
+    @Test fun conflictReloadKeepsDraftAndNewVersionRequiresExplicitSave() {
+        val vm = tracked(AdoptionProfileViewModel())
+        reply(completeProfile); vm.load(); idle(vm)
+        vm.age = "31"; vm.experience = "本地草稿"
+        reply("""{"error_code":"PROFILE_CHANGED"}""", 409)
+        vm.save(); idle(vm)
+        assertEquals("PROFILE_CHANGED", vm.error.value?.errorCode)
+        reply(completeProfile.replace("\"version\":2", "\"version\":3"))
+        vm.load(preserveDraft = true); idle(vm)
+        assertEquals("31", vm.age)
+        assertEquals("本地草稿", vm.experience)
+        assertEquals(3, vm.data.value?.version)
+        assertFalse(vm.saved.value == true)
+        assertEquals(3, server.requestCount)
+        reply(completeProfile.replace("\"version\":2", "\"version\":4"))
+        vm.save(); idle(vm)
+        val writes = requests().filter { it.method == "PUT" }
+        val body = Gson().fromJson(writes.last().body.readUtf8(), ProfileWrite::class.java)
+        assertEquals(3, body.version)
+        assertEquals(31, body.age)
+        assertEquals("本地草稿", body.pet_experience)
+        assertTrue(vm.saved.value == true)
+    }
+    @Test fun absentProfileClearsPreviouslyLoadedFields() {
+        val vm = tracked(AdoptionProfileViewModel())
+        reply(completeProfile); vm.load(); idle(vm)
+        reply("""{"profile":null,"is_complete":false,"version":null}""")
+        vm.load(); idle(vm)
+        assertTrue(vm.loaded)
+        assertEquals(listOf("", "", "", "", "", ""),
+            listOf(vm.age, vm.city, vm.district, vm.housing, vm.employment, vm.experience))
+        assertNull(vm.data.value?.version)
+    }
+    @Test fun firstProfileSaveOmitsVersionAndNeverCreatesApplication() {
+        val vm = tracked(AdoptionProfileViewModel())
+        reply("""{"profile":null,"is_complete":false,"version":null}""")
+        vm.load(); idle(vm)
+        vm.age = "28"; vm.city = "上海市"; vm.district = "浦东新区"
+        vm.housing = "owned"; vm.employment = "employed"
+        reply(completeProfile); vm.save(); idle(vm)
+        val calls = requests()
+        assertEquals(listOf("GET", "PUT"), calls.map { it.method })
+        assertTrue(calls.all { it.path == "/api/v2/adoption-profile/me" })
+        assertFalse(Gson().fromJson(calls.last().body.readUtf8(), com.google.gson.JsonObject::class.java).has("version"))
+        assertTrue(vm.saved.value == true)
+    }
+    @Test fun sessionChangeClearsProfileAndDraft() {
+        val vm = tracked(AdoptionProfileViewModel())
+        reply(completeProfile); vm.load(); idle(vm)
+        vm.experience = "私人草稿"
+        val originalRevision = UserManager.sessionRevision.value ?: 0L
+        try {
+            UserManager.sessionRevision.value = originalRevision + 1
+            assertNull(vm.data.value)
+            assertEquals("", vm.age); assertEquals("", vm.city); assertEquals("", vm.experience)
+            assertFalse(vm.loaded); assertFalse(vm.saved.value == true)
+        } finally {
+            UserManager.sessionRevision.value = originalRevision
+        }
     }
 }

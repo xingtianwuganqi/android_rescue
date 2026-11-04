@@ -1,0 +1,55 @@
+[
+  {
+    "name": "promotion_state_anonymous",
+    "method": "GET",
+    "path": "api/v2/topics/1/promotion-state",
+    "started_at": "2026-10-25T06:30:39.388666+00:00",
+    "http": 401,
+    "content_type": "application/json",
+    "server_date": "Sun, 25 Oct 2026 06:30:39 GMT",
+    "response_bytes": 75,
+    "json": true,
+    "code": 401,
+    "data_keys": [
+      "error_code"
+    ],
+    "error_code": "AUTH_REQUIRED",
+    "status": null,
+    "elapsed_ms": 110,
+    "expected": "JSON auth rejection",
+    "pass": true
+  },
+  {
+    "name": "adoption_state_anonymous",
+    "method": "GET",
+    "path": "api/v2/adoptions/1/application-state",
+    "started_at": "2026-10-25T06:30:39.498970+00:00",
+    "http": 401,
+    "content_type": "application/json",
+    "server_date": "Sun, 25 Oct 2026 06:30:39 GMT",
+    "response_bytes": 47,
+    "json": true,
+    "code": 401,
+    "data_keys": [],
+    "error_code": null,
+    "status": null,
+    "elapsed_ms": 154,
+    "expected": "JSON auth rejection",
+    "pass": true
+  },
+  {
+    "name": "promotion_route_options",
+    "method": "OPTIONS",
+    "path": "api/v2/topics/1/promotion",
+    "started_at": "2026-10-25T06:30:39.652788+00:00",
+    "http": 200,
+    "content_type": "application/json",
+    "server_date": "Sun, 25 Oct 2026 06:30:39 GMT",
+    "response_bytes": 172,
+    "json": true,
+    "code": null,
+    "elapsed_ms": 86,
+    "expected": "route exists; no promotion submitted",
+    "pass": true
+  }
+]

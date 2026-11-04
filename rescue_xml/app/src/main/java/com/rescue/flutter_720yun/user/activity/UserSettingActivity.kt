@@ -48,6 +48,7 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
         _binding = ActivityUserSettingBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
         addViewModelObserver()
+        UserManager.sessionRevision.observe(this) { viewModel.refreshEntries() }
     }
 
 
@@ -64,23 +65,27 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
 
 
     override fun itemClick(position: Int) {
-        when (position) {
-            0 -> {
+        when (viewModel.messageList.value?.getOrNull(position)?.category) {
+            "adoption_profile" -> {
+                startActivity(Intent(this, com.rescue.flutter_720yun.adoption.activity.AdoptionProfileActivity::class.java))
+            }
+            "find_pet_profile" -> startActivity(Intent(this, com.rescue.flutter_720yun.home.activity.FindPetDetailActivity::class.java))
+            "password" -> {
                 val intent = Intent(this, UserChangePasswordActivity::class.java)
                 startActivity(intent)
             }
 
-            1 -> {
+            "feedback" -> {
                 val intent = Intent(this, UserFeedbackActivity::class.java)
                 startActivity(intent)
             }
 
-            2 -> {
+            "account_security" -> {
                 val intent = Intent(this, UserAccountSafeActivity::class.java)
                 intent.putExtra("localUrl","file:///android_asset/account_security.html")
                 startActivity(intent)
             }
-            3 -> {
+            "logout" -> {
                 logoutDialog()
             }
         }
@@ -91,6 +96,7 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
         builder.setMessage(resources.getString(R.string.logout_remind))
         builder.setCancelable(false)
         builder.setPositiveButton(resources.getString(R.string.confirm_d), DialogInterface.OnClickListener { dialogInterface, i ->
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.track("logout",interactive=true)
             logout()
         })
         builder.setNegativeButton(resources.getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->

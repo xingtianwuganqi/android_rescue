@@ -24,3 +24,15 @@ class FeedCursor {
         return items.filter { it.topic_id!=null && seen.add(it.topic_id) }
     }
 }
+
+/** A refresh cursor is disposable until validated data is accepted. */
+class FeedBatches {
+    var current=FeedCursor()
+        private set
+    fun candidate(refresh: Boolean): FeedCursor = if(refresh) FeedCursor() else current
+    fun commit(candidate: FeedCursor) {
+        require(candidate.snapshot!=null)
+        current=candidate
+    }
+    fun invalidate() { current=FeedCursor() }
+}

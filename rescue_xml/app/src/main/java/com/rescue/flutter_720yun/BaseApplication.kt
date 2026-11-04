@@ -19,6 +19,8 @@ class BaseApplication: Application() {
         }
         context = applicationContext
         if (processName == packageName) {
+            com.rescue.flutter_720yun.util.UserManager.getUserInfo()
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.initialize(this)
             com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.initialize()
             registerActivityLifecycleCallbacks(com.rescue.flutter_720yun.ads.ForegroundSplashObserver(this))
         }

@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.home.activity.LoginActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.BaseActivity
@@ -23,6 +26,11 @@ class MessageSystemListActivity : BaseActivity() {
     private var _binding: ActivityMessageSystemListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: MessageSystemItemAdapter
+    private var loginPending=false
+    private val login=registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        loginPending=false
+        if(UserManager.isLogin) viewModel.systemMessageListNetworking(RefreshState.REFRESH) else finish()
+    }
     private val viewModel by lazy {
         ViewModelProvider(this)[MessageSystemListViewModel::class.java]
     }
@@ -36,9 +44,9 @@ class MessageSystemListActivity : BaseActivity() {
         addViewAction()
         addViewModelObserver()
         addBackListener()
-        if (viewModel.uiState.value !is UiState.Success) {
-            viewModel.systemMessageListNetworking(RefreshState.REFRESH)
-        }
+        UserManager.sessionRevision.observe(this) { if(!UserManager.isLogin) ensureLogin() }
+        if(UserManager.isLogin && viewModel.uiState.value !is UiState.Success) viewModel.systemMessageListNetworking(RefreshState.REFRESH)
+        else if(!UserManager.isLogin) ensureLogin()
     }
 
     override fun addViewAction() {
@@ -51,6 +59,10 @@ class MessageSystemListActivity : BaseActivity() {
         adapter = MessageSystemItemAdapter(mutableListOf())
         binding.recyclerview.layoutManager = LinearLayoutManager(this)
         binding.recyclerview.adapter = adapter
+        baseBinding.errorView.setOnClickListener { if(UserManager.isLogin) viewModel.systemMessageListNetworking(RefreshState.REFRESH) else ensureLogin() }
+    }
+    private fun ensureLogin() {
+        if(!loginPending) { loginPending=true;login.launch(Intent(this,LoginActivity::class.java)) }
     }
 
     override fun addViewModelObserver() {
@@ -64,6 +76,7 @@ class MessageSystemListActivity : BaseActivity() {
                 is UiState.Success -> {
                     showSuccess()
                     val list = it.data
+                    if(list.isEmpty()) { adapter.refreshItem(emptyList());showError(getString(R.string.no_data));return@observe }
                     if (viewModel.refreshState.value == RefreshState.REFRESH) {
                         adapter.refreshItem(list)
                     }else if (viewModel.refreshState.value == RefreshState.MORE) {

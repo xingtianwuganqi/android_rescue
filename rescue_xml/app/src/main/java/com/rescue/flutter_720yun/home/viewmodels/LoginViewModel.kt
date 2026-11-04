@@ -39,22 +39,34 @@ class LoginViewModel: ViewModel() {
     private var countDownTimer: CountDownTimer? = null
 
     suspend fun loginNetworking(phone: String, password: String) {
-        val passwordMD5String = password.toMD5()
-        val dic = paramDic
-        dic["password"] = passwordMD5String
-        if (phone.isValidEmail()) {
-            dic["email"] = phone
-        }else{
-            dic["phoneNum"] = phone
-        }
-        dic["phone_type"] = "android"
-        val response = appService.login(dic).awaitResp()
-        if (response.code == 200) {
-            val userInfo = response.data
-            UserManager.setUserInfo(userInfo)
-            _loginStatus.value = response
-        }else{
-            _loginStatus.value = response
+        val attemptRevision=UserManager.sessionRevision.value
+        try {
+            val passwordMD5String = password.toMD5()
+            val dic = paramDic
+            dic["password"] = passwordMD5String
+            if (phone.isValidEmail()) {
+                dic["email"] = phone
+            }else{
+                dic["phoneNum"] = phone
+            }
+            dic["phone_type"] = "android"
+            val response = appService.login(dic).awaitResp()
+            if(attemptRevision!=UserManager.sessionRevision.value) return
+            if (response.code == 200) {
+                val userInfo = response.data
+                UserManager.setUserInfo(userInfo)
+                com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_success",properties=mapOf("login_method" to "password"))
+                _loginStatus.value = response
+            }else{
+                com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_failed",properties=mapOf("login_method" to "password",
+                    "reason_code" to if(response.code==403) "account_unavailable" else "unknown"))
+                _loginStatus.value = response
+            }
+        } catch(cancel: kotlinx.coroutines.CancellationException) { throw cancel }
+        catch(error: Exception) {
+            if(attemptRevision==UserManager.sessionRevision.value) com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_failed",
+                properties=mapOf("login_method" to "password","reason_code" to if(error is java.io.IOException) "network_error" else "unknown"))
+            throw error
         }
     }
 
@@ -86,22 +98,34 @@ class LoginViewModel: ViewModel() {
 
     // 登录
     suspend fun register(phone: String, password: String) {
-        val dic = paramDic
-        dic["password"] = password.toMD5()
-        dic["confirm_password"] = password.toMD5()
-        if (phone.isValidEmail()) {
-            dic["email"] = phone
-        }else{
-            dic["phoneNum"] = phone
-        }
-        dic["phone_type"] = "android"
-        val response = appService.register(dic).awaitResp()
-        if (response.code == 200) {
-            val userInfo = response.data
-            UserManager.setUserInfo(userInfo)
-            _loginStatus.value = response
-        }else{
-            _loginStatus.value = response
+        val attemptRevision=UserManager.sessionRevision.value
+        try {
+            val dic = paramDic
+            dic["password"] = password.toMD5()
+            dic["confirm_password"] = password.toMD5()
+            if (phone.isValidEmail()) {
+                dic["email"] = phone
+            }else{
+                dic["phoneNum"] = phone
+            }
+            dic["phone_type"] = "android"
+            val response = appService.register(dic).awaitResp()
+            if(attemptRevision!=UserManager.sessionRevision.value) return
+            if (response.code == 200) {
+                val userInfo = response.data
+                UserManager.setUserInfo(userInfo)
+                com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_success",properties=mapOf("login_method" to "password"))
+                _loginStatus.value = response
+            }else{
+                com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_failed",properties=mapOf("login_method" to "password",
+                    "reason_code" to if(response.code==403) "account_unavailable" else "unknown"))
+                _loginStatus.value = response
+            }
+        } catch(cancel: kotlinx.coroutines.CancellationException) { throw cancel }
+        catch(error: Exception) {
+            if(attemptRevision==UserManager.sessionRevision.value) com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_failed",
+                properties=mapOf("login_method" to "password","reason_code" to if(error is java.io.IOException) "network_error" else "unknown"))
+            throw error
         }
     }
 

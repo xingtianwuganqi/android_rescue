@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/my_find_pet_content"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/adoption_page_background" android:saveEnabled="false">
+    <TextView android:id="@+id/find_pet_state" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" android:textColor="@color/color_content" android:textSize="15sp" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/find_pet_manage" style="@style/FindPetActionButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:layout_gravity="end" android:text="管理找宠信息" />
+    <TextView android:id="@+id/find_pet_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:padding="16dp" android:textColor="@color/color_system" android:visibility="gone" />
+    <ProgressBar android:id="@+id/find_pet_loading" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:visibility="gone" />
+    <com.scwang.smart.refresh.layout.SmartRefreshLayout android:id="@+id/find_pet_refresh" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <com.scwang.smart.refresh.header.MaterialHeader android:layout_width="match_parent" android:layout_height="wrap_content" />
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/find_pet_recommendations" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingTop="8dp" android:clipToPadding="false" android:saveEnabled="false" />
+            <TextView android:id="@+id/find_pet_empty" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:padding="24dp" android:textColor="@color/color_desc" android:textSize="15sp" android:visibility="gone" />
+        </FrameLayout>
+        <com.scwang.smart.refresh.footer.ClassicsFooter android:layout_width="match_parent" android:layout_height="wrap_content" />
+    </com.scwang.smart.refresh.layout.SmartRefreshLayout>
+</LinearLayout>

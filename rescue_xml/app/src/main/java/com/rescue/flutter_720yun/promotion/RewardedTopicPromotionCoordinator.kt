@@ -144,6 +144,7 @@ object RewardedTopicPromotionCoordinator {
                 }
                 repository.submit(record)
                 if(!current(a)) return@launch
+                com.rescue.flutter_720yun.analytics.AnalyticsManager.rewardSuccess(record.account_id,record.topic_id,record.scene,record.reward_attempt_id)
                 store.remove(a.key)
                 pendingPersistence.remove(a.key)
                 changes.value=(changes.value ?: 0)+1

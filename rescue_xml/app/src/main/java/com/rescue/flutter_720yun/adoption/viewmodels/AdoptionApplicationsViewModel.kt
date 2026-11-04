@@ -28,7 +28,7 @@ open class AdoptionApplicationsViewModel(private val saved: SavedStateHandle) : 
     protected var mine = false
     val role get() = if(mine) "mine" else "received"
     var status: String
-        get() = saved["filter"] ?: if(mine) "" else "applying"
+        get() = saved["filter"] ?: ""
         set(value) { saved["filter"] = value }
     var page = 0
     var hasMore = true

@@ -86,7 +86,7 @@ class PromotionEntry(private val host: FragmentActivity, private val button: Tex
         if(state?.can_promote!=true) { host.notice(PromotionPolicy.reason(state?.reason));refresh();return }
         dialog=AlertDialog.Builder(host).setMessage("观看视频后，该帖子将获得一小时优先展示。再次观看成功将重新计算推广时间，是否继续？")
             .setNegativeButton("取消") { d,_ -> d.dismiss() }
-            .setPositiveButton("观看视频") { d,_ -> d.dismiss();RewardedTopicPromotionCoordinator.start(host,topic,scene) }.show()
+            .setPositiveButton("观看视频") { d,_ -> d.dismiss();com.rescue.flutter_720yun.analytics.AnalyticsManager.rewardClick(topic,scene);RewardedTopicPromotionCoordinator.start(host,topic,scene) }.show()
     }
     override fun onResume(owner: LifecycleOwner) { RewardedTopicPromotionCoordinator.restore();refresh() }
     override fun onPause(owner: LifecycleOwner) { dialog?.dismiss();dialog=null;job?.cancel();expiry?.cancel();generation++ }

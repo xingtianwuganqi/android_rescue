@@ -128,6 +128,7 @@ class ShowFragment : Fragment(), ShowItemClickListener {
         if (viewModel.uiState.value !is UiState.Success) loadData(RefreshState.REFRESH)
 
         binding.tip.setOnClickListener {
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.publishClick("show_pet")
             activity?.let {
                 val intent = Intent(it, ShowReleaseActivity::class.java)
                 releaseLauncher.launch(intent)

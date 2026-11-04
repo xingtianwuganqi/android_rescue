@@ -40,6 +40,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         ViewModelProvider(this)[HomeDetailViewModel::class.java]
     }
 
+    private lateinit var shareFlow: com.rescue.flutter_720yun.home.share.TopicShareFlow
     private var deleteDialog: AlertDialog? = null
     private lateinit var adapter: HomeDetailAdapter
     private lateinit var imageAdapter: HomeDetailAdapter
@@ -61,6 +62,10 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         ViewModelProvider(this)[com.rescue.flutter_720yun.adoption.viewmodels.AdoptionDetailViewModel::class.java].state.observe(this) { state ->
             promotionEntry.setOwner(state?.can_manage==true,state?.workflow_status)
         }
+        shareFlow=com.rescue.flutter_720yun.home.share.TopicShareFlow(this,{ viewModel.topicId },{
+            val model=viewModel.homeData.value
+            model?.topic_id==viewModel.topicId && model!=null && model.is_delete!=0 && !model.unavailable && viewModel.deleted.value!=true
+        }) { invalidateOptionsMenu() }
         viewModel.topicFrom = intent.getIntExtra("topic_from", 0)
 
         addViewAction()
@@ -78,14 +83,17 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         viewModel.homeData.observe(this) {
             uploadViews(it)
             uploadBottom(it)
+            invalidateOptionsMenu()
         }
 
 //        viewModel.changeModel.observe(this) {
 //            uploadBottom(it)
+            invalidateOptionsMenu()
 //        }
 
         viewModel.deleted.observe(this) {
             if(it == true) {
+                if(::shareFlow.isInitialized) shareFlow.cancel()
                 resources.getString(R.string.delete_success).toastString()
                 sendResultAndFinish(); finish()
             }
@@ -253,6 +261,18 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
 
     }
 
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        menu.add(0,10009,0,"分享").setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        return true
+    }
+    override fun onPrepareOptionsMenu(menu: android.view.Menu): Boolean {
+        menu.findItem(10009)?.isEnabled=::shareFlow.isInitialized && !shareFlow.busy && viewModel.homeData.value!=null
+        return super.onPrepareOptionsMenu(menu)
+    }
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        if(item.itemId==10009) { if(::shareFlow.isInitialized) shareFlow.showMenu();return true }
+        return super.onOptionsItemSelected(item)
+    }
     override fun onResume() {
         super.onResume()
         if (::adoptionFlow.isInitialized) {

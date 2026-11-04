@@ -22,7 +22,10 @@ import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val feedRepository: com.rescue.flutter_720yun.home.repository.FeedRepository = com.rescue.flutter_720yun.home.repository.FeedRepository(),
+    private val blockedTopics: () -> Set<String> = { SharedPreferencesUtil.getStringSet("black_home_list",BaseApplication.context).orEmpty() }
+) : ViewModel() {
 
     private var page: Int = 1
 
@@ -50,13 +53,15 @@ class HomeViewModel : ViewModel() {
 
     private val appService = ServiceCreator.create<HomeService>()
 
-    private val feedRepository=com.rescue.flutter_720yun.home.repository.FeedRepository()
-    private val feedCursor=com.rescue.flutter_720yun.home.models.FeedCursor()
+    private val feedBatches=com.rescue.flutter_720yun.home.models.FeedBatches()
+    private val feedCursor get()=feedBatches.current
+    var feedChunkSize=0
+        private set
     private var feedJob: kotlinx.coroutines.Job?=null
     private var feedGeneration=0L
     private var feedCity: String?=null
     private val sessionObserver=androidx.lifecycle.Observer<Long> {
-        feedJob?.cancel();feedGeneration++;feedCursor.reset();_isLoading.value=false
+        feedJob?.cancel();feedGeneration++;feedBatches.invalidate();feedChunkSize=0;_models.value=emptyList();_isLastPage.value=false;_isLoading.value=false
         _refreshState.value=RefreshState.REFRESH;_uiState.value=UiState.Success(emptyList())
         _isFirstLoading.value=true
     }
@@ -67,11 +72,16 @@ class HomeViewModel : ViewModel() {
     }
     fun loadListData(refresh: RefreshState) = loadFeed(null,refresh)
     private fun loadFeed(city: String?,requested: RefreshState) {
-        val refresh=if(city!=feedCity) RefreshState.REFRESH else requested
-        if(refresh==RefreshState.MORE && (_isLoading.value==true || !feedCursor.hasMore)) return
-        if(refresh==RefreshState.REFRESH) {
-            feedJob?.cancel();feedCursor.reset();feedCity=city;_isLastPage.value=false
+        val changedRange=city!=feedCity
+        if(changedRange) {
+            feedJob?.cancel();feedBatches.invalidate();feedChunkSize=0;feedCity=city
+            _models.value=emptyList();_refreshState.value=RefreshState.REFRESH;_uiState.value=UiState.Success(emptyList())
+            _isFirstLoading.value=true;_isLastPage.value=false
         }
+        val refresh=if(changedRange || feedCursor.snapshot==null) RefreshState.REFRESH else requested
+        if(refresh==RefreshState.MORE && (_isLoading.value==true || !feedCursor.hasMore)) return
+        if(refresh==RefreshState.REFRESH) feedJob?.cancel()
+        val candidate=feedBatches.candidate(refresh==RefreshState.REFRESH)
         val generation=++feedGeneration
         val session=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
         _refreshState.value=refresh;_isLoading.value=true
@@ -79,13 +89,16 @@ class HomeViewModel : ViewModel() {
         feedJob=viewModelScope.launch {
             var expired=false
             try {
-                val result=feedRepository.page(city,feedCursor.nextPage,feedCursor.snapshot)
+                val result=feedRepository.page(city,candidate.nextPage,candidate.snapshot)
                 if(generation!=feedGeneration || session!=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) return@launch
-                val black=SharedPreferencesUtil.getStringSet("black_home_list",BaseApplication.context)
-                val accepted=feedCursor.accept(result.meta,result.items).filter { black?.contains("${it.topic_id}")!=true }
+                val black=blockedTopics()
+                val accepted=candidate.accept(result.meta,result.items).filter { !black.contains("${it.topic_id}") }
+                feedBatches.commit(candidate)
+                feedChunkSize=accepted.size
+                _models.value=if(refresh==RefreshState.REFRESH) accepted else _models.value.orEmpty()+accepted
                 _isFirstLoading.value=false;_isLastPage.value=!feedCursor.hasMore
                 // An empty page still completes successfully and advances the snapshot cursor.
-                _uiState.value=UiState.Success(accepted)
+                _uiState.value=UiState.Success(_models.value.orEmpty())
             } catch(e: kotlinx.coroutines.CancellationException) { throw e }
             catch(e: Exception) { if(generation==feedGeneration) {
                 val error=e as? com.rescue.flutter_720yun.adoption.repository.AdoptionError
@@ -98,6 +111,7 @@ class HomeViewModel : ViewModel() {
             finally { if(generation==feedGeneration) {
                 _isLoading.value=false
                 if(expired) {
+                    feedBatches.invalidate();feedChunkSize=0;_models.value=emptyList();_isFirstLoading.value=true;_isLastPage.value=false
                     _refreshState.value=RefreshState.REFRESH;_uiState.value=UiState.Success(emptyList())
                     loadFeed(city,RefreshState.REFRESH)
                 }

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.MessageSystemItemBinding
-import com.rescue.flutter_720yun.message.models.MessageSingleListModel
 import com.rescue.flutter_720yun.message.models.MessageSystemListModel
 import com.rescue.flutter_720yun.util.formatTime
 
@@ -19,6 +18,7 @@ class MessageSystemItemAdapter(val list: MutableList<MessageSystemListModel>): R
             binding.titleText.text = ContextCompat.getString(BaseApplication.context, R.string.message_title)
             binding.timeText.text = item.create_time?.formatTime()
             binding.content.text = item.content
+
         }
     }
 

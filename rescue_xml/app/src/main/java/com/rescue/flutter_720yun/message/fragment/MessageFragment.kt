@@ -78,15 +78,28 @@ class MessageFragment : Fragment(), MessageListItemClickListener {
         binding.messageList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         adapter.setClickListener(this)
 
+        binding.adoptionUnreadRetry.setOnClickListener { messageViewModel.unreadMessageNumberNetworking() }
+        messageViewModel.adoptionUnreadError.observe(viewLifecycleOwner) { updateUnreadRetry() }
+        messageViewModel.findPetUnreadError.observe(viewLifecycleOwner) { updateUnreadRetry() }
         messageViewModel.messageList.observe(viewLifecycleOwner) {
             adapter.reloadList(it)
         }
     }
 
+    private fun updateUnreadRetry() {
+        val errors=listOfNotNull(messageViewModel.adoptionUnreadError.value,messageViewModel.findPetUnreadError.value)
+        _binding?.adoptionUnreadRetry?.apply { visibility=if(errors.isEmpty()) View.GONE else View.VISIBLE; text=errors.joinToString("\n") }
+    }
+
     override fun itemClick(position: Int) {
         val category=messageViewModel.messageList.value?.getOrNull(position)?.category ?: return
+        if(category in listOf("system","my_find_pet","my_applications","received_applications") && !com.rescue.flutter_720yun.util.UserManager.isLogin)
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
         if(category == "system") {
             startActivity(Intent(activity, MessageSystemListActivity::class.java)); return
+        }
+        if(category == "my_find_pet") {
+            startActivity(Intent(requireContext(), com.rescue.flutter_720yun.findpet.MyFindPetActivity::class.java)); return
         }
         if(category in listOf("my_applications", "received_applications")) {
             val target=if(category=="my_applications") com.rescue.flutter_720yun.adoption.activity.AdoptionMyApplicationsActivity::class.java

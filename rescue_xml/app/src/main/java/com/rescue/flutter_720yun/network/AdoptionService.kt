@@ -12,7 +12,7 @@ interface AdoptionService {
     @POST("api/v2/adoptions/{id}/applications") suspend fun apply(@Header("Authorization") auth: String, @Path("id") id: Int,
         @Header("Idempotency-Key") key: String, @Body body: ApplicationWrite): Response<V2Response<AdoptionApplication>>
     @GET("api/v2/adoptions/mine/applications") suspend fun received(@Header("Authorization") auth: String,
-        @Query("topic_id") topic: Int?, @Query("status") status: String, @Query("page") page: Int, @Query("size") size: Int = 10): Response<V2Response<V2Page<AdoptionApplication>>>
+        @Query("topic_id") topic: Int?, @Query("status") status: String?, @Query("page") page: Int, @Query("size") size: Int = 10): Response<V2Response<V2Page<AdoptionApplication>>>
     @GET("api/v2/adoption-applications/mine") suspend fun mine(@Header("Authorization") auth: String,
         @Query("status") status: String?, @Query("page") page: Int, @Query("size") size: Int = 10): Response<V2Response<V2Page<AdoptionApplication>>>
     @GET("api/v2/adoption-applications/{id}") suspend fun application(@Header("Authorization") auth: String, @Path("id") id: Int): Response<V2Response<AdoptionApplication>>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/adoption_card_background"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:saveEnabled="false">
+
+    <LinearLayout
+        android:id="@+id/application_mine_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/application_mine_status"
+            style="@style/AdoptionCardSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="28dp"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/application_mine_time"
+            style="@style/AdoptionCardSecondary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:gravity="end"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/application_received_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/application_avatar"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                app:riv_oval="true" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/application_applicant"
+                    style="@style/AdoptionCardText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/application_received_time"
+                    style="@style/AdoptionCardSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/application_received_status"
+                style="@style/AdoptionCardSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="28dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/application_result"
+            style="@style/AdoptionCardSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:textSize="12sp" />
+        <LinearLayout
+            android:id="@+id/application_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/adoption_panel_background"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:contentDescription="@string/adoption_view_snapshot">
+            <TextView
+                style="@style/AdoptionCardSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/adoption_profile_snapshot_label"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/application_profile_summary"
+                style="@style/AdoptionCardSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:lineSpacingExtra="2dp" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="14dp"
+            android:background="@color/adoption_card_border" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/application_topic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="86dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/adoption_panel_background"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/application_topic_photo"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:scaleType="centerCrop"
+            android:importantForAccessibility="no"
+            app:riv_corner_radius="8dp" />
+        <TextView
+            android:id="@+id/application_topic_title"
+            style="@style/AdoptionCardText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="12dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/application_topic_arrow"
+            android:layout_width="16dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/adoption_topic_chevron" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/application_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/adoption_panel_background"
+        android:orientation="vertical"
+        android:padding="12dp">
+        <TextView
+            style="@style/AdoptionCardSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/adoption_owner_contact_label"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/application_contact_value"
+            style="@style/AdoptionCardSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
+    </LinearLayout>
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/application_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_end" />
+</LinearLayout>

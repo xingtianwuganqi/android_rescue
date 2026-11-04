@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-22T06:27:35" hostname="Jing-de-MacBook-Pro.local" time="0.042">
+  <properties/>
+  <testcase name="startupIsAnonymousAndHandoffsDoNotOpenTwice" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.006"/>
+  <testcase name="internalDisableDoesNotBackfillEvents" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.005"/>
+  <testcase name="rewardUsesOriginalAttemptAndIgnoresDuplicateAndOtherAccount" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.004"/>
+  <testcase name="messageListTypeIsNestedEnumeratedProperty" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.003"/>
+  <testcase name="repeatedPageRenderIsIgnoredButReturningCounts" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.008"/>
+  <testcase name="formExposureEmitsMatchingPageAndTypeOnlyOnce" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.007"/>
+  <testcase name="analytics401DoesNotChangeBusinessIdentity" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.003"/>
+  <testcase name="loginKeepsAnonymousPathAndFreezesNewCredential" classname="com.rescue.flutter_720yun.analytics.AnalyticsManagerTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -43,5 +43,6 @@ data class MessageUnreadModel(
     val sys_unread: Int?,
     val like_unread: Int?,
     val collec_unread: Int?,
-    val com_unread: Int?
+    val com_unread: Int?,
+    val find_pet_unread: Int? = null
 ): Parcelable
