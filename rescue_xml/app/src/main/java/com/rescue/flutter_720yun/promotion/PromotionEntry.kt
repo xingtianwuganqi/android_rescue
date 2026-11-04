@@ -2,10 +2,8 @@ package com.rescue.flutter_720yun.promotion
 
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
-import com.rescue.flutter_720yun.adoption.ui.notice
 import com.rescue.flutter_720yun.promotion.models.*
 import com.rescue.flutter_720yun.promotion.repository.PromotionRepository
 import com.rescue.flutter_720yun.util.UserManager
@@ -21,21 +19,18 @@ class PromotionEntry(private val host: FragmentActivity, private val button: Tex
     private var job: Job?=null
     private var expiry: Job?=null
     private var generation=0L
-    private var dialog: AlertDialog?=null
+    private val watch = PromotionWatchFlow(host,host)
     init {
         button.visibility=View.GONE
-        button.setOnClickListener { confirm() }
+        button.setOnClickListener { watch.start(topic,scene) }
         host.lifecycle.addObserver(this)
-        RewardedTopicPromotionCoordinator.updates.observe(host) { update ->
+        RewardedTopicPromotionCoordinator.updates.observe(host) {
             render()
-            if(update.account==UserManager.userId && update.topic==topic && update.message!=null &&
-                host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                host.notice(update.message)
-                RewardedTopicPromotionCoordinator.updates.value=update.copy(message=null)
-            }
         }
+        PromotionFeedback(host,host) { it.topic==topic }
+
         RewardedTopicPromotionCoordinator.changes.observe(host) { refresh() }
-        UserManager.sessionRevision.observe(host) { dialog?.dismiss();dialog=null;state=null;job?.cancel();expiry?.cancel();generation++;render() }
+        UserManager.sessionRevision.observe(host) { state=null;job?.cancel();expiry?.cancel();generation++;render() }
     }
     fun setOwner(value: Boolean,status: String?=null) {
         val changed=owner!=value || workflow!=status
@@ -44,7 +39,7 @@ class PromotionEntry(private val host: FragmentActivity, private val button: Tex
         if(changed && owner) refresh()
     }
     fun refresh() {
-        if(!owner || !UserManager.isLogin || topic<=0) { state=null;render();return }
+        if(!com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED || !owner || !UserManager.isLogin || topic<=0) { state=null;render();return }
         job?.cancel();val operation=++generation
         val revision=UserManager.sessionRevision.value
         job=host.lifecycleScope.launch {
@@ -67,7 +62,7 @@ class PromotionEntry(private val host: FragmentActivity, private val button: Tex
         }
     }
     private fun render() {
-        button.visibility=if(owner && UserManager.isLogin && topic>0) View.VISIBLE else View.GONE
+        button.visibility=if(com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED && owner && UserManager.isLogin && topic>0) View.VISIBLE else View.GONE
         button.text=when {
             workflow=="adopted" -> "完成领养"
             workflow=="closed" -> "结束领养"
@@ -78,16 +73,9 @@ class PromotionEntry(private val host: FragmentActivity, private val button: Tex
             else -> "观看视频，增加曝光"
         }
         val terminal=workflow in listOf("adopted","closed")
-        button.isEnabled=!terminal && !RewardedTopicPromotionCoordinator.busy
+        button.isEnabled=!terminal && state?.can_promote!=false && !RewardedTopicPromotionCoordinator.busy
         button.alpha=if(terminal || state?.can_promote==false) 0.5f else 1f
     }
-    private fun confirm() {
-        if(state==null) { refresh();return }
-        if(state?.can_promote!=true) { host.notice(PromotionPolicy.reason(state?.reason));refresh();return }
-        dialog=AlertDialog.Builder(host).setMessage("观看视频后，该帖子将获得一小时优先展示。再次观看成功将重新计算推广时间，是否继续？")
-            .setNegativeButton("取消") { d,_ -> d.dismiss() }
-            .setPositiveButton("观看视频") { d,_ -> d.dismiss();com.rescue.flutter_720yun.analytics.AnalyticsManager.rewardClick(topic,scene);RewardedTopicPromotionCoordinator.start(host,topic,scene) }.show()
-    }
     override fun onResume(owner: LifecycleOwner) { RewardedTopicPromotionCoordinator.restore();refresh() }
-    override fun onPause(owner: LifecycleOwner) { dialog?.dismiss();dialog=null;job?.cancel();expiry?.cancel();generation++ }
+    override fun onPause(owner: LifecycleOwner) { job?.cancel();expiry?.cancel();generation++ }
 }

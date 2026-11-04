@@ -4,5 +4,5 @@ package com.rescue.flutter_720yun.adoption.models
 object AdoptionContact {
     fun visible(topic: TopicSummary?): String? = topic?.takeIf {
         it.getedcontact && it.is_complete == false && it.is_delete == 1 && !it.unavailable
-    }?.contact_info?.takeIf { it.isNotBlank() }
+    }?.contact_info?.trim()?.takeIf { it.isNotEmpty() }
 }

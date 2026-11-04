@@ -22,6 +22,9 @@
     <string name="login_failed">"Login failed"</string>
 
     <string name="no_data">暂无数据</string>
+    <string name="no_data_desc">请点击重试</string>
+    <string name="load_failed_title">网络加载失败</string>
+    <string name="load_failed_desc">请检查网络后重试</string>
     <string name="copy_success">复制成功</string>
     <string name="copy_success_copy">已复制到粘贴板</string>
 
@@ -119,7 +122,7 @@
     <string name="drawer_rescue">领养相关</string>
     <string name="drawer_upload">检测更新</string>
     <string name="drawer_agreement">用户协议</string>
-    <string name="drawer_privacy">隐私协议</string>
+    <string name="drawer_privacy">隐私政策</string>
     <string name="drawer_about">关于我们</string>
     <string name="drawer_help">支持我们</string>
     <string name="drawer_recommend">推荐给朋友</string>
@@ -127,6 +130,7 @@
     <string name="drawer_guideline">宠物领养防骗指南</string>
     <string name="drawer_description">领养说明</string>
     <string name="adoption_profile_title">领养资料</string>
+    <string name="find_pet_profile_title">找宠资料</string>
     <string name="adoption_profile_purpose">一份资料，多次复用。资料供你确认申请的送养人参考，既有申请保留申请时快照。</string>
     <string name="adoption_flow_title">领养流程说明</string>
     <string name="adoption_flow_contact_note">联系方式仅在你同意沟通后向申请人展示。</string>
@@ -202,6 +206,12 @@
     <string name="black_reason_placeholder">请输入举报理由</string>
     <string name="black_evidence">举报证据</string>
     <string name="black_evidence_placeholder">请上传证据图片</string>
+    <string name="black_unknown_name">未填写昵称</string>
+    <string name="black_unknown_contact">未填写号码</string>
+    <string name="black_contact_value">号码：%1$s</string>
+    <string name="black_no_desc">暂无举报描述</string>
+    <string name="black_evidence_count">举报证据 · %1$d 张</string>
+    <string name="black_view_detail">查看举报详情  ›</string>
 
     <string name="more_black">屏蔽/拉黑</string>
     <string name="more_report">投诉举报</string>

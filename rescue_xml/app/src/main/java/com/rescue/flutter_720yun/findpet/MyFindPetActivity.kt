@@ -53,15 +53,20 @@ class MyFindPetActivity : AdoptionActivity() {
         val empty = vm.items.value.isNullOrEmpty()
         val state = vm.state.value
         adapter.submit(vm.items.value.orEmpty(), busy)
-        b.findPetState.text = when (state) {
-            "no_request" -> "尚未发布找宠信息"
-            "open" -> "找宠中 · 同城送养推荐"
-            "closed" -> "找宠已关闭 · 历史推荐仍可查看"
-            else -> if(busy) "正在读取找宠信息" else "找宠信息暂不可用"
+        val restricted = vm.error.value?.status == 403
+        val failed = vm.error.value != null && vm.error.value?.status !in listOf(401,403)
+        b.findPetState.text = when {
+            restricted -> "账号受限，暂时无法查看找宠推荐。"
+            failed -> if (empty) "同城推荐暂时无法加载。" else "推荐加载失败，可重试；已有推荐仍可查看。"
+            busy && empty -> "正在加载同城推荐…"
+            state == "no_request" -> "发布找宠信息，接收同城送养推荐。"
+            state == "closed" -> "找宠已关闭。开启后可继续接收同城推荐，历史推荐仍可查看。"
+            else -> if (empty) "暂无同城推荐，下拉刷新试试。" else "为你推荐同城送养信息，点击查看详情。"
         }
         b.findPetManage.text = when (state) { "no_request" -> "发布找宠信息"; "closed" -> "开启找宠信息"; else -> "管理找宠信息" }
-        b.findPetManage.isVisible = state != null
-        b.findPetManage.isEnabled = !busy
+        b.findPetManage.isVisible = !state.isNullOrBlank()
+        b.findPetManage.isEnabled = !busy && !restricted
+        b.findPetManage.alpha = if (busy || restricted) 0.5f else 1f
         b.findPetLoading.isVisible = busy && empty && !b.findPetRefresh.isRefreshing
         b.findPetError.isVisible = false
         b.findPetError.text = vm.error.value?.message.orEmpty() + "\n点击重试"

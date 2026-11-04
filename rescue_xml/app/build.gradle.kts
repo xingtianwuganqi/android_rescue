@@ -7,7 +7,7 @@ plugins {
 }
 
 val takuProperties = Properties().apply {
-    rootProject.file("taku-ads.properties").inputStream().use { load(it) }
+    rootProject.file("taku-ads.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
 }
 fun takuValue(key: String): String = providers.gradleProperty(key)
     .getOrElse(takuProperties.getProperty(key, ""))
@@ -28,11 +28,30 @@ android {
         buildConfigField("String", "ADOPTION_BASE_URL", "\"${adoptionUrl.replace("\"", "\\\"")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // Override with -PTAKU_* or ~/.gradle/gradle.properties for Android placements.
-        listOf("APP_ID", "APP_KEY", "SPLASH_ID", "BANNER_ID", "NATIVE_ID", "NATIVE_SECONDARY_ID",
-            "INTERSTITIAL_ID", "REWARDED_ID").forEach { name ->
-            val value = takuValue("TAKU_$name").replace("\\", "\\\\").replace("\"", "\\\"")
-            buildConfigField("String", "TAKU_$name", "\"$value\"")
+
+    }
+
+    flavorDimensions += "ads"
+    productFlavors {
+        create("noAds") {
+            dimension = "ads"
+            isDefault = true
+            buildConfigField("boolean", "ADS_ENABLED", "false")
+            // Keep all placement values empty even when -PTAKU_* is supplied.
+            listOf("APP_ID", "APP_KEY", "SPLASH_ID", "BANNER_ID", "NATIVE_ID", "NATIVE_SECONDARY_ID",
+                "INTERSTITIAL_ID", "REWARDED_ID").forEach { name ->
+                buildConfigField("String", "TAKU_$name", "\"\"")
+            }
+        }
+        create("domestic") {
+            dimension = "ads"
+            buildConfigField("boolean", "ADS_ENABLED", "true")
+            // Override with -PTAKU_* or ~/.gradle/gradle.properties for Android placements.
+            listOf("APP_ID", "APP_KEY", "SPLASH_ID", "BANNER_ID", "NATIVE_ID", "NATIVE_SECONDARY_ID",
+                "INTERSTITIAL_ID", "REWARDED_ID").forEach { name ->
+                val value = takuValue("TAKU_$name").replace("\\", "\\\\").replace("\"", "\\\"")
+                buildConfigField("String", "TAKU_$name", "\"$value\"")
+            }
         }
     }
 
@@ -94,7 +113,7 @@ android {
 }
 
 dependencies {
-    implementation(fileTree("taku_libs") { include("*.aar", "*.jar") })
+    add("domesticImplementation", fileTree("taku_libs") { include("*.aar", "*.jar") })
     implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
     implementation(libs.androidx.core.ktx)

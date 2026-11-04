@@ -18,12 +18,14 @@ class PromotionRepositoryTest {
     private lateinit var repo: PromotionRepository
     private val account=AtomicReference(AdoptionAccount(1,"one",1L))
     private var logouts=0
+    private val authenticationRewards=mutableListOf<PendingReward>()
+    private lateinit var service: PromotionService
     private val pending=PendingReward(1,123,"my_posts","0835f97e-8e42-4cb0-92ce-9b587796dd90",100,100000)
     @Before fun setup() {
         server=MockWebServer();server.start()
-        val service=Retrofit.Builder().baseUrl(server.url("/"))
+        service=Retrofit.Builder().baseUrl(server.url("/"))
             .addConverterFactory(GsonConverterFactory.create(AdoptionServiceCreator.gson)).build().create(PromotionService::class.java)
-        repo=PromotionRepository(service,{ account.get() },{ logouts++ })
+        repo=PromotionRepository(service,{ account.get() },{ logouts++ },{ authenticationRewards.add(it) })
     }
     @After fun close() { server.shutdown() }
     private suspend fun error(action: suspend ()->Unit): AdoptionError {
@@ -33,6 +35,22 @@ class PromotionRepositoryTest {
         server.enqueue(MockResponse().setResponseCode(http).setBody("""{"code":$code,"message":"响应","data":$data}""").apply {
             headers.forEach { (key,value) -> setHeader(key,value) }
         })
+    }
+    @Test fun expiredAuthenticationKeepsRewardIdentityForOriginalAccountRecovery()=runBlocking {
+        reply(401)
+        assertEquals(401,error { repo.submit(pending) }.status)
+        assertEquals(listOf(pending),authenticationRewards);assertEquals(1,logouts)
+        reply(401)
+        error { repo.state(123,pending) }
+        assertEquals(listOf(pending,pending),authenticationRewards)
+    }
+    @Test fun durationConfigurationIsAnonymousAndUsesIosConfigKey()=runBlocking {
+        reply(200,data="""{"key":"BOOST_DURATION_SECONDS","value":1800}""")
+        assertEquals(1800,PromotionConfiguration.parse(service.configuration().body()?.data))
+        val request=server.takeRequest()
+        assertEquals("/api/v2/config/",request.requestUrl!!.encodedPath)
+        assertEquals("BOOST_DURATION_SECONDS",request.requestUrl!!.queryParameter("key"))
+        assertNull(request.getHeader("Authorization"))
     }
     @Test fun retryUsesSameUuidTargetSceneAndJsonOnly()=runBlocking {
         reply(503,data="""{"error_code":"RETRY_LATER"}""");error { repo.submit(pending) }

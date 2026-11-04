@@ -68,7 +68,7 @@ class UserFragment : Fragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginEvent(event: LoginEvent) {
-        if (isOtherUserPage) { updatePrivateEntries(); return }
+        if (isOtherUserPage) { updateEditEntryVisibility(); return }
         if (event.userId != null) {
             viewModel.setUserId(event.userId)
             viewModel.userIdGetUserInfoNetworking()
@@ -101,9 +101,8 @@ class UserFragment : Fragment() {
             binding.rightButton.visibility = View.GONE
         }
 
-        binding.adoptionProfileEntry.setOnClickListener { if(isOwnPage) startActivity(Intent(requireContext(), com.rescue.flutter_720yun.adoption.activity.AdoptionProfileActivity::class.java)) }
-        UserManager.sessionRevision.observe(viewLifecycleOwner) { updatePrivateEntries() }
-        viewModel.userIdLiveData.observe(viewLifecycleOwner) { updatePrivateEntries() }
+        UserManager.sessionRevision.observe(viewLifecycleOwner) { updateEditEntryVisibility() }
+        viewModel.userIdLiveData.observe(viewLifecycleOwner) { updateEditEntryVisibility() }
         binding.backLayout.setOnClickListener {
             if(isOtherUserPage && !isOwnPage) return@setOnClickListener
             lazyLogin(requireActivity()) {
@@ -115,6 +114,8 @@ class UserFragment : Fragment() {
 
             }
         }
+
+        binding.rightButton.setOnClickListener { binding.backLayout.performClick() }
 
         viewModel.userInfo.observe(viewLifecycleOwner) {
             if (it != null) {
@@ -138,8 +139,7 @@ class UserFragment : Fragment() {
         }.attach()
     }
 
-    private fun updatePrivateEntries() {
-        _binding?.adoptionPrivateEntries?.visibility = if(isOwnPage) View.VISIBLE else View.GONE
+    private fun updateEditEntryVisibility() {
         _binding?.rightButton?.visibility = if(isOwnPage) View.VISIBLE else View.GONE
     }
     override fun onDestroyView() { _binding = null; super.onDestroyView() }

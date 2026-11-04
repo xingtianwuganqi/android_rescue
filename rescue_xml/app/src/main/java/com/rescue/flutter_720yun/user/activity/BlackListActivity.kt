@@ -4,24 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextUtils
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.enableEdgeToEdge
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rescue.flutter_720yun.BaseActivity
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.ActivityBlackListBinding
-import com.rescue.flutter_720yun.home.adapter.HomeListAdapter
 import com.rescue.flutter_720yun.user.adapter.BlackListAdapter
 import com.rescue.flutter_720yun.user.viewmodels.BlackListViewModel
 import com.rescue.flutter_720yun.util.RefreshState
@@ -30,6 +28,7 @@ import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
+import com.wei.wimagepreviewlib.WImagePreviewBuilder
 
 class BlackListActivity : BaseActivity() {
 
@@ -40,7 +39,7 @@ class BlackListActivity : BaseActivity() {
     }
     private lateinit var adapter: BlackListAdapter
 
-    var detailLauncher = registerForActivityResult(
+    var detailLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -118,24 +117,88 @@ class BlackListActivity : BaseActivity() {
             viewModel.blackListNetworking(RefreshState.MORE)
         }
 
-        binding.recyclerview.layoutManager = LinearLayoutManager(this)
         adapter = BlackListAdapter(mutableListOf(), {
             val intent = Intent(this, BlackDetailActivity::class.java)
             intent.putExtra("blackId", it.id)
             detailLauncher.launch(intent)
+        }, { urls, index ->
+            previewEvidence(urls, index)
         })
-        binding.recyclerview.adapter = adapter
+        recyclerView.adapter = adapter
+
+        configureEmptyView()
+    }
+
+    private fun configureEmptyView() {
+        baseBinding.errorView.apply {
+            gravity = Gravity.CENTER
+            translationY = -resources.displayMetrics.heightPixels * 0.1f
+            setOnClickListener {
+                showLoading()
+                viewModel.blackListNetworking(RefreshState.REFRESH)
+            }
+        }
+    }
+
+    private fun previewEvidence(urls: List<String>, index: Int) {
+        if (urls.isEmpty()) return
+        WImagePreviewBuilder
+            .load(this)
+            .setData(urls)
+            .setPosition(index)
+            .start()
+    }
+
+    private fun showEmpty(failed: Boolean) {
+        baseBinding.progressBar.visibility = View.GONE
+        baseBinding.contentFrame.getChildAt(2).visibility = View.GONE
+
+        val title = SpannableString(
+            resources.getString(if (failed) R.string.load_failed_title else R.string.no_data)
+        ).apply {
+            setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(this@BlackListActivity, R.color.color_content)),
+                0,
+                length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                AbsoluteSizeSpan(resources.getDimensionPixelSize(R.dimen.content_font)),
+                0,
+                length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        val desc = SpannableString(
+            resources.getString(if (failed) R.string.load_failed_desc else R.string.no_data_desc)
+        ).apply {
+            setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(this@BlackListActivity, R.color.color_desc)),
+                0,
+                length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                AbsoluteSizeSpan(resources.getDimensionPixelSize(R.dimen.address_font)),
+                0,
+                length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        baseBinding.errorView.text = TextUtils.concat(title, "\n", desc)
+        baseBinding.errorView.visibility = View.VISIBLE
     }
 
     override fun addViewModelObserver() {
         super.addViewModelObserver()
         viewModel.isLoading.observe(this) {
             if (it == false) {
-                binding.refreshLayout.finishRefresh()
-                binding.refreshLayout.finishLoadMore()
-                if (viewModel.isLastPage.value == true) {
-                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
-                }
+                val noMore = viewModel.isLastPage.value == true
+                binding.refreshLayout.finishRefresh(200)
+                binding.refreshLayout.finishLoadMore(200)
+                binding.refreshLayout.setEnableLoadMore(adapter.itemCount > 0)
+                binding.refreshLayout.setNoMoreData(noMore)
             }
         }
 
@@ -146,27 +209,25 @@ class BlackListActivity : BaseActivity() {
                 }
 
                 is UiState.Success -> {
-                    showSuccess()
                     val list = it.data
-                    if (viewModel.refreshState.value == RefreshState.REFRESH) {
-                        adapter.refreshItem(list)
-                    }else if (viewModel.refreshState.value == RefreshState.MORE) {
+                    if (viewModel.refreshState.value == RefreshState.MORE) {
                         adapter.addItems(list)
+                    } else {
+                        adapter.refreshItem(list)
+                    }
+                    if (adapter.itemCount == 0) {
+                        showEmpty(false)
+                    } else {
+                        showSuccess()
                     }
                 }
 
                 is UiState.Error -> {
-                    showError(it.message ?: "")
-                }
-            }
-        }
-
-        viewModel.isLoading.observe(this) {
-            if (it == false) {
-                binding.refreshLayout.finishRefresh()
-                binding.refreshLayout.finishLoadMore()
-                if (viewModel.isLastPage.value == true) {
-                    binding.refreshLayout.finishLoadMoreWithNoMoreData()
+                    if (adapter.itemCount == 0) {
+                        showEmpty(true)
+                    } else {
+                        showSuccess()
+                    }
                 }
             }
         }
@@ -174,11 +235,10 @@ class BlackListActivity : BaseActivity() {
         viewModel.errorMsg.observe(this) {
             it?.toastString()
         }
-
     }
 
     override fun onDestroy() {
+        _binding = null
         super.onDestroy()
-
     }
 }

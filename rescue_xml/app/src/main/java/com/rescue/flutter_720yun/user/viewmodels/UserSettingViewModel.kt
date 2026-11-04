@@ -16,7 +16,8 @@ class UserSettingViewModel : ViewModel() {
         val context = BaseApplication.context
         entries.value = buildList {
             add(MessageListModel("icon_mi_zeliao", context.getString(R.string.adoption_profile_title), category = "adoption_profile"))
-            add(MessageListModel("icon_message_find_pet", "找宠资料", category = "find_pet_profile"))
+            add(MessageListModel("icon_message_find_pet", context.getString(R.string.find_pet_profile_title), category = "find_pet_profile"))
+            add(MessageListModel("ic_share_video", "背景音乐管理", category = "share_video_music"))
             add(MessageListModel("icon_setting_pswd", context.getString(R.string.user_change_password), category = "password"))
             add(MessageListModel("icon_setting_fk", context.getString(R.string.user_suggestion), category = "feedback"))
             add(MessageListModel("icon_acc_sec", context.getString(R.string.user_account), category = "account_security"))

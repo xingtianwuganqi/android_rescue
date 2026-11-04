@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PromotionSummary(val promotion_id: Int? = null, val is_active: Boolean = false,
     val create_time: String? = null, val update_time: String? = null, val effective_until: String? = null,
-    val can_promote: Boolean = false, val reason: String? = null, val duration_seconds: Int? = null,
+    val can_promote: Boolean? = null, val reason: String? = null, val duration_seconds: Int? = null,
     val remaining_today: Int? = null, val server_time: String? = null,
     val is_promoted: Boolean = false, val label: String? = null): Parcelable
 
@@ -29,9 +29,10 @@ object PromotionPolicy {
     // losing the subsequent retry-state write cannot cause an immediate restart replay.
     const val UNKNOWN_RESULT_BACKOFF=120_000L
     fun recoverable(record: PendingReward, account: Int?, now: Long)=
-        record.account_id==account && record.retry_until>now && record.next_retry_at<=now && record.retry_state=="pending"
+        record.account_id==account && record.reward_observed_at<=now && record.retry_until>now && record.next_retry_at<=now && record.retry_state=="pending"
     fun retryable(http: Int)=http==0 || http==429 || http>=500
     fun reason(value: String?)=when(value) {
+        "FEATURE_DISABLED" -> "推广功能暂未开放"
         "DAILY_LIMIT_REACHED" -> "今日推广次数已用完"
         "TOPIC_NOT_OPEN" -> "帖子已结束送养"
         "NOT_OWNER" -> "仅送养人可推广此帖"

@@ -27,14 +27,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_rescue"
         tools:targetApi="31">
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <provider android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.sharefiles" android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/share_file_paths" />
+        </provider>
+        <activity android:name=".home.share.TopicVideoPreviewActivity" android:exported="false" />
+        <activity android:name=".home.share.ShareVideoMusicActivity" android:exported="false" />
         <activity android:name=".home.activity.PublishSuccessActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionMyApplicationsActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionProfileActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionApplicationsActivity" android:exported="false" />
         <activity android:name=".message.activity.AdoptionNotificationsActivity" android:exported="false" />
-        <activity android:name=".user.activity.SupportActivity" android:exported="false" />
-        <activity android:name=".ads.WarmSplashActivity" android:exported="false" />
         <activity
             android:name=".home.activity.TopicReportActivity"
             android:exported="false" />

@@ -204,14 +204,16 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
                 val intent = Intent(this, UserCollectionActivity::class.java)
                 startActivity(intent)
             }
+        }else if (item.name == getString(R.string.adoption_profile_title)) {
+            lazyLogin(this) {
+                startActivity(Intent(this, com.rescue.flutter_720yun.adoption.activity.AdoptionProfileActivity::class.java))
+            }
         }else if (item.name == resources.getString(R.string.drawer_black)) {
             val intent = Intent(this, BlackListActivity::class.java)
             startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_rescue)) {
             val intent = Intent(this, AdoptAboutActivity::class.java)
             startActivity(intent)
-        }else if (item.name == resources.getString(R.string.drawer_upload)) {
-
         }else if (item.name == resources.getString(R.string.drawer_agreement)) {
             val intent = Intent(this, WebPageActivity::class.java)
             val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.USERAGREEN_URL
@@ -223,16 +225,14 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
             Log.d("TAG", baseUrl)
             intent.putExtra("webUrl",baseUrl)
             startActivity(intent)
-        }else if (item.name == resources.getString(R.string.drawer_about)) {
-            val intent = Intent(this, WebPageActivity::class.java)
-            val baseUrl = AppBuildConfig.BASEURL + AppBuildConfig.ABOUTUS
-            Log.d("TAG", baseUrl)
-            intent.putExtra("webUrl",baseUrl)
-            startActivity(intent)
         }else if (item.name == resources.getString(R.string.drawer_help)) {
-            startActivity(Intent(this, SupportActivity::class.java))
+            if (BuildConfig.ADS_ENABLED) startActivity(Intent(this, SupportActivity::class.java))
         }else if (item.name == resources.getString(R.string.drawer_recommend)) {
-
+            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "帮宠物找个家")
+            }
+            startActivity(Intent.createChooser(sendIntent, getString(R.string.drawer_recommend)))
         }
     }
 

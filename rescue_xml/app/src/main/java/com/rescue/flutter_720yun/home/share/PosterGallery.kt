@@ -9,19 +9,19 @@ import java.io.File
 
 object PosterGallery {
     /** API 29+ requires no storage permission. API 28 permission is requested by the page. */
-    suspend fun save(context: Context,file: File,topic: Int) = withContext(Dispatchers.IO) {
+    suspend fun save(context: Context,file: File,topic: Int,video: Boolean = false) = withContext(Dispatchers.IO) {
         require(topic>0 && file.isFile && file.length()>0)
         val resolver=context.applicationContext.contentResolver
         val values=ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME,"真命天喵_${topic}_${System.currentTimeMillis()}.png")
-            put(MediaStore.Images.Media.MIME_TYPE,"image/png")
+            put(MediaStore.Images.Media.DISPLAY_NAME,"真命天喵_${topic}_${System.currentTimeMillis()}.${if(video) "mp4" else "png"}")
+            put(MediaStore.Images.Media.MIME_TYPE,if(video) "video/mp4" else "image/png")
             if(Build.VERSION.SDK_INT>=29) {
-                put(MediaStore.Images.Media.RELATIVE_PATH,"Pictures/真命天喵")
+                put(MediaStore.Images.Media.RELATIVE_PATH,if(video) "Movies/真命天喵" else "Pictures/真命天喵")
                 put(MediaStore.Images.Media.IS_PENDING,1)
             }
         }
         ensureActive()
-        val uri=resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values) ?: error("Cannot create media")
+        val uri=resolver.insert(if(video) MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values) ?: error("Cannot create media")
         try {
             resolver.openOutputStream(uri)?.use { output -> file.inputStream().use { input ->
                 val bytes=ByteArray(8192)

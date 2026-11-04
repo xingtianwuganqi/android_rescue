@@ -70,6 +70,7 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
                 startActivity(Intent(this, com.rescue.flutter_720yun.adoption.activity.AdoptionProfileActivity::class.java))
             }
             "find_pet_profile" -> startActivity(Intent(this, com.rescue.flutter_720yun.home.activity.FindPetDetailActivity::class.java))
+            "share_video_music" -> startActivity(Intent(this, com.rescue.flutter_720yun.home.share.ShareVideoMusicActivity::class.java))
             "password" -> {
                 val intent = Intent(this, UserChangePasswordActivity::class.java)
                 startActivity(intent)

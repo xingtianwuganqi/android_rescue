@@ -15,7 +15,8 @@ data class BlackListModel(
     var black_status: String?,
     var from_userId: String?,
     //1: 领养人，2：送养人
-    var black_type: Int?
+    var black_type: Int?,
+    var images: List<String>? = null
 ): Parcelable
 
 

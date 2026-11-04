@@ -12,6 +12,10 @@ class MainViewModel: ViewModel() {
 
     init {
         _drawerList.value = listOf(
+            DrawerListModel("icon_mi_zeliao",
+                BaseApplication.context.getString(R.string.adoption_profile_title),
+                null
+            ),
             DrawerListModel("icon_view_hist",
                 BaseApplication.context.resources.getString(R.string.drawer_footer),
                 null
@@ -28,10 +32,6 @@ class MainViewModel: ViewModel() {
                 BaseApplication.context.resources.getString(R.string.drawer_rescue),
                 null
             ),
-//            DrawerListModel("icon_mi_upload",
-//                BaseApplication.context.resources.getString(R.string.drawer_upload),
-//                null
-//            ),
             DrawerListModel("icon_mi_xy",
                 BaseApplication.context.resources.getString(R.string.drawer_agreement),
                 null
@@ -40,18 +40,15 @@ class MainViewModel: ViewModel() {
                 BaseApplication.context.resources.getString(R.string.drawer_privacy),
                 null
             ),
-            DrawerListModel("icon_mi_about",
-                BaseApplication.context.resources.getString(R.string.drawer_about),
-                null
-            ),
             DrawerListModel("icon_mi_help",
                 BaseApplication.context.resources.getString(R.string.drawer_help),
                 null
             ),
-//            DrawerListModel("icon_mi_tui",
-//                BaseApplication.context.resources.getString(R.string.drawer_recommend),
-//                null
-//            ),
-        )
+            DrawerListModel("icon_mi_tui",
+                BaseApplication.context.resources.getString(R.string.drawer_recommend),
+                null
+            ),
+        ).filter { com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED ||
+            it.name != BaseApplication.context.getString(R.string.drawer_help) }
     }
 }

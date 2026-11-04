@@ -71,6 +71,13 @@ class BlackDetailActivity : BaseActivity(), ReleaseImageClickListener {
         viewModel.dataModels.observe(this) {
             adapter.refreshItem(it)
         }
+        viewModel.releaseCompletion.observe(this) { success ->
+            viewModel.message.value?.toastString()
+            if (success) {
+                setResult(RESULT_OK)
+                finish()
+            }
+        }
     }
 
     override fun addImageClick() {

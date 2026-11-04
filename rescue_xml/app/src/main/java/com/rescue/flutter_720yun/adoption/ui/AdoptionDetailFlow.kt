@@ -1,140 +1,177 @@
 package com.rescue.flutter_720yun.adoption.ui
 
 import android.content.Intent
-import android.os.Bundle
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.view.View
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.*
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.activity.HomeDetailActivity
 import com.rescue.flutter_720yun.home.activity.LoginActivity
 import com.rescue.flutter_720yun.adoption.activity.*
 import com.rescue.flutter_720yun.adoption.viewmodels.*
 import com.rescue.flutter_720yun.adoption.models.*
+import com.rescue.flutter_720yun.adoption.repository.AdoptionError
 import com.rescue.flutter_720yun.util.UserManager
 
-/** Holds dialogs only on the current foreground page, never persists profile/contact in Bundles. */
-class AdoptionDetailFlow(private val host: HomeDetailActivity, private val button: android.widget.TextView) {
+/** Private dialogs and contact responses live only on the foreground detail page. */
+class AdoptionDetailFlow(private val host: HomeDetailActivity, private val button: TextView,
+    private val complete: () -> Boolean) {
     private val vm = ViewModelProvider(host)[AdoptionDetailViewModel::class.java]
     private var dialog: AlertDialog? = null
     private val login = host.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        vm.pendingLogin = false
-        if(UserManager.isLogin) { vm.refresh() }
+        if (!UserManager.isLogin) vm.pendingLogin = false
+        continueLogin()
+        if (!vm.pendingLogin) refresh()
     }
-    private val profile = host.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        refresh()
-    }
+    private val profile = host.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { refresh() }
     init {
         vm.state.observe(host) { render(it) }
-        vm.busy.observe(host) { button.isEnabled = it != true && (vm.state.value != null || vm.error.value != null || !UserManager.isLogin) }
-        vm.error.observe(host) { error -> if(error != null) {
-            clearDialog(); vm.event.value = null
-            if(error.status in listOf(401,403,404)) vm.state.value = null
-            host.notice(error.message); render(vm.state.value)
-            when(error.errorCode) {
-                "IDEMPOTENCY_CONFLICT" -> { vm.resetAttempt(); vm.refresh() }
-                "PROFILE_REQUIRED" -> { vm.event.value=AdoptionDetailEvent.EditProfile; consumeEvent() }
-                "PROFILE_CHANGED" -> { host.notice("资料已更新，请重新查看并确认"); vm.prepare() }
-                else -> if(error.status == 409) vm.refresh()
-            }
-        } }
+        vm.busy.observe(host) { render(vm.state.value); continueLogin() }
+        vm.error.observe(host) { error ->
+            render(vm.state.value)
+            if (error != null && !vm.suppressErrorDialog && host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) handleError(error,false)
+        }
         vm.event.observe(host) {
-            if(it is AdoptionDetailEvent.Contact && !host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) vm.event.value=null
+            if (it != null && !host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) vm.event.value = null
             else consumeEvent()
         }
         host.lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onResume(owner: LifecycleOwner) { consumeEvent() }
+            override fun onResume(owner: LifecycleOwner) { continueLogin(); consumeEvent() }
         })
         UserManager.sessionRevision.observe(host) { clearDialog(); render(null) }
         host.supportFragmentManager.setFragmentResultListener("adoption_changed",host) { _,_ -> host.reloadAdoptionTopic() }
         button.setOnClickListener { click() }
     }
+    private fun continueLogin() {
+        if (vm.pendingLogin && UserManager.isLogin && vm.busy.value != true && host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            vm.pendingLogin = false; vm.open()
+        }
+    }
     private fun consumeEvent() {
-        if(!host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
+        if (!host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
         val event = vm.event.value ?: return
         vm.event.value = null
         when(event) {
-            AdoptionDetailEvent.EditProfile -> {
-                dialog = AlertDialog.Builder(host).setMessage("没有领养资料，需要填写后再申请。")
-                    .setNegativeButton("取消", null).setPositiveButton("去申请") { d,_ ->
-                        d.dismiss(); profile.launch(Intent(host, AdoptionProfileActivity::class.java))
-                    }.show()
-            }
+            AdoptionDetailEvent.EditProfile -> requireProfile()
             AdoptionDetailEvent.Applied -> host.notice("申请成功，等待送养人反馈。")
-            is AdoptionDetailEvent.Notice -> host.notice(event.message)
+            AdoptionDetailEvent.Manage -> manage()
+            is AdoptionDetailEvent.Failure -> handleError(event.error,event.submission)
+            is AdoptionDetailEvent.Notice -> message(event.title,event.message)
             is AdoptionDetailEvent.Confirm -> confirm(event.profile)
-            is AdoptionDetailEvent.Contact -> showContact(event.value)
+            is AdoptionDetailEvent.Contact -> showApplication(event.value,event.submitted)
         }
     }
+    fun updateButton() { render(vm.state.value) }
     fun setTopic(topic: Int) { vm.topic = topic }
-    fun refresh() { if(UserManager.isLogin && vm.topic > 0) vm.refresh() else render(null) }
+    fun refresh() { if (UserManager.isLogin && vm.topic > 0) vm.refresh() else render(null) }
     private fun render(state: ApplicationState?) {
         button.text = when {
-            !UserManager.isLogin -> "获取联系方式"
-            state == null -> if(vm.error.value != null) "加载失败，点击重试" else "正在检查申请状态"
-            state.workflow_status !in listOf("open", "adopted", "closed") -> "状态暂不可用，点击重试"
-            state.can_manage -> "管理申请"
-            state.workflow_status == "adopted" -> "完成领养"
-            state.workflow_status == "closed" -> "结束领养"
-            state.application_status == "applying" -> "申请中 · 等待同意"
-            state.application_status == "communicating" -> if(state.contact_authorized) "查看联系方式" else "沟通中 · 查看申请"
-            state.application_status == "ended" -> AdoptionLabels.status("ended", state.application_result)
-            state.can_apply -> "获取联系方式"
-            else -> "已关闭或暂不可申请"
+            !UserManager.isLogin -> if (complete()) "送养已结束" else "申请领养"
+            state != null -> AdoptionDetailPolicy.title(state)
+            vm.error.value != null -> if (vm.error.value?.status == 404) "帖子不可用" else "状态加载失败 · 重试"
+            else -> "正在查询状态"
         }
         button.isEnabled = vm.busy.value != true
     }
     private fun click() {
-        if(!UserManager.isLogin) { com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick();vm.pendingLogin = true; login.launch(Intent(host, LoginActivity::class.java)); return }
-        val state = vm.state.value ?: run { refresh(); return }
-        if(state.workflow_status !in listOf("open","adopted","closed")) { refresh();return }
-        when {
-            state.can_manage -> manage()
-            state.application_status == "communicating" -> vm.readContact()
-            state.application_status in listOf("applying", "communicating", "ended") -> {
-                val choices = mutableListOf("查看申请详情")
-                if(state.application_status != "ended") choices.add("放弃申请")
-                if(state.can_apply) choices.add("重新申请")
-                dialog = AlertDialog.Builder(host).setTitle(AdoptionLabels.status(state.application_status,state.application_result))
-                    .setItems(choices.toTypedArray()) { _,i -> when(choices[i]) {
-                        "放弃申请" -> end(); "重新申请" -> { vm.resetAttempt(); vm.prepare() }
-                        else -> state.application_id?.let { com.rescue.flutter_720yun.adoption.fragment.AdoptionApplicationSheet.newInstance(it, false).show(host.supportFragmentManager, "adoption_application") }
-                    } }.show()
-            }
-            state.can_apply -> vm.prepare()
-            else -> refresh()
+        if (vm.busy.value == true) return
+        if (!UserManager.isLogin) {
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
+            vm.pendingLogin = true; login.launch(Intent(host,LoginActivity::class.java)); return
         }
+        // Never branch on a state cached before this tap.
+        vm.open()
+    }
+    private fun requireProfile() {
+        clearDialog()
+        dialog = AlertDialog.Builder(host).setTitle("领养资料").setMessage("没有领养资料，需要填写后再申请。")
+            .setNegativeButton("取消",null).setPositiveButton("去申请") { d,_ ->
+                d.dismiss(); profile.launch(Intent(host,AdoptionProfileActivity::class.java))
+            }.show()
+    }
+    private fun message(title: String?, text: String) {
+        clearDialog()
+        dialog = AlertDialog.Builder(host).setTitle(title).setMessage(text).setPositiveButton("知道了",null).show()
     }
     private fun confirm(profileData: ProfileData) {
-        val root = LinearLayout(host).apply { orientation = LinearLayout.VERTICAL; setPadding(32,16,32,16) }
-        root.label("请仔细阅读《领养说明》，不要相信任何理由的提前转账要求，如定金、运费等。若是红包领养，请当面给送养人。领养更多是一种爱心行为，一些必要的程序，如领养协议、互换身份证复印件等必不可少。宠物是生命不是物品或工具，一切领养活动都应在为生命负责的态度下进行。你的领养资料将提供给送养人。")
-        root.label(AdoptionLabels.summary(profileData.profile))
-        root.button("《领养说明》") {
-            clearDialog()
-            host.startActivity(Intent(host, com.rescue.flutter_720yun.user.activity.UserAccountSafeActivity::class.java)
-                .putExtra("localUrl", "file:///android_asset/lyinstruction.html").putExtra("title", "领养说明"))
+        clearDialog()
+        val instruction = "《领养说明》"
+        val warning = "不要相信任何理由的提前转账要求，如定金、运费等。若是红包领养，请当面给送养人。"
+        val text = "请仔细阅读${instruction}，${warning}领养更多是一种爱心行为，一些必要的程序，如领养协议、互换身份证复印件等必不可少。宠物是生命不是物品或工具，一切领养活动都应在为生命负责的态度下进行。"
+        val styled = android.text.SpannableString(text).apply {
+            val start = text.indexOf(instruction)
+            setSpan(object : android.text.style.ClickableSpan() {
+                override fun onClick(widget: android.view.View) {
+                    clearDialog()
+                    host.startActivity(Intent(host,com.rescue.flutter_720yun.user.activity.WebPageActivity::class.java)
+                        .putExtra("webUrl",com.rescue.flutter_720yun.util.AppBuildConfig.BASEURL.trimEnd('/') + com.rescue.flutter_720yun.util.AppBuildConfig.INSTRUCTION))
+                }
+                override fun updateDrawState(ds: android.text.TextPaint) { ds.color = ContextCompat.getColor(host,R.color.color_url); ds.isUnderlineText = false }
+            },start,start+instruction.length,android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            val noticeStart = text.indexOf(warning)
+            setSpan(android.text.style.ForegroundColorSpan(ContextCompat.getColor(host,R.color.color_remind)),noticeStart,noticeStart+warning.length,android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-        dialog = AlertDialog.Builder(host).setTitle("领养须知").setView(root)
-            .setPositiveButton("继续申请") { d,_ -> d.dismiss(); vm.submit(profileData, "") }
-            .setNegativeButton("取消",null).show()
+        val body = TextView(host).apply {
+            this.text = styled; textSize = 16f; setTextColor(ContextCompat.getColor(host,R.color.color_content))
+            val padding = (20*resources.displayMetrics.density).toInt(); setPadding(padding,padding,padding,padding)
+            movementMethod = android.text.method.LinkMovementMethod.getInstance(); setLineSpacing(2*resources.displayMetrics.density,1f)
+        }
+        val scroll = android.widget.ScrollView(host).apply { addView(body) }
+        dialog = AlertDialog.Builder(host).setTitle("领养须知").setView(scroll)
+            .setNegativeButton("取消",null).setPositiveButton("继续申请") { d,_ -> d.dismiss(); vm.submit(profileData,"") }.show()
     }
-    private fun end() {
-        dialog = AlertDialog.Builder(host).setMessage("确认放弃申请吗？")
-            .setPositiveButton("确认") { d,_ -> d.dismiss(); vm.end("") }.setNegativeButton("取消",null).show()
-    }
-    private fun showContact(app: AdoptionApplication) {
+    private fun showApplication(app: AdoptionApplication, submitted: Boolean) {
+        clearDialog()
         val contact = AdoptionContact.visible(app.topic)
-        if(contact == null) { host.notice("当前没有可显示的联系方式，请查看我的申请"); return }
-        dialog = AlertDialog.Builder(host).setTitle("送养人联系方式")
-            .setMessage(contact + "\n\n" + AdoptionContactCopy.SAFETY_TIP)
-            .setPositiveButton("复制") { _,_ -> AdoptionContactCopy.copy(host, vm, app.application_id) }
-            .setNegativeButton("关闭", null).show()
+        if (submitted && app.status == "applying") { host.notice("申请成功，等待送养人反馈。"); return }
+        if (submitted && app.status !in listOf("applying","communicating")) {
+            message("申请状态已变化","未创建新的有效申请，请刷新后重新申请。"); return
+        }
+        val body = if (submitted) contact?.let { "可联系送养人\n送养人联系方式：$it" }
+            ?: "申请成功，联系方式暂不可用，请稍后在「我的申请」中查看。"
+        else (when (app.status) {
+            "applying" -> "已申请，等待送养人同意"
+            "communicating" -> "可联系送养人"
+            else -> AdoptionDetailPolicy.title(app)
+        }) + (contact?.let { "\n送养人联系方式：$it" } ?: "")
+        val builder = AlertDialog.Builder(host).setTitle(if (submitted) "申请成功" else AdoptionDetailPolicy.title(app))
+            .setMessage(body).setNegativeButton("关闭",null)
+        if (contact != null) builder.setPositiveButton("复制联系方式") { _,_ ->
+            // Re-read the acquisition fields before writing any private value to the clipboard.
+            AdoptionContactCopy.copy(host,vm,app.application_id)
+        }
+        if (!submitted && AdoptionDetailPolicy.canReapply(vm.state.value,app)) builder.setNeutralButton("重新申请") { _,_ -> vm.resetAttempt(); vm.prepare() }
+        dialog = builder.show()
     }
+    private fun handleError(error: AdoptionError, submission: Boolean) {
+        clearDialog()
+        if (submission && error.status != 401 && error.code != 401) refresh()
+        when {
+            error.status == 401 || error.code == 401 -> { vm.pendingLogin = false; login.launch(Intent(host,LoginActivity::class.java)) }
+            error.errorCode == "PROFILE_REQUIRED" -> requireProfile()
+            error.errorCode == "PROFILE_CHANGED" -> {
+                vm.resetAttempt(); refresh(); message("资料已更新","领养资料已变化，请重新点击申请领养。")
+            }
+            submission && error.code in listOf(209,210) -> {
+                val unbound = error.code == 209
+                dialog = AlertDialog.Builder(host).setTitle("申请失败").setMessage(if (unbound) "未绑定手机号" else "未验证手机号")
+                    .setNegativeButton("取消",null).setPositiveButton(if (unbound) "去绑定" else "去验证") { _,_ ->
+                        login.launch(Intent(host,LoginActivity::class.java).putExtra("type",if (unbound) "bindPhone" else "checkPhone"))
+                    }.show()
+            }
+            else -> {
+                if (error.errorCode == "IDEMPOTENCY_CONFLICT") vm.resetAttempt()
+                val generic = error.message in listOf("操作失败，请刷新重试","拒绝访问")
+                val text = if (generic && (error.errorCode == "BLACKLISTED" || error.code == 202)) "当前账号受限制，无法申请领养。"
+                    else if (generic && submission) "申请失败，请稍后重试。" else error.message
+                if (error.status == 409) refresh()
+                message(if (submission) "申请失败" else null,text)
+            }
+        }
+    }
+    fun disappeared() { clearDialog(); vm.event.value = null; vm.cancelWork() }
     fun manage() { if(vm.state.value?.can_manage == true) host.startActivity(Intent(host, AdoptionApplicationsActivity::class.java).putExtra("topic_id",vm.topic)) }
     fun ownerMore() {
         val state = vm.state.value ?: run { refresh(); return }
@@ -162,5 +199,5 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
                 vm.state.value=vm.repository.state(vm.topic); host.reloadAdoptionTopic()
             } }.setNegativeButton("取消",null).show()
     }
-    fun clearDialog() { dialog?.dismiss(); dialog=null }
+    fun clearDialog() { dialog?.setMessage(null); dialog?.dismiss(); dialog=null }
 }

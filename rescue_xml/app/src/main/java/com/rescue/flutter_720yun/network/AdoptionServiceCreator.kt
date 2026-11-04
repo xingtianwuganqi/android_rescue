@@ -7,7 +7,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object AdoptionServiceCreator {
-    val gson = com.google.gson.GsonBuilder().registerTypeAdapterFactory(V2EnvelopeAdapter()).registerTypeAdapter(
+    val gson = com.google.gson.GsonBuilder().registerTypeAdapterFactory(V2EnvelopeAdapter())
+        .registerTypeAdapter(com.rescue.flutter_720yun.adoption.models.ApplicationState::class.java,com.rescue.flutter_720yun.adoption.models.ApplicationStateAdapter())
+        .registerTypeAdapter(com.rescue.flutter_720yun.adoption.models.AdoptionApplication::class.java,com.rescue.flutter_720yun.adoption.models.AdoptionApplicationAdapter()).registerTypeAdapter(
         com.rescue.flutter_720yun.adoption.models.TopicSummary::class.java,
         com.rescue.flutter_720yun.adoption.models.PreviewImageAdapter()).create()
     val retrofit: Retrofit by lazy {

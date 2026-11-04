@@ -3,8 +3,20 @@
     android:id="@+id/my_find_pet_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:background="@color/adoption_page_background" android:saveEnabled="false">
-    <TextView android:id="@+id/find_pet_state" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" android:textColor="@color/color_content" android:textSize="15sp" />
-    <com.google.android.material.button.MaterialButton android:id="@+id/find_pet_manage" style="@style/FindPetActionButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:layout_gravity="end" android:text="管理找宠信息" />
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp" android:layout_marginVertical="12dp"
+        android:orientation="vertical" android:paddingHorizontal="20dp" android:paddingVertical="16dp"
+        android:background="@drawable/find_pet_manage_header_background">
+        <TextView android:id="@+id/find_pet_state"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="@color/white" android:textSize="14sp" android:includeFontPadding="false" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/find_pet_manage"
+            style="@style/FindPetManageEntryButton"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:layout_gravity="start"
+            android:text="管理找宠信息" android:visibility="gone" />
+    </LinearLayout>
     <TextView android:id="@+id/find_pet_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:padding="16dp" android:textColor="@color/color_system" android:visibility="gone" />
     <ProgressBar android:id="@+id/find_pet_loading" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:visibility="gone" />
     <com.scwang.smart.refresh.layout.SmartRefreshLayout android:id="@+id/find_pet_refresh" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">

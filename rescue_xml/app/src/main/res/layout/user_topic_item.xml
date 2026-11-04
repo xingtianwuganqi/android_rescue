@@ -62,9 +62,16 @@
             </LinearLayout>
             <TextView android:id="@+id/promotion_status" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:padding="8dp" android:textSize="12sp" android:textColor="@color/color_system" android:visibility="gone" />
-            <com.google.android.material.button.MaterialButton android:id="@+id/promotion_action" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textSize="12sp" android:text="观看视频，增加曝光"
-                android:backgroundTint="@color/color_system" app:cornerRadius="5dp" android:visibility="gone" />
+            <LinearLayout android:id="@+id/promotion_row" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:visibility="gone">
+                <ImageButton android:id="@+id/promotion_help" android:layout_width="40dp" android:layout_height="48dp"
+                    android:src="@android:drawable/ic_menu_info_details" android:contentDescription="帖子推广说明"
+                    android:background="?attr/selectableItemBackgroundBorderless" app:tint="@color/color_system" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/promotion_action" android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content" android:textSize="12sp" android:text="观看视频，增加曝光"
+                    android:textColor="@color/white" android:maxLines="2"
+                    android:backgroundTint="@color/color_system" app:cornerRadius="5dp" android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

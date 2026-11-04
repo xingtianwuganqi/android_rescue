@@ -24,13 +24,14 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
     private var job: Job?=null
     private var progress: AlertDialog?=null
     private var preview: AlertDialog?=null
-    private var menu: AlertDialog?=null
+    private var menu: android.app.Dialog?=null
     private var output: File?=null
     private var bound: PosterContent?=null
     private var permissionPending=false
     private var saveOnResume=false
-    var busy=false
-        private set
+    private var imageBusy=false
+    private val video = TopicVideoExportFlow(host,topic,available,busyChanged)
+    val busy get() = imageBusy || video.busy
     private val permission=host.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         permissionPending=false;setBusy(false)
         preview?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled=true
@@ -43,35 +44,52 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
         host.lifecycle.addObserver(this)
         UserManager.sessionRevision.observe(host) { cancel() }
     }
-    private fun setBusy(value: Boolean) { busy=value;busyChanged() }
+    private fun setBusy(value: Boolean) { imageBusy=value;busyChanged() }
     fun showMenu() {
         val id=topic()?.takeIf { it>0 } ?: run { host.notice("帖子参数无效");return }
         if(busy || !available()) { host.notice("帖子已删除或暂不可用");return }
-        val choices=mutableListOf("生成海报","分享链接","复制链接")
-        if(BuildConfig.DEBUG) choices.add("生成无二维码海报（调试）")
-        menu=AlertDialog.Builder(host).setTitle("分享帖子").setItems(choices.toTypedArray()) { dialog,index ->
-            dialog.dismiss();menu=null
-            if(topic()!=id || !available()) return@setItems
-            when(index) {
+        menu=TopicShareSheet.show(host) { index ->
+            menu=null
+            if(topic()==id && available() && !busy) when(index) {
                 0 -> {
+                    com.rescue.flutter_720yun.analytics.AnalyticsManager.track("export_video","topic_detail",mapOf("publish_type" to "adoption","object_id" to id.toLong()),interactive=true)
+                    video.start(id)
+                }
+                1 -> {
                     com.rescue.flutter_720yun.analytics.AnalyticsManager.track("export_image","topic_detail",mapOf("publish_type" to "adoption","object_id" to id.toLong()),interactive=true)
                     generate(id,true)
                 }
-                1 -> {
-                    val url=PosterContent.shareLink(BuildConfig.API_BASE_URL,id)
-                    host.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                        type="text/plain";putExtra(Intent.EXTRA_TEXT,url)
-                    },"分享链接"))
-                }
-                2 -> {
+                2 -> if(BuildConfig.DEBUG) generate(id,false) else shareLink(id)
+                3 -> {
                     val url=PosterContent.shareLink(BuildConfig.API_BASE_URL,id)
                     (host.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("帖子链接",url))
-                    host.notice("已复制链接")
+                    host.notice("复制成功")
                 }
-                else -> generate(id,false)
             }
-        }.setNegativeButton("取消",null).show()
+        }
     }
+    private fun shareLink(id: Int) {
+        cancel(); val operation=++generation;setBusy(true);showProgress("正在加载分享内容…")
+        job=host.lifecycleScope.launch {
+            var file: File?=null
+            try {
+                val snapshot=repository.linkContent(id)
+                val content=snapshot.poster
+                val image=ShareFiles.newFile(host,"jpg");file=image
+                repository.withImage(content.photoUrl) { bitmap ->
+                    image.outputStream().use { check(bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG,90,it)) }
+                }
+                val latest=repository.content(id,false)
+                if(content!=latest || !current(operation,id)) return@launch
+                ShareFiles.send(host,image,"image/jpeg",PosterContent.shareLink(BuildConfig.API_BASE_URL,id)+"\n"+snapshot.bodyDescription)
+                // Receiver may read after the chooser returns; prune shared copies after 24 hours.
+                file=null
+            } catch(e: CancellationException) { throw e }
+            catch(e: Exception) { if(current(operation,id)) host.notice("分享失败，请稍后重试") }
+            finally { file?.delete();if(operation==generation) { progress?.dismiss();progress=null;setBusy(false) } }
+        }
+    }
+
     private fun current(operation: Long,id: Int)=generation==operation && topic()==id && available() &&
         host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
     private fun showProgress(message: String) {
@@ -159,6 +177,7 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
         }
     }
     fun cancel() {
+        video.cancel()
         generation++;permissionPending=false;saveOnResume=false;job?.cancel();job=null
         progress?.dismiss();progress=null;preview?.dismiss();preview=null;menu?.dismiss();menu=null
         output?.delete();output=null;bound=null;setBusy(false)

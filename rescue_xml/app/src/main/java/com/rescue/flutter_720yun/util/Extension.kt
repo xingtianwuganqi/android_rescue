@@ -104,6 +104,19 @@ fun String.maskMiddle(): String {
     }
 }
 
+/**
+ * 中间用 * 隐藏，规则与 iOS 的 String.hideTextCenter() 保持一致。
+ */
+fun String.maskCenter(): String {
+    val count = length
+    return when {
+        count <= 2 -> this
+        count < 6 -> take(1) + "*".repeat(count - 2) + takeLast(1)
+        count < 11 -> take(3) + "*".repeat(count - 6) + takeLast(3)
+        else -> take(4) + "*".repeat(count - 8) + takeLast(4)
+    }
+}
+
 fun HomeListModel.getImages(): List<String>? {
     return if (!this.preview_img.isNullOrEmpty()) {
         this.preview_img

@@ -17,7 +17,7 @@ class FullscreenAdController(
     activity: Activity,
     owner: LifecycleOwner,
     private var onEvent: (String) -> Unit = {},
-    private var onReward: (ATAdInfo) -> Unit = {},
+    private var onReward: () -> Unit = {},
     private val onRewardEvent: ((RewardedAdEvent) -> Unit)? = null
 ) : DefaultLifecycleObserver {
     private val activityRef=java.lang.ref.WeakReference(activity)
@@ -29,6 +29,7 @@ class FullscreenAdController(
     private var destroyed = false
     private var rewardDelivered = false
     private var rewardShowing = false
+    private var rewardedPresented = false
     private var interstitialShowing = false
     private val interstitialToken = Any()
     private val rewardedToken = Any()
@@ -102,7 +103,7 @@ class FullscreenAdController(
                                 rewardDelivered=true
                                 // Business reward observation must survive the presenting page.
                                 onRewardEvent?.invoke(RewardedAdEvent.Reward)
-                                if(!destroyed && info!=null) onReward(info)
+                                if(!destroyed && info!=null) onReward()
                             }
                         }
                     }
@@ -110,7 +111,10 @@ class FullscreenAdController(
                 })
             }
         }
-        if (rewarded?.isAdReady != true) rewarded?.load()
+        if (rewarded?.isAdReady == true) {
+            event("rewarded loaded")
+            rewardEvent(RewardedAdEvent.Loaded { showRewarded() })
+        } else rewarded?.load()
         return true
     }
 
@@ -120,6 +124,7 @@ class FullscreenAdController(
         if(!TakuAds.acquireFullscreen(rewardedToken)) return false
         rewardDelivered = false
         rewardShowing = true
+        rewardedPresented = true
         try { rewarded?.show(page) }
         catch(e: Exception) { rewardShowing=false;TakuAds.releaseFullscreen(rewardedToken);return false }
         return true
@@ -138,7 +143,9 @@ class FullscreenAdController(
         event("$format failed: ${error?.code}")
     }
 
+    fun destroy() { ownerRef.get()?.let { onDestroy(it) } }
     override fun onDestroy(owner: LifecycleOwner) {
+        if (destroyed) return
         destroyed = true
         TakuAds.releaseFullscreen(interstitialToken)
         interstitial?.setAdListener(null)
@@ -146,11 +153,11 @@ class FullscreenAdController(
         onEvent={}; onReward={}
         onRewardEvent?.invoke(RewardedAdEvent.Destroyed)
         val ad=rewarded
-        if(onRewardEvent!=null) {
+        if(onRewardEvent!=null && rewardedPresented) {
             // Keep only a context-free reward sink attached for SDK callbacks after close/destroy.
             ad?.setAdListener(LateRewardListener(onRewardEvent, rewardDelivered, rewardedToken))
             val token=rewardedToken
-            main.postDelayed({ ad?.setAdListener(null);ad?.destroyAd();TakuAds.releaseFullscreen(token) },60000)
+            main.postDelayed({ ad?.setAdListener(null);ad?.destroyAd();TakuAds.releaseFullscreen(token) },300000)
         } else { ad?.setAdListener(null);ad?.destroyAd();TakuAds.releaseFullscreen(rewardedToken) }
         owner.lifecycle.removeObserver(this)
         interstitial = null

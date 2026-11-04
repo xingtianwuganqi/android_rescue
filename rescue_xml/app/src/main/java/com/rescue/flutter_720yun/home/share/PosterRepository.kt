@@ -17,7 +17,10 @@ class PosterRepository(context: Context) {
     private val context=context.applicationContext
     private val service=ServiceCreator.create<HomeService>()
     private val client=OkHttpClient.Builder().connectTimeout(15,TimeUnit.SECONDS).readTimeout(20,TimeUnit.SECONDS).callTimeout(30,TimeUnit.SECONDS).build()
-    suspend fun content(topic: Int,includeQr: Boolean): PosterContent {
+    suspend fun content(topic: Int,includeQr: Boolean): PosterContent = snapshot(topic, includeQr, false).poster
+    suspend fun linkContent(topic: Int): VideoContent = snapshot(topic, false, false)
+    suspend fun videoContent(topic: Int): VideoContent = snapshot(topic, true, true)
+    private suspend fun snapshot(topic: Int,includeQr: Boolean,allPhotos: Boolean): VideoContent {
         if(topic<=0) throw PosterUnavailable("帖子参数无效")
         val session=UserManager.sessionRevision.value
         val params=mutableMapOf<String,Any?>("topic_id" to topic)
@@ -27,7 +30,7 @@ class PosterRepository(context: Context) {
         val model=response.body()?.data
         if(response.code()!=200 || response.body()?.code!=200 || model?.topic_id!=topic || model.is_delete==0 || model.unavailable)
             throw PosterUnavailable("帖子已删除或暂不可用")
-        val photo=PosterContent.imageUrl(model.imgs) ?: throw PosterUnavailable("帖子暂无可导出的图片")
+        val photo=PosterContent.imageUrl(model.imgs) ?: throw PosterUnavailable(if(allPhotos) "帖子暂无可导出的视频图片" else "帖子暂无可导出的图片")
         val workflow=if(UserManager.isLogin) {
             try { withContext(Dispatchers.Main.immediate) { AdoptionRepository().state(topic).workflow_status } }
             catch(e: CancellationException) { throw e }
@@ -35,10 +38,13 @@ class PosterRepository(context: Context) {
             catch(e: Exception) { null }
         } else model.workflow_status
         if(session!=UserManager.sessionRevision.value) throw CancellationException("Account changed")
-        return PosterContent(topic,PosterContent.introduction(model.tagInfos.orEmpty().mapNotNull { it.tag_name },model.content),
+        val poster = PosterContent(topic,PosterContent.introduction(model.tagInfos.orEmpty().mapNotNull { it.tag_name },model.content),
             photo,workflow,model.is_complete==true,includeQr)
+        val paths = model.imgs.orEmpty().map(String::trim).filter(String::isNotEmpty)
+        val photos = if (!allPhotos) listOf(photo) else paths.map { PosterContent.imageUrl(listOf(it)) ?: throw PosterUnavailable("图片加载失败，请检查网络后重试") }
+        return VideoContent(poster, photos, model.tagInfos.orEmpty().mapNotNull { it.tag_name?.trim()?.takeIf(String::isNotEmpty) }, model.address_info.orEmpty().trim())
     }
-    suspend fun <T> withImage(url: String, render: suspend (Bitmap)->T): T = withContext(Dispatchers.IO) {
+    suspend fun <T> withImage(url: String, maxEdge: Int? = null, render: suspend (Bitmap)->T): T = withContext(Dispatchers.IO) {
         val temp=File.createTempFile("poster-photo-", ".img",context.cacheDir)
         val call=client.newCall(Request.Builder().url(url).build())
         val canceller=launch(Dispatchers.Default,start=CoroutineStart.UNDISPATCHED) {
@@ -65,7 +71,11 @@ class PosterRepository(context: Context) {
             while(bounds.outWidth/sample>2100 || bounds.outHeight/sample>6000 ||
                 (bounds.outWidth.toLong()/sample)*(bounds.outHeight/sample)>4_000_000) sample*=2
             ensureActive()
-            val bitmap=BitmapFactory.decodeFile(temp.path,BitmapFactory.Options().apply { inSampleSize=sample;inPreferredConfig=Bitmap.Config.ARGB_8888 })
+            val bitmap = if (maxEdge != null) android.graphics.ImageDecoder.decodeBitmap(android.graphics.ImageDecoder.createSource(temp)) { decoder, info, _ ->
+                val scale = minOf(1.0, maxEdge.toDouble() / maxOf(info.size.width, info.size.height))
+                decoder.setTargetSize(maxOf(1, (info.size.width * scale).toInt()), maxOf(1, (info.size.height * scale).toInt()))
+                decoder.allocator = android.graphics.ImageDecoder.ALLOCATOR_SOFTWARE
+            } else BitmapFactory.decodeFile(temp.path,BitmapFactory.Options().apply { inSampleSize=sample;inPreferredConfig=Bitmap.Config.ARGB_8888 })
                 ?: throw PosterUnavailable("图片生成失败")
             // Keep ownership inside this scope: prompt cancellation cannot strand a Bitmap between dispatchers.
             try { ensureActive();render(bitmap) } finally { bitmap.recycle() }

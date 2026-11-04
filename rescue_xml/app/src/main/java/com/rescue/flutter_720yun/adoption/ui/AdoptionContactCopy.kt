@@ -21,8 +21,10 @@ object AdoptionContactCopy {
             if(app.applicant?.user_id!=UserManager.userId || contact==null) {
                 host.notice("当前没有可显示的联系方式，请刷新申请列表");return@run
             }
-            (host.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-                .setPrimaryClip(ClipData.newPlainText("送养人联系方式",contact))
+            val clip = ClipData.newPlainText("送养人联系方式",contact).apply {
+                description.extras = android.os.PersistableBundle().apply { putBoolean("android.content.extra.IS_SENSITIVE",true) }
+            }
+            (host.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
             host.notice("已复制联系方式")
         }
     }

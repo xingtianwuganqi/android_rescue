@@ -49,7 +49,7 @@ class NativeFeedAdapter(
         if (destroyed) return
         if (refresh) releaseSlots()
         val index = placement.insertionIndex(pageSize, refresh)
-        if (index != null && placementId.isNotBlank()) {
+        if (BuildConfig.ADS_ENABLED && index != null && placementId.isNotBlank()) {
             val start = if (refresh) 0 else content.itemCount - pageSize
             val adapter = NativeAdAdapter(activity, owner, placementId)
             val observer = object : RecyclerView.AdapterDataObserver() {
@@ -82,9 +82,7 @@ class NativeFeedAdapter(
         is Row.Content -> content.getItemViewType(row.index)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        if (viewType == Int.MIN_VALUE) NativeAdAdapter.Holder(com.anythink.nativead.api.ATNativeAdView(parent.context).apply {
-            layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }) else content.onCreateViewHolder(parent, viewType)
+        if (viewType == Int.MIN_VALUE) NativeAdAdapter.createHolder(parent) else content.onCreateViewHolder(parent, viewType)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val row = rows[position]) {

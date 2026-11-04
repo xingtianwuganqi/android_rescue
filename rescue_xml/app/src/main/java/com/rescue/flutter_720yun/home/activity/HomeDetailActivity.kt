@@ -56,7 +56,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         val topic = intent.getIntExtra("topic_id", 0)
         if (topic <= 0) { "帖子参数无效".toastString(); finish(); return }
         viewModel.topicId = topic
-        adoptionFlow = com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow(this, binding.getContactBtn)
+        adoptionFlow = com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow(this, binding.getContactBtn) { viewModel.homeData.value?.is_complete == true }
         adoptionFlow.setTopic(topic)
         promotionEntry=com.rescue.flutter_720yun.promotion.PromotionEntry(this,binding.promotionButton,topic,"my_posts")
         ViewModelProvider(this)[com.rescue.flutter_720yun.adoption.viewmodels.AdoptionDetailViewModel::class.java].state.observe(this) { state ->
@@ -83,11 +83,13 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         viewModel.homeData.observe(this) {
             uploadViews(it)
             uploadBottom(it)
+            if (::adoptionFlow.isInitialized) adoptionFlow.updateButton()
             invalidateOptionsMenu()
         }
 
 //        viewModel.changeModel.observe(this) {
 //            uploadBottom(it)
+            if (::adoptionFlow.isInitialized) adoptionFlow.updateButton()
             invalidateOptionsMenu()
 //        }
 
@@ -262,7 +264,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
-        menu.add(0,10009,0,"分享").setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        menu.add(0,10009,0,"分享").setIcon(R.drawable.icon_topic_share).setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM)
         return true
     }
     override fun onPrepareOptionsMenu(menu: android.view.Menu): Boolean {
@@ -282,7 +284,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     override fun onPause() {
-        if (::adoptionFlow.isInitialized) adoptionFlow.clearDialog()
+        if (::adoptionFlow.isInitialized) adoptionFlow.disappeared()
         deleteDialog?.dismiss(); deleteDialog = null
         super.onPause()
     }

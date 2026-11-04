@@ -20,7 +20,7 @@ class DetailBannerAdapter(activity: Activity, owner: LifecycleOwner) :
     private val controller = BannerAdController(activity, container)
     init { owner.lifecycle.addObserver(this); controller.load() }
     class Holder(view: View) : RecyclerView.ViewHolder(view)
-    override fun getItemCount() = 1
+    override fun getItemCount() = if (com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED) 1 else 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         (container.parent as? ViewGroup)?.removeView(container)
         return Holder(container)

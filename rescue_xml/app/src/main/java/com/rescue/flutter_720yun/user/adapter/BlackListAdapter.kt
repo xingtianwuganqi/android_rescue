@@ -3,21 +3,63 @@ package com.rescue.flutter_720yun.user.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.BlackListItemBinding
-import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.user.models.BlackListModel
-import com.rescue.flutter_720yun.util.maskMiddle
+import com.rescue.flutter_720yun.util.maskCenter
+import com.rescue.flutter_720yun.util.toImgUrl
 
-class BlackListAdapter(var list: MutableList<BlackListModel>, private val clickListener: (BlackListModel) -> Unit): RecyclerView.Adapter<BlackListAdapter.ViewHolder>() {
+class BlackListAdapter(
+    var list: MutableList<BlackListModel>,
+    private val clickListener: (BlackListModel) -> Unit,
+    private val evidenceListener: (List<String>, Int) -> Unit
+) : RecyclerView.Adapter<BlackListAdapter.ViewHolder>() {
 
-    inner class ViewHolder(val binding: BlackListItemBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BlackListModel, clickListener: (BlackListModel) -> Unit) {
-            binding.phoneText.text = item.contact?.maskMiddle()
-            binding.desc.text = item.desc
-            binding.roleText.text = if (item.black_type == 1) ContextCompat.getString(BaseApplication.context, R.string.user_rescue) else ContextCompat.getString(BaseApplication.context, R.string.user_sender)
+    inner class ViewHolder(val binding: BlackListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: BlackListModel) {
+            val context = binding.root.context
+            val name = item.name?.trim().orEmpty()
+            binding.nameText.text = if (name.isEmpty()) {
+                ContextCompat.getString(context, R.string.black_unknown_name)
+            } else {
+                name.maskCenter()
+            }
+
+            val contact = item.contact?.trim().orEmpty()
+            binding.phoneText.text = if (contact.isEmpty()) {
+                ContextCompat.getString(context, R.string.black_unknown_contact)
+            } else {
+                context.getString(R.string.black_contact_value, contact.maskCenter())
+            }
+
+            binding.roleText.text = ContextCompat.getString(
+                context,
+                if (item.black_type == 2) R.string.user_sender else R.string.user_rescue
+            )
+
+            val desc = item.desc?.trim().orEmpty()
+            binding.desc.text = if (desc.isEmpty()) {
+                ContextCompat.getString(context, R.string.black_no_desc)
+            } else {
+                desc
+            }
+
+            val evidence = item.images.orEmpty()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .map { it.toImgUrl() }
+            binding.evidenceSection.isVisible = evidence.isNotEmpty()
+            if (evidence.isNotEmpty()) {
+                binding.evidenceLabel.text = context.getString(R.string.black_evidence_count, evidence.size)
+                binding.evidenceGrid.setImages(evidence) { index ->
+                    evidenceListener(evidence, index)
+                }
+            } else {
+                binding.evidenceGrid.setImages(emptyList()) { }
+            }
+
             binding.backLayout.setOnClickListener {
                 clickListener(item)
             }
@@ -34,8 +76,7 @@ class BlackListAdapter(var list: MutableList<BlackListModel>, private val clickL
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        holder.bind(item, clickListener)
+        holder.bind(list[position])
     }
 
     fun refreshItem(items: List<BlackListModel>) {

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.rescue.flutter_720yun.BuildConfig
 import com.rescue.flutter_720yun.BaseApplication
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.databinding.UserTopicItemBinding
@@ -16,7 +17,8 @@ import com.rescue.flutter_720yun.util.toImgUrl
 
 class UserTopicListAdapter(var list: MutableList<HomeListModel>,
                            val clickListener: (HomeListModel) -> Unit,
-                           val promote: ((HomeListModel)->Unit)? = null
+                           val promote: ((HomeListModel)->Unit)? = null,
+                           val help: (() -> Unit)? = null
 ): RecyclerView.Adapter<UserTopicListAdapter.ViewHolder>() {
 
     inner class ViewHolder(var binding: UserTopicItemBinding): RecyclerView.ViewHolder(binding.root) {
@@ -36,17 +38,18 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
             }
 
             val own=(item.userInfo?.id ?: item.user)==com.rescue.flutter_720yun.util.UserManager.userId && com.rescue.flutter_720yun.util.UserManager.isLogin
-            binding.promotionAction.visibility=if(own && promote!=null) View.VISIBLE else View.GONE
+            val visible=BuildConfig.ADS_ENABLED && own && promote!=null
+            binding.promotionRow.visibility=if(visible) View.VISIBLE else View.GONE
+            binding.promotionAction.visibility=if(visible) View.VISIBLE else View.GONE
+            binding.promotionHelp.setOnClickListener { if(visible) help?.invoke() }
             binding.promotionStatus.text=com.rescue.flutter_720yun.promotion.PromotionDisplay.label(item.promotion)
             binding.promotionStatus.visibility=if(own && binding.promotionStatus.text.isNotEmpty()) View.VISIBLE else View.GONE
-            binding.promotionAction.text=when(item.workflow_status) {
-                "adopted" -> "完成领养"; "closed" -> "结束领养"
-                else -> if(item.promotion?.is_active==true) "观看视频，延长推广" else if(item.promotion?.can_promote==true) "观看视频，增加曝光"
-                    else if(item.is_complete==true) "送养状态待刷新" else com.rescue.flutter_720yun.promotion.models.PromotionPolicy.reason(item.promotion?.reason)
-            }
-            binding.promotionAction.isEnabled=item.is_complete!=true && !com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.busy
-            binding.promotionAction.alpha=if(item.is_complete==true) 0.5f else 1f
-            binding.promotionAction.setOnClickListener { promote?.invoke(item) }
+            binding.promotionAction.text=com.rescue.flutter_720yun.promotion.models.PromotionUiPolicy.title(item.is_complete==true,item.workflow_status,item.promotion)
+            val enabled=com.rescue.flutter_720yun.promotion.models.PromotionUiPolicy.enabled(BuildConfig.ADS_ENABLED,own,item.is_complete==true,item.workflow_status,item.promotion,
+                com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.busy)
+            binding.promotionAction.isEnabled=enabled
+            binding.promotionAction.alpha=if(enabled) 1f else 0.35f
+            binding.promotionAction.setOnClickListener { if(enabled) promote?.invoke(item) }
             if (item.is_complete == true) {
                 binding.completion.visibility = View.VISIBLE
             }else{

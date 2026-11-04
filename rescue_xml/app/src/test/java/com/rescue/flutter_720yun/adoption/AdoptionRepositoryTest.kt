@@ -101,6 +101,25 @@ class AdoptionRepositoryTest {
         val url=server.takeRequest().requestUrl!!; assertEquals("ended",url.queryParameter("status"))
         assertEquals("2",url.queryParameter("page")); assertEquals("123",url.queryParameter("topic_id"))
     }
+    @Test fun immediateCommunicationSubmissionReturnsAuthorizedContactAndKeepsIdempotency()=runBlocking {
+        reply("""{"application":{"application_id":501,"status":"communicating","version":1,"applicant":{"user_id":1},"topic":{"topic_id":123,"is_delete":1,"is_complete":false,"getedcontact":true,"contact_info":"wx-contact"}}}""")
+        val app=repo.apply(123,"attempt-one",ApplicationWrite(3,""))
+        assertEquals("communicating",app.status); assertEquals("wx-contact",AdoptionContact.visible(app.topic))
+        val request=server.takeRequest()
+        assertEquals("POST",request.method);assertEquals("/api/v2/adoptions/123/applications",request.path)
+        assertEquals("attempt-one",request.getHeader("Idempotency-Key"))
+        val body=JsonParser.parseString(request.body.readUtf8()).asJsonObject
+        assertEquals(3,body["profile_version"].asInt);assertEquals("",body["statement"].asString)
+        assertFalse(body.has("contact_info"))
+    }
+    @Test fun submissionKeepsLegacyPhoneBindingAndVerificationCodes()=runBlocking {
+        for (code in listOf(209,210)) {
+            reply("{}",200,code)
+            val failure=error { repo.apply(123,"phone-$code",ApplicationWrite(3,"")) }
+            assertEquals(code,failure.code);assertEquals(code,failure.status)
+        }
+        assertEquals(0,logouts)
+    }
     @Test fun applicationContactComesFromGetWithoutSafetyOrDisclosurePost()=runBlocking {
         reply("""{"application_id":501,"status":"applying","version":7,"topic":{"topic_id":123,"is_complete":false,"is_delete":1,"getedcontact":true,"contact_info":"historical-contact"}}""")
         val app=repo.application(501)

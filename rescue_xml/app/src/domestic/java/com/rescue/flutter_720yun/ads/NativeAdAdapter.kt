@@ -58,6 +58,11 @@ class NativeAdAdapter(
 
     override fun getItemCount() = if (nativeAd != null && !destroyed) 1 else 0
 
+    companion object {
+        fun createHolder(parent: ViewGroup) = Holder(ATNativeAdView(parent.context).apply {
+            layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        })
+    }
     class Holder(val view: ATNativeAdView) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {

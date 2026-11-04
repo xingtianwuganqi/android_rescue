@@ -136,16 +136,16 @@ class BlackDetailViewModel: ViewModel() {
                 Log.d("TAG","$dic")
                 val response = appService.blackRelease(dic).awaitResp()
                 if (response.code == 200) {
-                    _releaseCompletion.value = true
                     _message.value = BaseApplication.context.getString(R.string.push_success)
+                    _releaseCompletion.value = true
                 }else{
-                    _releaseCompletion.value = false
                     _message.value = BaseApplication.context.getString(R.string.push_fail)
+                    _releaseCompletion.value = false
 
                 }
             }catch (e: Exception) {
-                _releaseCompletion.value = false
                 _message.value = BaseApplication.context.getString(R.string.push_fail)
+                _releaseCompletion.value = false
             }
         }
     }

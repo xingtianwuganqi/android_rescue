@@ -14,6 +14,7 @@ class SupportActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED) { finish(); return }
         setContentLayout(R.layout.activity_support)
         binding = ActivitySupportBinding.bind(baseBinding.contentFrame.getChildAt(2))
         setupToolbar(getString(R.string.drawer_help))

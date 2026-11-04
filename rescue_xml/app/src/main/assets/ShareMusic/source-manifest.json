@@ -1,0 +1,20 @@
+[
+  {
+    "file": "ukulele_song.mp3",
+    "source_sha256": "ad54684b7dffd48dcc09c12a0093d375ea1edcaa418bad714d4f54b16a95c81d",
+    "bundled_file": "ukulele_song.m4a",
+    "bundled_sha256": "b4a53a19bbb218ed03ca2ba845e90c48003da031b40b7505ed1d35c356630305"
+  },
+  {
+    "file": "city_sunshine.mp3",
+    "source_sha256": "e05c1bd683174cff77d492b7ac77262ff4617f99f69d82564b66831cf48352d6",
+    "bundled_file": "city_sunshine.m4a",
+    "bundled_sha256": "f4981df4806f2e80e2047f897d71fc231381a673a8b031f380c65d02dcc8bc40"
+  },
+  {
+    "file": "happy_whistling_ukulele.mp3",
+    "source_sha256": "ed4059c8fba8673d657e85175ff54eaa32cef9e43f688f164bef585e6e65cf15",
+    "bundled_file": "happy_whistling_ukulele.m4a",
+    "bundled_sha256": "5229628529368dfb5f3d6e5aff2463b2bf0a08f74e3c2430dff39cf04b5d4ef3"
+  }
+]

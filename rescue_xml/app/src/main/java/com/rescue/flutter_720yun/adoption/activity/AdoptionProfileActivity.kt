@@ -49,7 +49,14 @@ class AdoptionProfileActivity : AdoptionActivity() {
             inputType = InputType.TYPE_CLASS_NUMBER; textSize=18f;setTypeface(typeface,Typeface.BOLD)
         }
         errors["age"] = content.label("")
-        location = content.button("选择城市和区县") { chooseRegion() }
+        location = content.button("选择城市和区县") { chooseRegion() }.apply {
+            // The app theme uses white for both colorPrimary and colorOnPrimary.
+            // Give this address field its own readable foreground and background.
+            setTextColor(ContextCompat.getColor(this@AdoptionProfileActivity, R.color.color_content))
+            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@AdoptionProfileActivity, R.color.color_defIcon))
+            strokeColor = ColorStateList.valueOf(ContextCompat.getColor(this@AdoptionProfileActivity, R.color.color_eee))
+            strokeWidth = resources.displayMetrics.density.toInt().coerceAtLeast(1)
+        }
         errors["residence_city"] = content.label("")
         errors["residence_district"] = content.label("")
         housing = content.choice("住房情况", listOf("请选择") + AdoptionLabels.housing.values)
@@ -57,6 +64,14 @@ class AdoptionProfileActivity : AdoptionActivity() {
         employment = content.choice("工作状态", listOf("请选择") + AdoptionLabels.employment.values)
         errors["employment_status"] = content.label("")
         experience = content.field("养宠经验（选填，最多200字）", 200)
+        listOf(age, experience).forEach { input ->
+            input.setBackgroundResource(R.drawable.rounded_edit_stroke)
+            // Clear the theme tint so focused fields retain the feedback form's #EEEEEE border.
+            input.backgroundTintList = null
+            val horizontal = (12 * resources.displayMetrics.density).toInt()
+            val vertical = (10 * resources.displayMetrics.density).toInt()
+            input.setPadding(horizontal, vertical, horizontal, vertical)
+        }
         errors["pet_experience"] = content.label("")
         save = content.button("保存资料") {
             vm.age = age.text.toString(); vm.experience = experience.text.toString()
@@ -72,7 +87,13 @@ class AdoptionProfileActivity : AdoptionActivity() {
             if(failures.isEmpty()) vm.save() else failures.forEach { (key,value) -> errors[key]?.text=value }
         }
         (save as MaterialButton).apply {
-            layoutParams=LinearLayout.LayoutParams(-2,-2).apply { gravity=android.view.Gravity.CENTER_HORIZONTAL }
+            // The form already supplies 20dp horizontal padding.
+            layoutParams=LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,(40*resources.displayMetrics.density).toInt())
+            minHeight=0
+            minimumHeight=0
+            insetTop=0
+            insetBottom=0
+            setPadding(paddingLeft,0,paddingRight,0)
             cornerRadius=(8*resources.displayMetrics.density).toInt()
             backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(this@AdoptionProfileActivity,R.color.color_system))
             setTextColor(ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),intArrayOf()),intArrayOf(0x88ffffff.toInt(),0xffffffff.toInt())))

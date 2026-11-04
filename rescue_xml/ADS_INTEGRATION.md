@@ -4,12 +4,54 @@
 `20261002_Taku_Sdk_release_China_v6.6.51_20261002085557.zip`。
 `rescue_compose` 未改动。
 
+## 版本切换（2026-11-04）
+
+使用 `ads` flavor 维度，同一套业务代码构建两个版本：
+
+| Flavor | 用途 | SDK |
+| --- | --- | --- |
+| `noAds`（Android Studio 默认） | 当前无广告发布 | 不包含 Taku 及其聚合广告 AAR |
+| `domestic` | 国内广告 | 保留现有 Taku 配置和展示逻辑 |
+
+Android Studio 的 Build Variants 中选择 `noAdsDebug` 或 `domesticDebug`。
+命令行必须明确选择版本；`assembleDebug` 会构建两个版本，不表示仅构建无广告版。
+
+```sh
+./gradlew :app:assembleNoAdsDebug
+./gradlew :app:assembleDomesticDebug
+./gradlew :app:assembleNoAdsRelease
+./gradlew :app:assembleDomesticRelease
+./gradlew :app:testNoAdsDebugUnitTest :app:testDomesticDebugUnitTest
+```
+
+构建后可检查 APK 中的实际 DEX 类，防止广告 SDK 意外进入无广告版：
+
+```sh
+python3 qa/ads-variants/verify_apks.py \
+  app/build/outputs/apk/noAds/debug/app-noAds-debug.apk \
+  app/build/outputs/apk/domestic/debug/app-domestic-debug.apk
+```
+
+APK 路径为 `app/build/outputs/apk/<flavor>/<buildType>/`。
+无广告发布使用 `noAds/release/app-noAds-release.apk`。
+两个版本保持相同包名、版本号和签名配置，不能并行安装；覆盖升级需使用相同签名，
+发布更新时仍须递增 `versionCode`。
+
+无广告版使用不依赖 SDK 的空实现，广告配置强制为空，隐藏“支持我们”和“观看视频增加曝光”入口，
+不创建信息流广告槽、不显示详情横幅、不等待开屏广告。普通发帖、领养等业务保持原流程。
+已经观看成功但尚未提交的推广奖励仍可由原有恢复机制补交，避免覆盖升级丢失奖励。
+广告 SDK、资源保留规则、SDK 清单声明及广告调试 Activity 只进入国内广告版，
+`AdDemoActivity` 仅在 `domesticDebug` 可用。
+`app/src/domestic` 存放广告实现，`app/src/noAds` 存放禁用实现；业务代码通过共同接口调用。
+`taku-ads.properties` 可缺省，无广告构建不需要广告账号配置。
+国际广告版尚未实现，后续确定平台后可增加独立 flavor。
+
 ## SDK 和配置
 
 `app/taku_libs` 保留下载包中的 6 个 AAR，包括 Taku 6.6.51、穿山甲 7.6.1.2、
 酷盈 SDK 和对应适配器。AAR 自带组件清单及 consumer ProGuard 规则；
 压缩包额外要求的 Apache HTTP legacy 声明已加入应用清单。
-资源保留规则位于 `app/src/main/res/raw/taku_keep.xml`，资源优化白名单在
+资源保留规则位于 `app/src/domestic/res/raw/taku_keep.xml`，资源优化白名单在
 `app/taku_libs/whitelists.txt`。项目已有 AndroidX/Jetifier 和 HTTP 网络配置。
 
 在 `taku-ads.properties` 填入 Taku 后台创建的 **Android** 配置：
@@ -60,8 +102,8 @@ App ID/Key 为空时不初始化、不请求广告；单个广告位为空时跳
 
 ```sh
 cd rescue_xml
-./gradlew :app:assembleDebug
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+./gradlew :app:assembleDomesticDebug
+adb install -r app/build/outputs/apk/domestic/debug/app-domestic-debug.apk
 adb shell am start -n com.rescue.flutter_720yun/.SplashActivity
 # 从启动页完成隐私同意后，打开仅 debug APK 包含的广告调试页：
 adb shell am start -n com.rescue.flutter_720yun/.ads.AdDemoActivity
@@ -91,3 +133,8 @@ ARM 真机用于穿山甲等渠道的完整验证。
 - 原项目缺失 wrapper JAR，已从仓库根目录补入并修正忽略规则，保留 wrapper 指定的 Gradle 8.4。
 - 本机没有已连接的 Android 设备；尚未进行真实广告请求/展示或奖励回调验证。
 - 打包 SDK 存在 Jetifier 混用及 D8 stack map 警告，未阻止 Debug 构建。
+
+## 国内版推广链路完善（2026-11-04）
+
+“我的 → 领养”的资格预检、动态推广时长、说明入口、缓存激励视频播放、迟到奖励及登录恢复已对照 iOS 调整。
+完整规则及验证范围见 `PROMOTION_FLOW.md`。本轮未打包 APK，Debug/Release 编译通过，两个版本各 117 项测试通过。

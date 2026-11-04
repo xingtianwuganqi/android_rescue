@@ -22,7 +22,7 @@ class BaseApplication: Application() {
             com.rescue.flutter_720yun.util.UserManager.getUserInfo()
             com.rescue.flutter_720yun.analytics.AnalyticsManager.initialize(this)
             com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.initialize()
-            registerActivityLifecycleCallbacks(com.rescue.flutter_720yun.ads.ForegroundSplashObserver(this))
+            if (BuildConfig.ADS_ENABLED) registerActivityLifecycleCallbacks(com.rescue.flutter_720yun.ads.ForegroundSplashObserver(this))
         }
     }
 }

@@ -4,10 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rescue.flutter_720yun.BaseApplication
-import com.rescue.flutter_720yun.R
-import com.rescue.flutter_720yun.home.models.FindPetModel
-import com.rescue.flutter_720yun.network.HomeService
 import com.rescue.flutter_720yun.network.ServiceCreator
 import com.rescue.flutter_720yun.network.UserService
 import com.rescue.flutter_720yun.network.awaitResp
@@ -22,6 +18,7 @@ import kotlinx.coroutines.launch
 class BlackListViewModel: ViewModel() , CommonViewModelInterface {
     private val appService = ServiceCreator.create<UserService>()
     private var page: Int = 1
+    private val pageSize = 10
 
     private var _isLoading = MutableLiveData(false)
     private var _isFirstLoading = MutableLiveData(true)
@@ -68,7 +65,7 @@ class BlackListViewModel: ViewModel() , CommonViewModelInterface {
                 _refreshState.value = refresh
                 val dic = paramDic
                 dic["page"] = page
-                dic["size"] = 10
+                dic["size"] = pageSize
                 val response = appService.blackList(dic).awaitResp()
                 _isFirstLoading.value = false
                 if (response.code == 200) {
@@ -84,29 +81,21 @@ class BlackListViewModel: ViewModel() , CommonViewModelInterface {
                             emptyList()
                         }
                     }
+                    _isLastPage.value = items.size < pageSize
                     if (items.isNotEmpty()) {
                         page += 1
                         _uiState.value = UiState.Success(items)
                     }else{
                         if (page == 1) {
-                            val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                            _uiState.value = UiState.Error(noMoreData)
-                        }else{
-                            _isLastPage.value = true
+                            _uiState.value = UiState.Success(emptyList())
                         }
                     }
                 }else{
-                    if (page == 1) {
-                        val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                        _uiState.value = UiState.Error(noMoreData)
-                    }
+                    _uiState.value = UiState.Error(null)
                 }
 
             }catch (e: Exception) {
-                if (page == 1) {
-                    val noMoreData = BaseApplication.context.resources.getString(R.string.no_data)
-                    _uiState.value = UiState.Error(noMoreData)
-                }
+                _uiState.value = UiState.Error(null)
             }finally {
                 _isLoading.value = false
 
