@@ -5,7 +5,6 @@ import android.app.Application
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.appcompat.view.WindowCallbackWrapper
 import androidx.fragment.app.FragmentActivity
@@ -18,7 +17,6 @@ import com.rescue.flutter_720yun.findpet.MyFindPetActivity
 import com.rescue.flutter_720yun.home.activity.*
 import com.rescue.flutter_720yun.message.activity.*
 import com.rescue.flutter_720yun.show.activity.ShowReleaseActivity
-import com.rescue.flutter_720yun.util.UserManager
 import java.util.UUID
 import java.util.WeakHashMap
 
@@ -53,16 +51,10 @@ internal class AnalyticsLifecycle : Application.ActivityLifecycleCallbacks {
     override fun onActivityPaused(activity: Activity) = Unit
     private class InteractionCallback(callback: android.view.Window.Callback) : WindowCallbackWrapper(callback) {
         override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-            if(event.actionMasked==MotionEvent.ACTION_DOWN) AnalyticsManager.interaction()
+            when(event.actionMasked) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP -> AnalyticsManager.interaction()
+            }
             return super.dispatchTouchEvent(event)
-        }
-        override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-            if(event.action==KeyEvent.ACTION_DOWN) AnalyticsManager.interaction()
-            return super.dispatchKeyEvent(event)
-        }
-        override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
-            if(event.actionMasked==MotionEvent.ACTION_SCROLL) AnalyticsManager.interaction()
-            return super.dispatchGenericMotionEvent(event)
         }
     }
 }
@@ -85,27 +77,35 @@ object AnalyticsPages {
                 R.id.navigation_user -> "profile"
                 else -> null // No invented page code for the show-pet feed.
             }
-            is LoginActivity -> if((activity.intent.getStringExtra("type") ?: "login") in setOf("login","register","registerCheckCode")) "login" else null
+            is LoginActivity -> if((activity.intent.getStringExtra("type") ?: "login") in setOf("login","register")) "login" else null
             is ReleaseTopicActivity -> "publish_adoption"
-            is FindPetDetailActivity -> if(UserManager.isLogin) "publish_find_pet" else null
+            is FindPetDetailActivity -> "publish_find_pet"
             is ShowReleaseActivity -> "publish_show_pet"
             is HomeDetailActivity -> {
                 activity.intent.getIntExtra("topic_id",0).takeIf { it>0 }?.let { properties["object_id"]=it.toLong() }
                 "topic_detail"
             }
-            is AdoptionProfileActivity -> if(UserManager.isLogin) "adoption_profile" else null
+            is AdoptionProfileActivity -> "adoption_profile"
             is MessageSingleActivity -> {
                 val type=when(activity.intent.getIntExtra("messageType",0)) { 1 -> "like";2 -> "collect";3 -> "comment";else -> null }
                 type?.let { properties["message_list_type"]=it }
                 if(type!=null) "message_list" else null
             }
-            is MessageSystemListActivity -> { properties["message_list_type"]="system";if(UserManager.isLogin) "message_list" else null }
-            is MyFindPetActivity -> { properties["message_list_type"]="find_pet";if(UserManager.isLogin) "message_list" else null }
-            is AdoptionMyApplicationsActivity -> { properties["message_list_type"]="my_applications";if(UserManager.isLogin) "message_list" else null }
-            is AdoptionApplicationsActivity -> { properties["message_list_type"]="received_applications";if(UserManager.isLogin) "message_list" else null }
+            is MessageSystemListActivity -> { properties["message_list_type"]="system";"message_list" }
+            is MyFindPetActivity -> { properties["message_list_type"]="find_pet";"message_list" }
+            is AdoptionMyApplicationsActivity -> { properties["message_list_type"]="my_applications";"message_list" }
+            is AdoptionApplicationsActivity -> { properties["message_list_type"]="received_applications";"message_list" }
             else -> null
         }
         val route=if(activity is MainActivity) runCatching { activity.findNavController(R.id.nav_host_fragment_activity_main).currentDestination?.id }.getOrNull().toString() else ""
         AnalyticsManager.showScreen(key(activity)+":"+route+":"+page+":"+properties.toString(),page,properties)
     }
+
+    /** The home drawer is the same "profile" page on iOS; report open/close as a page visit. */
+    fun drawerOpened(activity: Activity) {
+        if(activity.isFinishing || activity.isDestroyed ||
+            (activity is FragmentActivity && !activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))) return
+        AnalyticsManager.showScreen(key(activity)+":drawer","profile")
+    }
+    fun drawerClosed(activity: Activity) { visible(activity) }
 }

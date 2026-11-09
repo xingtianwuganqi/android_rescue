@@ -18,7 +18,7 @@ import com.rescue.flutter_720yun.message.viewmodels.MessageSystemListViewModel
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import com.scwang.smart.refresh.layout.api.RefreshHeader
 
 class MessageSystemListActivity : BaseActivity() {

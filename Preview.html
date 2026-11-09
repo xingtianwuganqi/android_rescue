@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>领养资料 · UI 设计预览</title>
+  <style>
+    :root {
+      --orange: #FFA500;
+      --orange-deep: #F08C00;
+      --orange-soft: #FFF4DF;
+      --orange-line: #FFE3B2;
+      --ink: #333333;
+      --ink-2: #666666;
+      --muted: #8E8E93;
+      --faint: #B4B4B8;
+      --line: #EEEEEE;
+      --line-strong: #E6E6E8;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+      --danger: #E5484D;
+      --success: #36835A;
+      --card-radius: 18px;
+      --shadow-card: 0 8px 24px rgba(45, 38, 25, .045);
+      --ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--ui-font);
+      -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(1100px 580px at 12% -8%, rgba(255, 197, 94, .24), transparent 58%),
+        radial-gradient(900px 520px at 92% 12%, rgba(197, 208, 218, .30), transparent 60%),
+        #F1F0ED;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .icon { width: 20px; height: 20px; display: block; flex: none; }
+    .icon-sm { width: 16px; height: 16px; display: block; flex: none; }
+    .svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    .page {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 46px 0 64px;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 34px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--ink-2);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--orange);
+      box-shadow: 0 0 0 4px rgba(255, 165, 0, .14);
+    }
+    .masthead h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+      color: #252525;
+    }
+    .masthead p {
+      margin: 10px 0 0;
+      color: #7A7A7E;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .state-switch {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      padding-bottom: 4px;
+    }
+    .state-switch-label {
+      color: #8B8B90;
+      font-size: 11px;
+      letter-spacing: .04em;
+    }
+    .segmented {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid rgba(0, 0, 0, .07);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 8px 22px rgba(45, 38, 25, .06);
+      backdrop-filter: blur(12px);
+    }
+    .segmented button {
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #76767B;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+    .segmented button:hover { color: var(--ink); }
+    .segmented button.active {
+      background: #2F2F31;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 390px minmax(300px, 352px);
+      gap: clamp(36px, 6vw, 76px);
+      justify-content: center;
+      align-items: start;
+    }
+    .device-column { display: flex; flex-direction: column; align-items: center; }
+    .device-caption {
+      margin-top: 18px;
+      color: #929297;
+      font-size: 12px;
+      letter-spacing: .02em;
+    }
+
+    .phone {
+      position: relative;
+      width: 390px;
+      height: 844px;
+      padding: 9px;
+      border-radius: 48px;
+      background: #161617;
+      box-shadow:
+        0 42px 90px -36px rgba(32, 27, 18, .55),
+        0 18px 44px -24px rgba(32, 27, 18, .30),
+        inset 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+    .phone::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 46px;
+      border: 1px solid rgba(255, 255, 255, .10);
+      pointer-events: none;
+    }
+    .phone-screen {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 40px;
+      background: var(--bg);
+    }
+
+    .statusbar {
+      flex: none;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      background: #FFFFFF;
+      color: #1F1F1F;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+    .status-icons { display: flex; align-items: center; gap: 6px; }
+    .signal { display: flex; align-items: flex-end; gap: 2px; height: 11px; }
+    .signal i { width: 3px; border-radius: 1px; background: #1F1F1F; display: block; }
+    .signal i:nth-child(1) { height: 4px; opacity: .45; }
+    .signal i:nth-child(2) { height: 6px; opacity: .65; }
+    .signal i:nth-child(3) { height: 8px; opacity: .82; }
+    .signal i:nth-child(4) { height: 11px; }
+    .battery {
+      position: relative;
+      width: 21px;
+      height: 10px;
+      border: 1.4px solid #1F1F1F;
+      border-radius: 3px;
+      opacity: .9;
+    }
+    .battery::before { content: ""; position: absolute; inset: 1.5px; background: #1F1F1F; border-radius: 1.5px; }
+    .battery::after { content: ""; position: absolute; top: 2px; right: -3px; width: 2px; height: 4px; border-radius: 0 2px 2px 0; background: #1F1F1F; opacity: .7; }
+
+    .appbar {
+      flex: none;
+      height: 54px;
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      background: #FFFFFF;
+      border-bottom: 1px solid #F3F3F3;
+    }
+    .appbar-title {
+      text-align: center;
+      font-size: 17px;
+      font-weight: 650;
+      letter-spacing: -.01em;
+      color: #222222;
+    }
+    .icon-button {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-left: 3px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #2E2E2E;
+      transition: background .18s ease;
+    }
+    .icon-button:hover { background: #F4F4F4; }
+
+    .app-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 14px 15px 150px;
+      scrollbar-width: none;
+    }
+    .app-scroll::-webkit-scrollbar { display: none; }
+
+    .intro-card {
+      position: relative;
+      overflow: hidden;
+      padding: 17px 16px 14px;
+      border: 1px solid var(--orange-line);
+      border-radius: 20px;
+      background:
+        radial-gradient(220px 120px at 100% 0%, rgba(255, 184, 60, .26), transparent 78%),
+        linear-gradient(145deg, #FFF8EC 0%, #FFFFFF 62%, #FFFBF2 100%);
+      box-shadow: 0 10px 30px -18px rgba(192, 126, 16, .38);
+    }
+    .intro-card::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: -32px;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      border: 18px solid rgba(255, 165, 0, .07);
+    }
+    .intro-main { position: relative; display: flex; gap: 12px; align-items: flex-start; z-index: 1; }
+    .intro-icon {
+      width: 44px;
+      height: 44px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #FFFFFF;
+      background: linear-gradient(145deg, #FFBF45, #FF9800);
+      box-shadow: 0 8px 18px -8px rgba(240, 140, 0, .9);
+    }
+    .intro-icon .icon { width: 23px; height: 23px; }
+    .intro-copy h2 {
+      margin: 1px 0 5px;
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 700;
+      letter-spacing: -.015em;
+      color: #2E2B25;
+    }
+    .intro-copy p {
+      margin: 0;
+      color: #7A746B;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+    .progress-block {
+      position: relative;
+      z-index: 1;
+      margin-top: 15px;
+      padding-top: 13px;
+      border-top: 1px dashed rgba(206, 166, 92, .30);
+    }
+    .progress-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #8A8174;
+      font-size: 11.5px;
+    }
+    .progress-head strong {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #A86B00;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+    .progress-track {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(219, 197, 160, .33);
+    }
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #FFC24D, #FF9500);
+      box-shadow: 0 0 10px rgba(255, 160, 0, .45);
+      transition: width .35s cubic-bezier(.32, .72, 0, 1);
+    }
+    .safe-note {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+      color: #9A8F7D;
+      font-size: 10.5px;
+    }
+    .safe-note .icon-sm { width: 13px; height: 13px; color: #B09A71; }
+
+    .form-card {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid #F0F0F0;
+      border-radius: var(--card-radius);
+      background: var(--white);
+      box-shadow: var(--shadow-card);
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .section-head h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      color: #2E2E2E;
+    }
+    .req-pill, .optional-pill {
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
+      padding: 0 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .req-pill { color: #B56A00; background: #FFF1D9; }
+    .optional-pill { color: #8C8C91; background: #F3F3F4; }
+
+    .field { display: block; }
+    .field + .field { margin-top: 15px; }
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin: 0 0 8px 2px;
+      color: #68686C;
+      font-size: 12px;
+      font-weight: 550;
+    }
+    .field-label em {
+      color: var(--orange-deep);
+      font-style: normal;
+      font-weight: 700;
+    }
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      height: 50px;
+      padding: 0 14px;
+      border: 1.5px solid #ECECEC;
+      border-radius: 14px;
+      background: #FBFBFB;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .input-wrap:focus-within {
+      border-color: #FFB52E;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(255, 165, 0, .11);
+    }
+    .input-wrap input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 650;
+      letter-spacing: .01em;
+      padding: 0;
+    }
+    .input-wrap input::placeholder { color: #B4B4B8; font-weight: 450; }
+    .input-suffix {
+      flex: none;
+      margin-left: 8px;
+      color: #9A9A9F;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .hint {
+      display: block;
+      margin: 7px 0 0 2px;
+      color: #A0A0A5;
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+    .field-error {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      margin: 7px 0 0 2px;
+      color: var(--danger);
+      font-size: 10.5px;
+      line-height: 1.4;
+    }
+    .field-error.show { display: flex; }
+    .field-error .icon-sm { width: 12px; height: 12px; }
+    .field.invalid .input-wrap,
+    .field.invalid .select-row,
+    .field.invalid .textarea-wrap {
+      border-color: rgba(229, 72, 77, .62);
+      background: #FFF9F9;
+      box-shadow: 0 0 0 4px rgba(229, 72, 77, .07);
+    }
+
+    .select-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 58px;
+      gap: 11px;
+      padding: 9px 12px;
+      border: 1.5px solid #ECECEC;
+      border-radius: 14px;
+      background: #FBFBFB;
+      text-align: left;
+      transition: border-color .18s ease, background .18s ease, transform .12s ease;
+    }
+    .select-row:hover { border-color: #E0D3B9; background: #FFFDF9; }
+    .select-row:active { transform: scale(.995); }
+    .select-icon {
+      width: 36px;
+      height: 36px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: #D98A00;
+      background: #FFF3DF;
+    }
+    .select-icon .icon { width: 18px; height: 18px; }
+    .select-text { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .select-value {
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 14.5px;
+      font-weight: 600;
+      line-height: 1.3;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .select-value.is-placeholder { color: #B4B4B8; font-weight: 450; }
+    .select-sub { color: #A3A3A7; font-size: 10.5px; line-height: 1.35; }
+    .chevron { flex: none; color: #C1C1C5; }
+
+    .textarea-wrap {
+      position: relative;
+      border: 1.5px solid #ECECEC;
+      border-radius: 14px;
+      background: #FBFBFB;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .textarea-wrap:focus-within {
+      border-color: #FFB52E;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(255, 165, 0, .11);
+    }
+    .textarea-wrap textarea {
+      display: block;
+      width: 100%;
+      min-height: 108px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      padding: 12px 14px 27px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+    .textarea-wrap textarea::placeholder { color: #B6B6BA; }
+    .counter {
+      position: absolute;
+      right: 12px;
+      bottom: 9px;
+      color: #ABABAF;
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dock {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 8;
+      padding: 30px 15px 15px;
+      background: linear-gradient(180deg, rgba(245, 245, 245, 0) 0%, rgba(245, 245, 245, .97) 28%, #F5F5F5 48%);
+      pointer-events: none;
+    }
+    .dock-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 8px;
+      color: #99999E;
+      font-size: 10.5px;
+      pointer-events: none;
+    }
+    .dock-note .icon-sm { width: 11px; height: 11px; }
+    .save-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 51px;
+      border: 0;
+      border-radius: 16px;
+      color: #FFFFFF;
+      font-size: 16.5px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      background: linear-gradient(135deg, #FFB52E 0%, #FF9A00 100%);
+      box-shadow: 0 12px 24px -10px rgba(240, 140, 0, .65);
+      pointer-events: auto;
+      transition: transform .12s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .save-btn:hover { filter: brightness(1.02); box-shadow: 0 14px 28px -10px rgba(240, 140, 0, .72); }
+    .save-btn:active { transform: scale(.988); }
+    .save-btn:disabled {
+      color: #A8A8AC;
+      background: #E9E9EB;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background: rgba(24, 22, 18, .30);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+    }
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 21;
+      display: flex;
+      flex-direction: column;
+      max-height: 72%;
+      padding: 9px 16px 22px;
+      border-radius: 26px 26px 0 0;
+      background: #FFFFFF;
+      box-shadow: 0 -20px 50px -30px rgba(0, 0, 0, .4);
+      transform: translateY(104%);
+      transition: transform .30s cubic-bezier(.32, .72, 0, 1);
+    }
+    .phone-screen.sheet-open .sheet-backdrop { opacity: 1; pointer-events: auto; }
+    .phone-screen.sheet-open .sheet { transform: translateY(0); }
+    .sheet-handle { width: 36px; height: 4px; margin: 0 auto 16px; border-radius: 999px; background: #E5E5E7; }
+    .sheet-title { margin-bottom: 12px; color: #2E2E2E; font-size: 16px; font-weight: 700; }
+    .sheet-options { overflow-y: auto; display: flex; flex-direction: column; gap: 2px; padding-bottom: 2px; }
+    .sheet-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-height: 47px;
+      padding: 10px 10px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #4A4A4F;
+      font-size: 14.5px;
+      font-weight: 500;
+      text-align: left;
+    }
+    .sheet-option:hover { background: #FAF7F1; }
+    .sheet-option.selected { color: #C67A00; font-weight: 650; background: #FFF7E8; }
+    .sheet-option .check { width: 17px; height: 17px; color: #E68A00; opacity: 0; }
+    .sheet-option.selected .check { opacity: 1; }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 104px;
+      z-index: 30;
+      transform: translate(-50%, 10px);
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(42, 39, 34, .92);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .22);
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .notes { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; }
+    .note-card {
+      padding: 20px;
+      border: 1px solid rgba(0, 0, 0, .065);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 16px 40px -28px rgba(35, 30, 22, .32);
+      backdrop-filter: blur(14px);
+    }
+    .note-kicker {
+      margin-bottom: 9px;
+      color: #A0A0A5;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .note-card h3 { margin: 0 0 12px; color: #2F2F31; font-size: 16px; letter-spacing: -.01em; }
+    .note-card p { margin: 0; color: #76767B; font-size: 12.5px; line-height: 1.7; }
+    .note-list { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .note-list li {
+      position: relative;
+      padding-left: 15px;
+      color: #707075;
+      font-size: 12.5px;
+      line-height: 1.62;
+    }
+    .note-list li::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      top: .62em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #FFB32E;
+      box-shadow: 0 0 0 3px rgba(255, 179, 46, .13);
+    }
+    .note-list strong { color: #3A3A3D; font-weight: 650; }
+    .swatches { display: flex; gap: 8px; margin: 2px 0 14px; }
+    .swatch {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      align-items: center;
+      color: #8E8E93;
+      font-size: 9.5px;
+      font-variant-numeric: tabular-nums;
+    }
+    .swatch i {
+      width: 100%;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, .055);
+      display: block;
+    }
+    .spec-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-top: 1px solid rgba(0, 0, 0, .055);
+      color: #87878C;
+      font-size: 11.5px;
+    }
+    .spec-line span:last-child { color: #4C4C51; font-weight: 600; text-align: right; }
+
+    @media (max-width: 900px) {
+      .page { width: min(100% - 28px, 520px); padding-top: 28px; }
+      .masthead { align-items: flex-start; flex-direction: column; gap: 18px; margin-bottom: 24px; }
+      .state-switch { align-items: flex-start; }
+      .workspace { grid-template-columns: 1fr; gap: 30px; justify-items: center; }
+      .notes { width: 100%; max-width: 390px; }
+      .phone { transform-origin: top center; }
+    }
+    @media (max-width: 430px) {
+      .page { width: 100%; padding: 20px 0 40px; }
+      .masthead { padding: 0 18px; }
+      .segmented { max-width: calc(100vw - 36px); overflow-x: auto; }
+      .phone { width: calc(100vw - 12px); height: calc((100vw - 12px) * 2.164); border-radius: 38px; padding: 7px; }
+      .phone-screen { border-radius: 32px; }
+      .phone::after { border-radius: 36px; }
+      .statusbar { height: 32px; padding: 0 18px; }
+      .appbar { height: 48px; }
+      .app-scroll { padding-left: 12px; padding-right: 12px; }
+      .notes { max-width: calc(100vw - 28px); }
+    }
+  </style>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <defs>
+      <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1116 0z"/><circle cx="12" cy="10" r="2.8"/>
+      </symbol>
+      <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5h5v5"/>
+      </symbol>
+      <symbol id="i-work" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7" width="18" height="13" rx="2.6"/><path d="M8.5 7V5.4A1.4 1.4 0 019.9 4h4.2a1.4 1.4 0 011.4 1.4V7"/><path d="M3 12.5h18"/><path d="M10 12.5v2.2h4v-2.2"/>
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l7 3v5.2c0 4.5-2.9 8.2-7 9.8-4.1-1.6-7-5.3-7-9.8V6l7-3z"/><path d="M9.2 12.1l1.9 2 3.8-4"/>
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4.5" y="10" width="15" height="10.5" rx="2.4"/><path d="M8 10V7.5a4 4 0 018 0V10"/><path d="M12 14.2v2.4"/>
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.2"/><path d="M12 16.4h.01"/>
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12.5l4.2 4.2L19 7"/>
+      </symbol>
+      <symbol id="i-paw" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8.4 10.2c1.1 0 1.9-1.1 1.9-2.4S9.5 5.4 8.4 5.4 6.5 6.5 6.5 7.8s.8 2.4 1.9 2.4zm7.2 0c1.1 0 1.9-1.1 1.9-2.4s-.8-2.4-1.9-2.4-1.9 1.1-1.9 2.4.8 2.4 1.9 2.4zM4.8 14.3c1 0 1.8-1 1.8-2.2s-.8-2.2-1.8-2.2S3 10.9 3 12.1s.8 2.2 1.8 2.2zm14.4 0c1 0 1.8-1 1.8-2.2s-.8-2.2-1.8-2.2-1.8 1-1.8 2.2.8 2.2 1.8 2.2zM12 12.3c-2.3 0-4.9 3.1-4.9 5.2 0 1.1.8 1.8 1.9 1.8.9 0 1.6-.5 3-.5s2.1.5 3 .5c1.1 0 1.9-.7 1.9-1.8 0-2.1-2.6-5.2-4.9-5.2z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="page">
+    <header class="masthead">
+      <div>
+        <div class="eyebrow">真命天喵 · 页面重设计</div>
+        <h1>领养资料</h1>
+        <p>把一份必填表单，做成让人愿意认真填完的信任卡片。</p>
+      </div>
+      <div class="state-switch">
+        <span class="state-switch-label">切换预览状态</span>
+        <div class="segmented" role="group" aria-label="切换预览状态">
+          <button type="button" class="active" data-state="filled">已填写</button>
+          <button type="button" data-state="empty">未填写</button>
+          <button type="button" data-state="error">校验提示</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="device-column" aria-label="领养资料页面预览">
+        <div class="phone">
+          <div class="phone-screen" id="phoneScreen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="status-icons" aria-hidden="true">
+                <span class="signal"><i></i><i></i><i></i><i></i></span>
+                <svg class="icon-sm" viewBox="0 0 24 20" fill="none" stroke="#1F1F1F" stroke-width="2" stroke-linecap="round" style="width:16px;height:13px">
+                  <path d="M2.2 7.3a14.2 14.2 0 0119.6 0"/><path d="M5.6 10.9a9.3 9.3 0 0112.8 0"/><path d="M9.1 14.4a4.4 4.4 0 015.8 0"/><circle cx="12" cy="17.2" r="1" fill="#1F1F1F" stroke="none"/>
+                </svg>
+                <span class="battery"></span>
+              </span>
+            </div>
+
+            <div class="appbar">
+              <button class="icon-button" type="button" aria-label="返回">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-back"/></svg>
+              </button>
+              <div class="appbar-title">领养资料</div>
+              <span aria-hidden="true"></span>
+            </div>
+
+            <div class="app-scroll">
+              <section class="intro-card">
+                <div class="intro-main">
+                  <div class="intro-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg></div>
+                  <div class="intro-copy">
+                    <h2>让送养人更快了解你</h2>
+                    <p>填写一次，即可复用到之后的领养申请。送养人看到的是你提交时的资料快照。</p>
+                  </div>
+                </div>
+                <div class="progress-block">
+                  <div class="progress-head">
+                    <span>必填资料完成度</span>
+                    <strong><svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg><span id="progressText">4 / 4</span></strong>
+                  </div>
+                  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                </div>
+                <div class="safe-note">
+                  <svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock"/></svg>
+                  资料仅用于领养沟通，不会公开展示联系方式
+                </div>
+              </section>
+
+              <section class="form-card">
+                <div class="section-head">
+                  <h3>基本信息</h3>
+                  <span class="req-pill">必填</span>
+                </div>
+
+                <label class="field" id="ageField">
+                  <span class="field-label">年龄 <em>*</em></span>
+                  <div class="input-wrap">
+                    <input id="ageInput" type="text" inputmode="numeric" autocomplete="off" placeholder="请输入年龄" value="28" aria-label="年龄">
+                    <span class="input-suffix">周岁</span>
+                  </div>
+                  <span class="hint">限 10–100 周岁</span>
+                  <span class="field-error" id="ageError"><svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg><span>请输入 10–100 的整数年龄</span></span>
+                </label>
+
+                <div class="field" id="cityField">
+                  <span class="field-label">城市 / 区县 <em>*</em></span>
+                  <button class="select-row" id="cityRow" type="button">
+                    <span class="select-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pin"/></svg></span>
+                    <span class="select-text">
+                      <span class="select-value" id="cityValue">苏州市 · 工业园区</span>
+                      <span class="select-sub">用于匹配同城领养信息</span>
+                    </span>
+                    <svg class="icon-sm chevron" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </button>
+                  <span class="field-error" id="cityError"><svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg><span>请选择城市 / 区县</span></span>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <div class="section-head"><h3>居住与工作</h3></div>
+
+                <div class="field" id="housingField">
+                  <span class="field-label">住房情况 <em>*</em></span>
+                  <button class="select-row" id="housingRow" type="button">
+                    <span class="select-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg></span>
+                    <span class="select-text">
+                      <span class="select-value" id="housingValue">自有住房</span>
+                      <span class="select-sub">帮助送养人了解居住环境</span>
+                    </span>
+                    <svg class="icon-sm chevron" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </button>
+                  <span class="field-error" id="housingError"><svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg><span>请选择住房情况</span></span>
+                </div>
+
+                <div class="field" id="employmentField">
+                  <span class="field-label">工作状态 <em>*</em></span>
+                  <button class="select-row" id="employmentRow" type="button">
+                    <span class="select-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-work"/></svg></span>
+                    <span class="select-text">
+                      <span class="select-value" id="employmentValue">在职</span>
+                      <span class="select-sub">用于评估照护稳定性</span>
+                    </span>
+                    <svg class="icon-sm chevron" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg>
+                  </button>
+                  <span class="field-error" id="employmentError"><svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-alert"/></svg><span>请选择工作状态</span></span>
+                </div>
+              </section>
+
+              <section class="form-card">
+                <div class="section-head">
+                  <h3>养宠经验</h3>
+                  <span class="optional-pill">选填</span>
+                </div>
+                <label class="field">
+                  <span class="field-label">说说你的养宠经历</span>
+                  <div class="textarea-wrap">
+                    <textarea id="expInput" maxlength="200" placeholder="例如：养猫 3 年，了解驱虫、疫苗和绝育护理。">养猫 3 年，家有一只 2 岁的橘猫，了解日常驱虫、疫苗和绝育护理，也能处理简单的肠胃不适。</textarea>
+                    <span class="counter"><span id="expCount">0</span>/200</span>
+                  </div>
+                  <span class="hint">真实、具体的经历更容易获得送养人信任</span>
+                </label>
+              </section>
+            </div>
+
+            <div class="dock">
+              <div class="dock-note"><svg class="icon-sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock"/></svg>保存后可随时修改</div>
+              <button class="save-btn" id="saveBtn" type="button">保存资料</button>
+            </div>
+
+            <div class="sheet-backdrop" id="sheetBackdrop"></div>
+            <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+              <div class="sheet-handle"></div>
+              <div class="sheet-title" id="sheetTitle">选择住房情况</div>
+              <div class="sheet-options" id="sheetOptions"></div>
+            </div>
+
+            <div class="toast" id="toast" role="status">资料已保存</div>
+          </div>
+        </div>
+        <div class="device-caption">390 × 844 · 页面内可滚动，可切换状态并点击选择项体验底部弹层</div>
+      </section>
+
+      <aside class="notes">
+        <div class="note-card">
+          <div class="note-kicker">Review</div>
+          <h3>现版的问题</h3>
+          <ul class="note-list">
+            <li>所有字段平铺，缺少分组和视觉节奏，长表单显得负担很重。</li>
+            <li>城市、住房、工作只有橙色文字，用户不容易看出这是可点击的选择项。</li>
+            <li>没有完成度、字数统计和字段级反馈，填写过程缺少确定感。</li>
+            <li>保存按钮跟随内容滚动，键盘弹出时容易被遮挡。</li>
+            <li>年龄输入与其他字段样式不统一，必填/选填也不够清楚。</li>
+          </ul>
+        </div>
+
+        <div class="note-card">
+          <div class="note-kicker">Direction</div>
+          <h3>新版结构</h3>
+          <ul class="note-list">
+            <li><strong>先建立信任：</strong>顶部解释资料用途与快照机制，并强调隐私。</li>
+            <li><strong>降低填写压力：</strong>按“基本信息 / 居住与工作 / 养宠经验”拆成三张卡片。</li>
+            <li><strong>强化可操作感：</strong>选择项使用图标、当前值和 chevron，点击打开底部弹层。</li>
+            <li><strong>即时反馈：</strong>必填完成度、字数计数、行内错误和保存成功轻提示。</li>
+            <li><strong>固定主操作：</strong>保存按钮固定在底部，避免滚动丢失。</li>
+          </ul>
+        </div>
+
+        <div class="note-card">
+          <div class="note-kicker">Tokens</div>
+          <h3>颜色与组件</h3>
+          <div class="swatches">
+            <span class="swatch"><i style="background:#FFA500"></i>#FFA500</span>
+            <span class="swatch"><i style="background:#FFF4DF"></i>#FFF4DF</span>
+            <span class="swatch"><i style="background:#333333"></i>#333333</span>
+            <span class="swatch"><i style="background:#8E8E93"></i>#8E8E93</span>
+            <span class="swatch"><i style="background:#F5F5F5"></i>#F5F5F5</span>
+          </div>
+          <div class="spec-line"><span>卡片圆角</span><span>18 px</span></div>
+          <div class="spec-line"><span>输入框 / 选择行</span><span>14 px</span></div>
+          <div class="spec-line"><span>主按钮</span><span>16 px · 51 px 高</span></div>
+          <div class="spec-line"><span>正文 / 辅助文字</span><span>16 px / 12 px</span></div>
+          <div class="spec-line"><span>页面左右边距</span><span>15–16 px</span></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const phoneScreen = document.getElementById('phoneScreen');
+      const ageInput = document.getElementById('ageInput');
+      const expInput = document.getElementById('expInput');
+      const expCount = document.getElementById('expCount');
+      const progressText = document.getElementById('progressText');
+      const progressFill = document.getElementById('progressFill');
+      const saveBtn = document.getElementById('saveBtn');
+      const ageField = document.getElementById('ageField');
+      const cityField = document.getElementById('cityField');
+      const housingField = document.getElementById('housingField');
+      const employmentField = document.getElementById('employmentField');
+      const ageError = document.getElementById('ageError');
+      const cityError = document.getElementById('cityError');
+      const housingError = document.getElementById('housingError');
+      const employmentError = document.getElementById('employmentError');
+      const cityValue = document.getElementById('cityValue');
+      const housingValue = document.getElementById('housingValue');
+      const employmentValue = document.getElementById('employmentValue');
+      const stateButtons = Array.from(document.querySelectorAll('[data-state]'));
+      const toastEl = document.getElementById('toast');
+      const sheet = document.getElementById('sheet');
+      const sheetTitle = document.getElementById('sheetTitle');
+      const sheetOptions = document.getElementById('sheetOptions');
+      const backdrop = document.getElementById('sheetBackdrop');
+
+      const stateData = {
+        filled: {
+          age: '28',
+          city: '苏州市 · 工业园区',
+          housing: '自有住房',
+          employment: '在职',
+          experience: '养猫 3 年，家有一只 2 岁的橘猫，了解日常驱虫、疫苗和绝育护理，也能处理简单的肠胃不适。',
+          errors: []
+        },
+        empty: {
+          age: '',
+          city: '',
+          housing: '',
+          employment: '',
+          experience: '',
+          errors: []
+        },
+        error: {
+          age: '8',
+          city: '',
+          housing: '合租',
+          employment: '在职',
+          experience: '',
+          errors: ['age', 'city']
+        }
+      };
+
+      const options = {
+        city: ['苏州市 · 工业园区', '苏州市 · 姑苏区', '南京市 · 鼓楼区', '上海市 · 浦东新区', '杭州市 · 西湖区'],
+        housing: ['自有住房', '整租', '合租', '与家人同住', '宿舍', '其他'],
+        employment: ['在职', '自由职业/个体经营', '学生', '暂未工作', '退休']
+      };
+
+      const config = {
+        city: { title: '选择城市 / 区县', row: cityValue, field: cityField, error: cityError },
+        housing: { title: '选择住房情况', row: housingValue, field: housingField, error: housingError },
+        employment: { title: '选择工作状态', row: employmentValue, field: employmentField, error: employmentError }
+      };
+
+      let activeSelect = null;
+      let toastTimer = null;
+
+      function isValidAge(value) {
+        const age = Number(value);
+        return /^\d+$/.test(String(value).trim()) && Number.isInteger(age) && age >= 10 && age <= 100;
+      }
+
+      function setSelectValue(element, value, placeholder) {
+        element.textContent = value || placeholder;
+        element.classList.toggle('is-placeholder', !value);
+      }
+
+      function showError(field, errorEl, show) {
+        field.classList.toggle('invalid', show);
+        errorEl.classList.toggle('show', show);
+      }
+
+      function completedCount() {
+        return [
+          isValidAge(ageInput.value),
+          Boolean(cityValue.textContent.trim()) && !cityValue.classList.contains('is-placeholder'),
+          Boolean(housingValue.textContent.trim()) && !housingValue.classList.contains('is-placeholder'),
+          Boolean(employmentValue.textContent.trim()) && !employmentValue.classList.contains('is-placeholder')
+        ].filter(Boolean).length;
+      }
+
+      function refreshProgress() {
+        const count = completedCount();
+        progressText.textContent = count + ' / 4';
+        progressFill.style.width = (count / 4 * 100) + '%';
+        saveBtn.disabled = count === 0;
+      }
+
+      function clearErrors() {
+        showError(ageField, ageError, false);
+        showError(cityField, cityError, false);
+        showError(housingField, housingError, false);
+        showError(employmentField, employmentError, false);
+      }
+
+      function renderState(name) {
+        const data = stateData[name];
+        clearErrors();
+        ageInput.value = data.age;
+        setSelectValue(cityValue, data.city, '请选择城市 / 区县');
+        setSelectValue(housingValue, data.housing, '请选择住房情况');
+        setSelectValue(employmentValue, data.employment, '请选择工作状态');
+        expInput.value = data.experience;
+        expCount.textContent = data.experience.length;
+
+        data.errors.forEach((field) => {
+          if (field === 'age') showError(ageField, ageError, true);
+          if (field === 'city') showError(cityField, cityError, true);
+          if (field === 'housing') showError(housingField, housingError, true);
+          if (field === 'employment') showError(employmentField, employmentError, true);
+        });
+
+        stateButtons.forEach((button) => button.classList.toggle('active', button.dataset.state === name));
+        refreshProgress();
+      }
+
+      function openSheet(kind) {
+        activeSelect = kind;
+        const conf = config[kind];
+        sheetTitle.textContent = conf.title;
+        sheetOptions.innerHTML = '';
+        const current = conf.row.textContent;
+        options[kind].forEach((option) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'sheet-option' + (option === current ? ' selected' : '');
+          button.innerHTML = '<span>' + option + '</span><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>';
+          button.addEventListener('click', () => {
+            setSelectValue(conf.row, option, '');
+            showError(conf.field, conf.error, false);
+            closeSheet();
+            refreshProgress();
+          });
+          sheetOptions.appendChild(button);
+        });
+        phoneScreen.classList.add('sheet-open');
+      }
+
+      function closeSheet() {
+        phoneScreen.classList.remove('sheet-open');
+        activeSelect = null;
+      }
+
+      function toast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1700);
+      }
+
+      document.getElementById('cityRow').addEventListener('click', () => openSheet('city'));
+      document.getElementById('housingRow').addEventListener('click', () => openSheet('housing'));
+      document.getElementById('employmentRow').addEventListener('click', () => openSheet('employment'));
+      backdrop.addEventListener('click', closeSheet);
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeSheet();
+      });
+
+      ageInput.addEventListener('input', () => {
+        if (isValidAge(ageInput.value)) showError(ageField, ageError, false);
+        refreshProgress();
+      });
+
+      expInput.addEventListener('input', () => {
+        expCount.textContent = expInput.value.length;
+      });
+
+      stateButtons.forEach((button) => {
+        button.addEventListener('click', () => renderState(button.dataset.state));
+      });
+
+      saveBtn.addEventListener('click', () => {
+        let valid = true;
+        if (!isValidAge(ageInput.value)) {
+          showError(ageField, ageError, true);
+          valid = false;
+        }
+        if (cityValue.classList.contains('is-placeholder')) {
+          showError(cityField, cityError, true);
+          valid = false;
+        }
+        if (housingValue.classList.contains('is-placeholder')) {
+          showError(housingField, housingError, true);
+          valid = false;
+        }
+        if (employmentValue.classList.contains('is-placeholder')) {
+          showError(employmentField, employmentError, true);
+          valid = false;
+        }
+        if (valid) {
+          toast('资料已保存');
+          saveBtn.disabled = true;
+          setTimeout(() => { saveBtn.disabled = completedCount() === 0; }, 900);
+        }
+      });
+
+      expCount.textContent = expInput.value.length;
+      refreshProgress();
+    })();
+  </script>
+</body>
+</html>

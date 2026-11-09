@@ -15,6 +15,8 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 interface HomeService {
+    @FormUrlEncoded @POST("api/v1/authhistorylist/")
+    suspend fun browsingHistory(@FieldMap fields: Map<String,@JvmSuppressWildcards Any?>): retrofit2.Response<BaseResponse<List<com.google.gson.JsonObject>>>
     @FormUrlEncoded @POST("api/v1/topicdetail/")
     suspend fun topicPreview(@FieldMap dic: Map<String,@JvmSuppressWildcards Any?>): retrofit2.Response<BaseResponse<HomeListModel>>
 

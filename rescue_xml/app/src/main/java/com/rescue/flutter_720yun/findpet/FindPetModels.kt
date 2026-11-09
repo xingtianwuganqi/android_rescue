@@ -20,6 +20,7 @@ data class PetRecommendations(
     val size: Int?, val total: Int?, val has_more: Boolean?, val unread_count: Int?
 )
 data class RecommendationRead(val recommendation_id: Int, val read: Boolean)
+data class FindPetPublishResult(val created: Boolean, val objectId: Int?)
 data class MyPetRequest(
     @SerializedName(value = "id", alternate = ["findId"]) val id: Int,
     val pet_type: Int?, val address: String?, val desc: String?, val contact: String?,

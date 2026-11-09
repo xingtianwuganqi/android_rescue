@@ -12,11 +12,11 @@ interface AnalyticsStateStore {
     fun write(state: AnalyticsState)
 }
 data class AnalyticsIdentity(val accountId: Int?, val token: String?) {
-    val authenticated get() = accountId != null && !token.isNullOrBlank()
+    val authenticated get() = !token.isNullOrBlank()
 }
 data class AnalyticsEvent(val event_id: String, val event_name: String, val anonymous_id: String,
     val session_id: String, val sequence: Int, val occurred_at: String, val platform: String,
-    val app_version: String, val page: String, val properties: Map<String, Any>)
+    val app_version: String, val page: String?, val properties: Map<String, Any>)
 data class AnalyticsEnvelope(val event: AnalyticsEvent, val identity: AnalyticsIdentity)
 
 /** Serial allocation and a testable clock. Automatic completions never extend idle time. */
@@ -27,7 +27,15 @@ class AnalyticsCore(private val store: AnalyticsStateStore, private val now: () 
     @Volatile var enabled = true; private set
     private var foreground = false
     private var cold = true
-    @Synchronized fun setEnabled(value: Boolean) { enabled=value }
+    @Synchronized fun setEnabled(value: Boolean) {
+        if (enabled == value) return
+        enabled = value
+        if (value) {
+            // Re-enabling collection starts a fresh session, matching the iOS store lifecycle.
+            val current = state ?: AnalyticsState(uuid(), uuid(), accountId = null)
+            save(current.copy(sessionId = uuid(), sequence = 0, lastInteractionAt = 0, backgroundAt = 0))
+        }
+    }
     private fun state(identity: AnalyticsIdentity): AnalyticsState {
         var result=state ?: AnalyticsState(uuid(),uuid(),lastInteractionAt=now(),accountId=identity.accountId)
         if(result.accountId!=identity.accountId) {
@@ -73,7 +81,7 @@ class AnalyticsCore(private val store: AnalyticsStateStore, private val now: () 
         if(value.sequence==Int.MAX_VALUE) value=value.copy(sessionId=uuid(),sequence=0)
         value=value.copy(sequence=value.sequence+1)
         val event=AnalyticsEvent(eventId ?: uuid(),name,value.anonymousId,value.sessionId,value.sequence,
-            Instant.ofEpochMilli(now()).toString(),"android",version.take(32),page,properties.toMap())
+            Instant.ofEpochMilli(now()).toString(),"android",version.take(32),page.takeIf { it.isNotEmpty() },properties.toMap())
         if(!AnalyticsContract.withinSize(event)) return null
         save(value)
         return AnalyticsEnvelope(event,identity.copy())
@@ -132,14 +140,15 @@ object AnalyticsContract {
         gson.toJson(event).toByteArray(Charsets.UTF_8).size<=8192
 }
 
-/** Config changes, permission dialogs and repeated renders keep the same visible key. */
+/** Config changes, permission dialogs and repeated renders keep the same visible key.
+ * Unsupported screens keep the last business page so referrer survives overlays and settings. */
 class AnalyticsExposure {
     private var visibleKey: String?=null
     var lastPage: String?=null; private set
     fun show(key: String,page: String?): Boolean {
         if(key==visibleKey) return false
         visibleKey=key
-        lastPage=page
+        if(page!=null) lastPage=page
         return page!=null
     }
 }

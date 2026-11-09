@@ -130,18 +130,30 @@ class AnalyticsCoreTest {
         assertTrue(e.show("instance:message:collect","message_list"))
         assertTrue(e.show("instance:profile","profile"))
     }
-    @Test fun unsupportedPageDoesNotInventReferrer() {
-        val e=AnalyticsExposure();e.show("a","home");assertFalse(e.show("b",null));assertNull(e.lastPage)
-        assertTrue(e.show("a","home"))
+    @Test fun unsupportedPageKeepsPreviousBusinessPage() {
+        val e=AnalyticsExposure();e.show("a","home");assertFalse(e.show("b",null));assertEquals("home",e.lastPage)
+        assertTrue(e.show("c","topic_detail"));assertEquals("topic_detail",e.lastPage)
     }
-    @Test fun payloadHasOnlyWhitelistedTopLevelKeysAndIntegerObjectId() {
+    @Test fun payloadOmitsPageForNonPageEventsAndKeepsIntegerObjectId() {
         val c=core();c.enterForeground(alice)
-        val e=c.create("publish_success","publish_adoption",mapOf("publish_type" to "adoption","object_id" to Long.MAX_VALUE),alice,"1.3.0")!!.event
+        val e=c.create("publish_success","",mapOf("publish_type" to "adoption","object_id" to Long.MAX_VALUE),alice,"1.3.0")!!.event
         val json=Gson().toJsonTree(e).asJsonObject
-        assertEquals(setOf("event_id","event_name","anonymous_id","session_id","sequence","occurred_at","platform","app_version","page","properties"),json.keySet())
+        assertEquals(setOf("event_id","event_name","anonymous_id","session_id","sequence","occurred_at","platform","app_version","properties"),json.keySet())
         assertEquals(Long.MAX_VALUE,json.getAsJsonObject("properties").get("object_id").asLong)
+        val page=Gson().toJsonTree(c.create("page_view","home",emptyMap(),alice,"1")!!.event).asJsonObject
+        assertEquals("home",page.get("page").asString)
         assertEquals("android",e.platform);assertEquals(time,OffsetDateTime.parse(e.occurred_at).toInstant().toEpochMilli())
         UUID.fromString(e.event_id);UUID.fromString(e.anonymous_id);UUID.fromString(e.session_id)
+    }
+    @Test fun tokenOnlyIdentityIsAuthenticated() {
+        assertTrue(AnalyticsIdentity(null,"token").authenticated)
+        assertFalse(AnalyticsIdentity(1,null).authenticated)
+    }
+    @Test fun reEnablingCollectionStartsNewSession() {
+        val c=core();c.enterForeground(anon);val first=event(c)
+        c.setEnabled(false);c.setEnabled(true)
+        val after=event(c)
+        assertNotEquals(first.event.session_id,after.event.session_id);assertEquals(1,after.event.sequence)
     }
     @Test fun requiredAuthAndSuccessObjectIdsCannotBeFaked() {
         val c=core()

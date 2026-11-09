@@ -9,6 +9,8 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface UserService {
+    @FormUrlEncoded @POST("api/v3/login/email/status")
+    suspend fun emailBindingStatus(@FieldMap fields: Map<String,@JvmSuppressWildcards Any?>): retrofit2.Response<com.google.gson.JsonObject>
     @FormUrlEncoded
     @POST("api/v1/authpublishlist/")
     fun ownPublishNetworking(@FieldMap dic: Map<String, @JvmSuppressWildcards Any?>): Call<BaseResponse<Any>>

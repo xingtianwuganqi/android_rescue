@@ -23,7 +23,7 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
 
     inner class ViewHolder(var binding: UserTopicItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListModel){
-            Glide.with(BaseApplication.context).load(item.getImages()?.first()?.toImgUrl())
+            Glide.with(BaseApplication.context).load(item.getImages()?.firstOrNull()?.toImgUrl())
                 .placeholder(R.drawable.icon_eee)
                 .into(binding.topicImage)
 
@@ -42,7 +42,7 @@ class UserTopicListAdapter(var list: MutableList<HomeListModel>,
             binding.promotionRow.visibility=if(visible) View.VISIBLE else View.GONE
             binding.promotionAction.visibility=if(visible) View.VISIBLE else View.GONE
             binding.promotionHelp.setOnClickListener { if(visible) help?.invoke() }
-            binding.promotionStatus.text=com.rescue.flutter_720yun.promotion.PromotionDisplay.label(item.promotion)
+            binding.promotionStatus.text=if(item.promotion?.is_active==true) com.rescue.flutter_720yun.promotion.PromotionDisplay.label(item.promotion) else ""
             binding.promotionStatus.visibility=if(own && binding.promotionStatus.text.isNotEmpty()) View.VISIBLE else View.GONE
             binding.promotionAction.text=com.rescue.flutter_720yun.promotion.models.PromotionUiPolicy.title(item.is_complete==true,item.workflow_status,item.promotion)
             val enabled=com.rescue.flutter_720yun.promotion.models.PromotionUiPolicy.enabled(BuildConfig.ADS_ENABLED,own,item.is_complete==true,item.workflow_status,item.promotion,
@@ -110,7 +110,7 @@ class UserShowListAdapter(var list: MutableList<ShowPageModel>,
     inner class ViewHolder(var binding: UserTopicItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShowPageModel){
 
-            Glide.with(BaseApplication.context).load(item.getImages()?.first()?.toImgUrl())
+            Glide.with(BaseApplication.context).load(item.getImages()?.firstOrNull()?.toImgUrl())
                 .placeholder(R.drawable.icon_eee)
                 .into(binding.topicImage)
 

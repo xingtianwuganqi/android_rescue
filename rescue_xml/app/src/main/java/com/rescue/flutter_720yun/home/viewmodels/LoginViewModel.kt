@@ -59,7 +59,7 @@ class LoginViewModel: ViewModel() {
                 _loginStatus.value = response
             }else{
                 com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_failed",properties=mapOf("login_method" to "password",
-                    "reason_code" to if(response.code==403) "account_unavailable" else "unknown"))
+                    "reason_code" to if(response.message=="网络错误") "network_error" else "unknown"))
                 _loginStatus.value = response
             }
         } catch(cancel: kotlinx.coroutines.CancellationException) { throw cancel }
@@ -118,7 +118,7 @@ class LoginViewModel: ViewModel() {
                 _loginStatus.value = response
             }else{
                 com.rescue.flutter_720yun.analytics.AnalyticsManager.track("login_failed",properties=mapOf("login_method" to "password",
-                    "reason_code" to if(response.code==403) "account_unavailable" else "unknown"))
+                    "reason_code" to if(response.message=="网络错误") "network_error" else "unknown"))
                 _loginStatus.value = response
             }
         } catch(cancel: kotlinx.coroutines.CancellationException) { throw cancel }

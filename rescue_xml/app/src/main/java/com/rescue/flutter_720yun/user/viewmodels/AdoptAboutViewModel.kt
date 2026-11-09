@@ -11,14 +11,10 @@ class AdoptAboutViewModel: ViewModel() {
 
     private val _messageList = MutableLiveData<List<MessageListModel>>().apply {
         value = listOf(
-            MessageListModel("icon_mi_zhinan",
-                BaseApplication.context.resources.getString(R.string.drawer_guideline)),
-            MessageListModel("icon_mi_inter",
-                BaseApplication.context.resources.getString(R.string.drawer_description)),
-            MessageListModel("icon_adoption_flow",
-                BaseApplication.context.resources.getString(R.string.adoption_flow_title), category = "adoption_flow"),
-//            MessageListModel("icon_mi_ad_xy",
-//                BaseApplication.context.resources.getString(R.string.drawer_protocol)),
+            MessageListModel("icon_mi_zhinan", BaseApplication.context.getString(R.string.drawer_guideline), category="prevention"),
+            MessageListModel("icon_adoption_flow", BaseApplication.context.getString(R.string.adoption_flow_title), category="adoption_flow"),
+            MessageListModel("icon_mi_inter", BaseApplication.context.getString(R.string.drawer_description), category="instruction"),
+            MessageListModel("icon_mi_ad_xy", BaseApplication.context.getString(R.string.drawer_protocol), category="agreement")
         )
     }
     val messageList: LiveData<List<MessageListModel>> = _messageList

@@ -96,5 +96,5 @@ class MyFindPetActivity : AdoptionActivity() {
     }
     override fun onSaveInstanceState(outState: Bundle) { outState.putBoolean("route_complete", routeComplete); super.onSaveInstanceState(outState) }
     override fun onPause() { if (vm.reading) vm.cancelWork(); super.onPause() }
-    override fun onDestroy() { binding?.findPetRecommendations?.adapter = null; binding = null; super.onDestroy() }
+    override fun onDestroy() { binding = null; super.onDestroy() }
 }

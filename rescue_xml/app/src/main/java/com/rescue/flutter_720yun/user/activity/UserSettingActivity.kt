@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rescue.flutter_720yun.ActivityController
 import com.rescue.flutter_720yun.BaseActivity
@@ -39,16 +41,22 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
         ViewModelProvider(this)[UserSettingViewModel::class.java]
     }
 
-    private lateinit var adapter: UserSettingAdapter
+    private var pendingCategory: String?=null
+    private val login=registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val category=pendingCategory;pendingCategory=null
+        if(UserManager.isLogin && category!=null) openEntry(category)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pendingCategory=savedInstanceState?.getString("pending_settings_category")
         setContentLayout(R.layout.activity_user_setting)
         setupToolbar(resources.getString(R.string.user_setting))
         _binding = ActivityUserSettingBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
+        binding.settingsVersion.text=com.rescue.flutter_720yun.BuildConfig.VERSION_NAME
         addViewModelObserver()
-        UserManager.sessionRevision.observe(this) { viewModel.refreshEntries() }
+        UserManager.sessionRevision.observe(this) { viewModel.refreshAccountStatus() }
     }
 
 
@@ -56,7 +64,7 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
     override fun addViewModelObserver() {
         super.addViewModelObserver()
         viewModel.messageList.observe(this) {
-            val adapter = UserSettingAdapter(it)
+            val adapter = UserSettingAdapter(it,settingsStyle=true)
             binding.recyclerview.adapter = adapter
             binding.recyclerview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             adapter.setClickListener(this)
@@ -65,7 +73,17 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
 
 
     override fun itemClick(position: Int) {
-        when (viewModel.messageList.value?.getOrNull(position)?.category) {
+        openEntry(viewModel.messageList.value?.getOrNull(position)?.category)
+    }
+    private fun openEntry(category: String?) {
+        if(category in listOf("adoption_profile","find_pet_profile","password","feedback") && !UserManager.isLogin) {
+            pendingCategory=category
+            com.rescue.flutter_720yun.analytics.AnalyticsManager.loginClick()
+            login.launch(Intent(this,com.rescue.flutter_720yun.home.activity.LoginActivity::class.java));return
+        }
+        when (category) {
+            "bind_email" -> startActivity(Intent(this,com.rescue.flutter_720yun.home.activity.LoginActivity::class.java).putExtra("type","bindPhone"))
+            "blacklist" -> startActivity(Intent(this,BlackListActivity::class.java))
             "adoption_profile" -> {
                 startActivity(Intent(this, com.rescue.flutter_720yun.adoption.activity.AdoptionProfileActivity::class.java))
             }
@@ -116,12 +134,15 @@ class UserSettingActivity : BaseActivity(), MessageListItemClickListener {
         LoadingDialog.show(this)
         UserManager.logout()
         EventBus.getDefault().post(LoginEvent(null))
-        GlobalScope.launch {
+        lifecycleScope.launch {
             LoadingDialog.hide()
-            delay(1000)
             ActivityController.finishToLast()
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) { outState.putString("pending_settings_category",pendingCategory);super.onSaveInstanceState(outState) }
+
+    override fun onResume() { super.onResume();viewModel.refreshAccountStatus() }
 
     override fun onDestroy() {
         super.onDestroy()

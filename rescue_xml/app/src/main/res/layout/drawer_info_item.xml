@@ -8,20 +8,17 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         >
         <ImageView
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="15dp"
             android:id="@+id/icon_image"
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:scaleType="fitCenter"
             android:layout_gravity="center"
             android:contentDescription="@null"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
             />
 
         <TextView
@@ -30,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:textSize="@dimen/content_font"
             android:textColor="@color/color_content"
@@ -59,10 +56,5 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/color_eee"
-        android:layout_marginStart="20dp"/>
 
 </LinearLayout>

@@ -1,7 +1,10 @@
 package com.rescue.flutter_720yun.adoption.ui
 
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.models.*
 import com.rescue.flutter_720yun.adoption.repository.AdoptionError
 import com.rescue.flutter_720yun.adoption.viewmodels.AdoptionViewModel
@@ -34,7 +37,7 @@ class AdoptionActionFlow(private val host: FragmentActivity, private val vm: Ado
             }
             val box=android.widget.LinearLayout(host).apply { orientation=android.widget.LinearLayout.VERTICAL;setPadding(32,16,32,16);label(message) }
             val note=if(action=="end") box.field("结束说明（选填，最多200字）") else null
-            dialog=AlertDialog.Builder(host).setView(box).setNegativeButton("取消") { _,_ -> dialog=null }
+            val actionDialog=AlertDialog.Builder(host).setView(box).setNegativeButton("取消") { _,_ -> dialog=null }
                 .setPositiveButton("确认") { d,_ ->
                     d.dismiss(); dialog=null
                     if(revision==UserManager.sessionRevision.value) vm.run {
@@ -56,7 +59,20 @@ class AdoptionActionFlow(private val host: FragmentActivity, private val vm: Ado
                         // Schedule refresh after AdoptionViewModel.run releases its busy flag.
                         host.window.decorView.post { changed() }
                     }
-                }.create().apply { setOnDismissListener { dialog=null }; show() }
+                }.create().apply {
+                    window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                    setOnShowListener {
+                        getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                            setTextColor(ContextCompat.getColor(host,R.color.color_system));textSize=16f
+                        }
+                        getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                            setTextColor(ContextCompat.getColor(host,R.color.color_node));textSize=16f
+                        }
+                    }
+                    setOnDismissListener { dialog=null }
+                }
+            dialog=actionDialog
+            actionDialog.show()
         }
     }
 }

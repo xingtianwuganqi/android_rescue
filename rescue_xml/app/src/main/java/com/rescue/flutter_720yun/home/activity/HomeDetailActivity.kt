@@ -6,6 +6,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
+import com.rescue.flutter_720yun.util.UserManager
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -52,6 +53,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         setContentLayout(R.layout.activity_home_detail)
         _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
         setupToolbar("详情")
+        UserManager.sessionRevision.observe(this) { updateSafetyNotice() }
 
         val topic = intent.getIntExtra("topic_id", 0)
         if (topic <= 0) { "帖子参数无效".toastString(); finish(); return }
@@ -83,6 +85,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         viewModel.homeData.observe(this) {
             uploadViews(it)
             uploadBottom(it)
+            updateSafetyNotice()
             if (::adoptionFlow.isInitialized) adoptionFlow.updateButton()
             invalidateOptionsMenu()
         }
@@ -101,6 +104,12 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
             }
         }
 
+    }
+
+    private fun updateSafetyNotice() {
+        val model=viewModel.homeData.value
+        val author=model?.userInfo?.id ?: model?.user
+        binding.topicSafetyNotice.showDetail(UserManager.isLogin && author!=null && author==UserManager.userId)
     }
 
     private fun uploadViews(homeData: HomeListModel?) {

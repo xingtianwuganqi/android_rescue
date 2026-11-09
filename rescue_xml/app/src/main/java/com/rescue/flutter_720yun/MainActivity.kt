@@ -43,6 +43,10 @@ import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
+    private var startupSafetyChecked=false
+    private lateinit var startupSafety: com.rescue.flutter_720yun.safety.StartupSafetyFlow
+    override fun onPostResume() { super.onPostResume();if(::startupSafety.isInitialized) startupSafety.schedule() }
+    override fun onSaveInstanceState(outState: Bundle) { outState.putBoolean("startup_safety_checked",startupSafetyChecked);super.onSaveInstanceState(outState) }
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
 
@@ -59,11 +63,21 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        startupSafetyChecked=savedInstanceState?.getBoolean("startup_safety_checked",false) ?: false
+        startupSafety=com.rescue.flutter_720yun.safety.StartupSafetyFlow(this,{ startupSafetyChecked },{ startupSafetyChecked=true })
         ActivityController.addActivity(this)
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         drawerLayout = binding.drawerLayout
+        drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerOpened(drawerView: View) {
+                com.rescue.flutter_720yun.analytics.AnalyticsPages.drawerOpened(this@MainActivity)
+            }
+            override fun onDrawerClosed(drawerView: View) {
+                com.rescue.flutter_720yun.analytics.AnalyticsPages.drawerClosed(this@MainActivity)
+            }
+        })
 
 
 
@@ -189,15 +203,23 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
     }
 
     override fun clickHeader() {
+        closeDrawerIfOpen()
         lazyLogin(this) {
 
         }
     }
 
+    private fun closeDrawerIfOpen() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START, false)
+        }
+    }
+
     override fun clickItem(item: DrawerListModel) {
+        closeDrawerIfOpen()
         if (item.name == resources.getString(R.string.drawer_footer)) {
             lazyLogin(this) {
-
+                startActivity(Intent(this,com.rescue.flutter_720yun.user.activity.BrowsingHistoryActivity::class.java))
             }
         }else if (item.name == resources.getString(R.string.drawer_collect)) {
             lazyLogin(this) {

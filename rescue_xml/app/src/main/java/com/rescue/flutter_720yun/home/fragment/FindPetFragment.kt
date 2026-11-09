@@ -50,7 +50,11 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
         _binding=FragmentFindPetBinding.inflate(inflater,container,false);return binding.root
     }
     override fun onViewCreated(view: View,state: Bundle?) {
-        if(resources.configuration.fontScale>1.25f && resources.configuration.screenWidthDp<400) {
+        val collections=arguments?.getBoolean("collections")==true
+        vm.collections=collections
+        // The assistant entry belongs to the public home "找宠" tab, not the collection list.
+        binding.backImage.isVisible=!collections
+        if(!collections && resources.configuration.fontScale>1.25f && resources.configuration.screenWidthDp<400) {
             val constraints=androidx.constraintlayout.widget.ConstraintSet()
             constraints.clone(binding.backImage)
             constraints.clear(R.id.find_header_text,androidx.constraintlayout.widget.ConstraintSet.BOTTOM)
@@ -60,7 +64,6 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
             constraints.constrainWidth(R.id.find_button,(150*resources.displayMetrics.density).toInt())
             constraints.applyTo(binding.backImage)
         }
-        vm.collections=arguments?.getBoolean("collections")==true
         adapter=FindPetListAdapter(mutableListOf(),this)
         binding.findList.layoutManager=LinearLayoutManager(requireContext())
         nativeFeed=NativeFeedAdapter(requireActivity(),viewLifecycleOwner,adapter,FeedAdPlacement.FIND_PET)

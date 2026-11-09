@@ -21,7 +21,7 @@ import com.rescue.flutter_720yun.show.models.GambitListModel
 import com.rescue.flutter_720yun.show.viewmodels.GambitListViewModel
 import com.rescue.flutter_720yun.util.UiState
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import kotlinx.coroutines.selects.select
 
 class GambitListActivity : BaseActivity() {

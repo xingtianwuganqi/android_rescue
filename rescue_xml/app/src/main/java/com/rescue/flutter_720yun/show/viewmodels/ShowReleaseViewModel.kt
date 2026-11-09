@@ -16,6 +16,7 @@ import com.rescue.flutter_720yun.network.ShowService
 import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.show.models.GambitListModel
 import com.rescue.flutter_720yun.show.models.ShowReleaseModel
+import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
 
@@ -170,7 +171,24 @@ class ShowReleaseViewModel: ViewModel() {
                 if (showReleaseModel.gambit_id != null) {
                     dic["gambit_id"] = showReleaseModel.gambit_id
                 }
+                val analyticsToken=UserManager.token
+                val analyticsRevision=UserManager.sessionRevision.value
                 val response = showService.releaseShowInfo(dic).awaitResp()
+                if (response.code == 200 && analyticsToken != null &&
+                    analyticsToken == UserManager.token &&
+                    analyticsRevision == UserManager.sessionRevision.value) {
+                    val data = response.data as? Map<*, *>
+                    val created = data?.get("created") == true
+                    val objectId = when (val value = data?.get("object_id")) {
+                        is Number -> value.toInt()
+                        is String -> value.toIntOrNull() ?: 0
+                        else -> 0
+                    }
+                    if (created && objectId > 0) {
+                        com.rescue.flutter_720yun.analytics.AnalyticsManager.track("publish_success",
+                            properties=mapOf("publish_type" to "show_pet","object_id" to objectId.toLong()))
+                    }
+                }
                 _releaseSuccess.value = response.code
             }catch (e: Exception) {
                 Log.d("TAG", "release topic error: $e")

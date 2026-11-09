@@ -38,7 +38,7 @@ import com.rescue.flutter_720yun.util.LoadingDialog
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

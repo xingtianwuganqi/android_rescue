@@ -42,7 +42,7 @@ import com.rescue.flutter_720yun.util.UserManager
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -102,7 +102,7 @@ class ShowFragment : Fragment(), ShowItemClickListener {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
+        binding.refreshLayout.setRefreshHeader(MaterialHeader(requireContext()))
         binding.refreshLayout.setOnRefreshListener {
             loadData(RefreshState.REFRESH)
         }

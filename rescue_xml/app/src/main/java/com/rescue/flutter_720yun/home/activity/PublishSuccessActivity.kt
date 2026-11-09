@@ -2,24 +2,32 @@ package com.rescue.flutter_720yun.home.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import com.rescue.flutter_720yun.BaseActivity
-import com.rescue.flutter_720yun.adoption.ui.*
-import com.rescue.flutter_720yun.promotion.PromotionEntry
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.databinding.ActivityPublishSuccessBinding
 
 class PublishSuccessActivity: BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupToolbar("发布成功")
-        val root=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL;setPadding(32,32,32,32) }
-        baseBinding.contentFrame.addView(root)
-        root.label("发布成功")
-        val topic=intent.getIntExtra("topic_id",0)
-        val promote=root.button("观看视频，增加曝光") { }
-        if(topic>0) {
-            PromotionEntry(this,promote,topic,"publish_success").setOwner(true)
-            root.button("查看帖子") { startActivity(Intent(this,HomeDetailActivity::class.java).putExtra("topic_id",topic)) }
-        } else promote.visibility=android.view.View.GONE
-        root.button("完成") { finish() }
+        setContentLayout(R.layout.activity_publish_success)
+        val binding = ActivityPublishSuccessBinding.bind(baseBinding.contentFrame.getChildAt(2))
+        setupToolbar("")
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        val topic = intent.getIntExtra("topic_id", 0)
+        binding.successMessage.text = if (topic > 0) {
+            "帖子已发布，可查看帖子或稍后在我的发布查看。"
+        } else {
+            "帖子已发布，可稍后在我的发布查看。"
+        }
+        binding.viewTopic.isVisible = topic > 0
+        binding.viewTopic.setOnClickListener {
+            if (topic > 0) {
+                startActivity(Intent(this, HomeDetailActivity::class.java).putExtra("topic_id", topic))
+            }
+        }
+        binding.done.setOnClickListener { finish() }
+        binding.successAnimation.playAnimation()
     }
 }

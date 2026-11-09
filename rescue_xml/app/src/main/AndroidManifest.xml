@@ -33,6 +33,9 @@
         </provider>
         <activity android:name=".home.share.TopicVideoPreviewActivity" android:exported="false" />
         <activity android:name=".home.share.ShareVideoMusicActivity" android:exported="false" />
+        <activity android:name=".user.activity.BrowsingHistoryActivity" android:exported="false" />
+        <activity android:name=".user.activity.AdoptionAgreementActivity" android:exported="false" />
+        <activity android:name=".safety.StartupSafetyGuideActivity" android:exported="false" />
         <activity android:name=".home.activity.PublishSuccessActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionMyApplicationsActivity" android:exported="false" />
         <activity android:name=".adoption.activity.AdoptionProfileActivity" android:exported="false" />

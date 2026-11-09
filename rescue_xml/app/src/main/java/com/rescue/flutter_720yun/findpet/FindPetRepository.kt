@@ -94,10 +94,14 @@ class FindPetRepository(
         return runCatching { FindPetServices.gson.fromJson(result.get("data"), MyPetRequest::class.java) }.getOrNull()
             ?.takeIf { it.id > 0 } ?: throw AdoptionError(502, message = "找宠资料无效，请重试")
     }
-    suspend fun save(type: Int, address: String, description: String, contact: String, cityId: String?) {
+    suspend fun save(type: Int, address: String, description: String, contact: String, cityId: String?): FindPetPublishResult {
         val fields = mutableMapOf<String, Any?>("pet_type" to type, "address" to address, "desc" to description, "contact" to contact)
         cityId?.takeIf { it.isNotBlank() }?.let { fields["city_id"] = it }
-        legacy(extra = fields, call = service::save)
+        val json = legacy(extra = fields, call = service::save)
+        val data = runCatching { json?.getAsJsonObject("data") }.getOrNull()
+        val created = runCatching { data?.get("created")?.takeUnless { it.isJsonNull }?.asBoolean }.getOrNull() == true
+        val objectId = runCatching { data?.get("object_id")?.takeUnless { it.isJsonNull }?.asInt }.getOrNull()
+        return FindPetPublishResult(created, objectId?.takeIf { it > 0 })
     }
     suspend fun setEffective(open: Boolean) { legacy(extra = mapOf("effective" to if (open) 1 else 2), call = service::effective) }
     suspend fun publicList(page: Int, collections: Boolean = false): List<com.rescue.flutter_720yun.home.models.FindPetModel> {

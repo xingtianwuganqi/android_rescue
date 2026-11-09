@@ -118,9 +118,20 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
             val padding = (20*resources.displayMetrics.density).toInt(); setPadding(padding,padding,padding,padding)
             movementMethod = android.text.method.LinkMovementMethod.getInstance(); setLineSpacing(2*resources.displayMetrics.density,1f)
         }
-        val scroll = android.widget.ScrollView(host).apply { addView(body) }
-        dialog = AlertDialog.Builder(host).setTitle("领养须知").setView(scroll)
-            .setNegativeButton("取消",null).setPositiveButton("继续申请") { d,_ -> d.dismiss(); vm.submit(profileData,"") }.show()
+        // Wrap short content; cap long content so the bottom button panel always stays visible.
+        val maxHeight = (host.resources.displayMetrics.heightPixels * 0.55f).toInt()
+        val scroll = com.rescue.flutter_720yun.views.MaxHeightScrollView(host).apply {
+            this.maxHeight = maxHeight
+            addView(body)
+        }
+        (host.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
+            ?.hideSoftInputFromWindow(host.window.decorView.windowToken,0)
+        val builder = AlertDialog.Builder(host).setTitle("领养须知").setView(scroll)
+            .setNegativeButton("取消",null)
+            .setPositiveButton("继续申请") { d,_ -> d.dismiss(); vm.submit(profileData,"") }
+        val noticeDialog = builder.create()
+        dialog = noticeDialog
+        noticeDialog.show()
     }
     private fun showApplication(app: AdoptionApplication, submitted: Boolean) {
         clearDialog()

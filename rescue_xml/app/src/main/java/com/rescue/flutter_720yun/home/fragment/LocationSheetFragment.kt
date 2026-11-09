@@ -87,15 +87,13 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
     private fun updatePage(level: Int, items: List<AddressItem>) {
         val fragment = pagerAdapter.fragments[level].apply {
             setAddressItem(items) {
-                if (selectedItems.size > level) {
-                    selectedItems[level] = it
-                }else{
-                    selectedItems.add(it)
-                }
+                // 重选上级地区时清除旧的下级选择，避免携带上一个城市的区县。
+                while (selectedItems.size > level) selectedItems.removeAt(selectedItems.lastIndex)
+                selectedItems.add(it)
 
                 tabLayout.getTabAt(level)?.text = it.name
 
-                if (it.children == null) {
+                if (it.children.isNullOrEmpty()) {
                     sendResultAndDismiss()
                 }else{
                     updatePage(level + 1, it.children ?: emptyList())

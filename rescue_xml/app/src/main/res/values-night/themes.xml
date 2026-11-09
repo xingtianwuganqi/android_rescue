@@ -11,5 +11,13 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@color/white</item>
         <item name="android:forceDarkAllowed">false</item>
+        <!-- AlertDialog buttons use colorAccent/colorPrimary; keep them visible in dark mode too. -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.Android_rescue.Dialog</item>
+    </style>
+
+    <style name="ThemeOverlay.Android_rescue.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/color_system</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/color_system</item>
     </style>
 </resources>

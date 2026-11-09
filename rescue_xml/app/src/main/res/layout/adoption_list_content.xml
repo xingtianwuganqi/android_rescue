@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <com.scwang.smart.refresh.header.MaterialHeader
+        <com.rescue.flutter_720yun.views.SystemColorRefreshHeader
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <androidx.core.widget.NestedScrollView
@@ -59,8 +59,8 @@
                     <ProgressBar android:id="@+id/adoption_reminder_loading" android:layout_width="28dp" android:layout_height="28dp" android:layout_gravity="center_horizontal" android:visibility="gone" />
                     <TextView android:id="@+id/adoption_reminder_status" style="@style/AdoptionCardSecondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="8dp" android:textSize="12sp" />
                     <androidx.recyclerview.widget.RecyclerView android:id="@+id/adoption_reminder_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:nestedScrollingEnabled="false" android:saveEnabled="false" />
-                    <Button android:id="@+id/adoption_reminder_retry" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="提醒加载失败，点击重试" android:visibility="gone" />
-                    <Button android:id="@+id/adoption_reminder_more" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="加载更多提醒" android:visibility="gone" />
+                    <Button android:id="@+id/adoption_reminder_retry" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:backgroundTint="@null" android:elevation="0dp" android:stateListAnimator="@null" android:minHeight="40dp" android:paddingHorizontal="0dp" android:text="提醒加载失败，点击重试" android:textAllCaps="false" android:textColor="@color/color_system" android:textSize="13sp" android:visibility="gone" />
+                    <Button android:id="@+id/adoption_reminder_more" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:backgroundTint="@null" android:elevation="0dp" android:stateListAnimator="@null" android:minHeight="40dp" android:paddingHorizontal="0dp" android:text="加载更多提醒" android:textAllCaps="false" android:textColor="@color/color_system" android:textSize="13sp" android:visibility="gone" />
                 </LinearLayout>
                 <ProgressBar android:id="@+id/adoption_list_loading" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:layout_marginVertical="36dp" android:visibility="gone" />
                 <TextView android:id="@+id/adoption_list_empty" android:layout_width="match_parent" android:layout_height="220dp" android:gravity="center" android:text="暂无数据\n请点击重试" android:textSize="@dimen/address_font" android:textColor="@color/color_desc" android:visibility="gone" />

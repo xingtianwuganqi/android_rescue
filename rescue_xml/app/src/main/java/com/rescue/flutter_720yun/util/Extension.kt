@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.util
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -181,6 +183,16 @@ fun loadScaleImage(context: Context, url: String, imageView: ImageView) {
                 // 可选的清除操作
             }
         })
+}
+
+/** Resolve the Activity behind a themed ContextWrapper, if any. */
+fun Context.findActivity(): Activity? {
+    var context: Context? = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
 }
 
 fun lazyLogin(activity: Context, callback: () -> Unit) {

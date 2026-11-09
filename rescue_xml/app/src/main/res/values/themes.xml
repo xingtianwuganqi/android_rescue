@@ -15,7 +15,15 @@
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar" >true</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- AlertDialog buttons use colorAccent/colorPrimary; the white app primary makes them invisible. -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.Android_rescue.Dialog</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="ThemeOverlay.Android_rescue.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/color_system</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/color_system</item>
     </style>
 
 

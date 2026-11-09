@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.models.AdoptionTime
 import com.rescue.flutter_720yun.databinding.FindPetRecommendationItemBinding
+import com.rescue.flutter_720yun.util.findActivity
 import com.rescue.flutter_720yun.util.toImgUrl
 
 class RecommendationAdapter(private val click: (PetRecommendation) -> Unit) : RecyclerView.Adapter<RecommendationAdapter.Holder>() {
@@ -32,5 +33,13 @@ class RecommendationAdapter(private val click: (PetRecommendation) -> Unit) : Re
         b.root.setOnClickListener { click(item) }
         b.root.contentDescription = if (item.available) "查看送养帖子" else "帖子不可用，点击标记已读"
     }
-    override fun onViewRecycled(holder: Holder) { Glide.with(holder.b.recommendationPhoto).clear(holder.b.recommendationPhoto); super.onViewRecycled(holder) }
+    override fun onViewRecycled(holder: Holder) {
+        // During Activity.onDestroy the Activity is already marked destroyed; Glide.with(view)
+        // would throw "You cannot start a load for a destroyed activity" while recycling holders.
+        val activity = holder.b.recommendationPhoto.context.findActivity()
+        if (activity == null || !activity.isDestroyed) {
+            Glide.with(holder.b.recommendationPhoto).clear(holder.b.recommendationPhoto)
+        }
+        super.onViewRecycled(holder)
+    }
 }

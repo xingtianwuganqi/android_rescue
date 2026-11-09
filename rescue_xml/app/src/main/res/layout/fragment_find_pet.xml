@@ -6,7 +6,7 @@
         android:layout_marginHorizontal="15dp" android:layout_marginVertical="8dp"
         android:paddingVertical="16dp" android:background="@drawable/find_pet_header_background"
         android:foreground="?attr/selectableItemBackground" android:contentDescription="找宠小助手，去找宠">
-        <ImageView android:layout_width="169dp" android:layout_height="0dp" android:src="@drawable/icon_find_line"
+        <ImageView android:id="@+id/find_header_image" android:layout_width="169dp" android:layout_height="0dp" android:src="@drawable/icon_find_line"
             android:scaleType="fitCenter" android:importantForAccessibility="no" android:clickable="false"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" />
         <LinearLayout android:id="@+id/find_header_text" android:layout_width="0dp" android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
         <com.scwang.smart.refresh.layout.SmartRefreshLayout android:id="@+id/refresh_layout" android:layout_width="match_parent" android:layout_height="match_parent">
-            <com.scwang.smart.refresh.header.MaterialHeader android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <com.rescue.flutter_720yun.views.SystemColorRefreshHeader android:layout_width="match_parent" android:layout_height="wrap_content" />
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/find_list" android:layout_width="match_parent" android:layout_height="match_parent" />
             <com.scwang.smart.refresh.footer.ClassicsFooter android:layout_width="match_parent" android:layout_height="wrap_content" />
         </com.scwang.smart.refresh.layout.SmartRefreshLayout>

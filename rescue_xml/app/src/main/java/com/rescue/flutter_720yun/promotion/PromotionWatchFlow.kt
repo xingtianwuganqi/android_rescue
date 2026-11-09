@@ -1,6 +1,5 @@
 package com.rescue.flutter_720yun.promotion
 
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -70,8 +69,16 @@ class PromotionWatchFlow(private val host: FragmentActivity, private val owner: 
             text.text = "1. 如何获得推广\n必须完整观看广告视频，并收到广告平台的奖励成功结果。提前关闭、播放失败或仅播放结束，都不会获得推广。推广接口提交成功后才正式生效。\n\n2. 展示位置与时长\n推广生效后，帖子获得${duration}首页优先展示，刷新首页第一页即可查看。有效推广帖排在普通帖之前，最近一次推广成功的帖子排在最前面。若推广帖子超过一页，部分帖子会展示在后续页，并不保证整个推广期间始终位于第一页。符合城市条件的同城列表也会优先展示。\n\n3. 再次观看与续期\n同一个帖子可以再次完整观看视频。成功后从这次推广生效时间重新计算${duration}，并更新排序；不会新增重复帖子，也不会在原剩余时间上累加${duration}。\n\n4. 何时停止推广\n超过${duration}后恢复普通排序；帖子删除、结束送养或不再符合展示条件时，也不再享有推广展示。推广只增加曝光，不保证浏览量或领养结果。\n\n5. 次数与网络异常\n仅可推广本人符合条件的帖子，每日次数以页面和服务端限制为准。推广暂未开放或次数用完时无法观看。获得奖励后遇到网络异常，会为原账号保留待提交记录，并在24小时内尝试恢复；看到推广成功提示后再刷新首页查看效果。"
         }
         update()
-        dialog = AlertDialog.Builder(host).setTitle("帖子推广说明").setView(ScrollView(host).apply { addView(text) })
-            .setPositiveButton("我知道了",null).create().apply { setOnDismissListener { if (operation == generation) { dialog = null; release() } }; show() }
+        val maxHeight = (host.resources.displayMetrics.heightPixels * 0.55f).toInt()
+        val scroll = com.rescue.flutter_720yun.views.MaxHeightScrollView(host).apply {
+            this.maxHeight = maxHeight
+            addView(text)
+        }
+        dialog = AlertDialog.Builder(host).setTitle("帖子推广说明").setView(scroll)
+            .setPositiveButton("我知道了",null).create().apply {
+                setOnDismissListener { if (operation == generation) { dialog = null; release() } }
+                show()
+            }
         job = owner.lifecycleScope.launch { configuration.refresh(); if (operation == generation && visible()) update() }
     }
     private fun cancel() { generation++; job?.cancel(); job = null; dialog?.dismiss(); dialog = null; release() }

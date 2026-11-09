@@ -32,7 +32,7 @@ import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -42,7 +42,7 @@ class UserTopicFragment: Fragment() {
     private var _binding: FragmentUserTopicBinding? = null
     private val binding get() = _binding!!
     private var from: Int? = null
-    private lateinit var promotionWatch: com.rescue.flutter_720yun.promotion.PromotionWatchFlow
+    private var promotionWatch: com.rescue.flutter_720yun.promotion.PromotionWatchFlow? = null
 
 
     // 处理反向传值
@@ -71,8 +71,8 @@ class UserTopicFragment: Fragment() {
             intent.putExtra("topic_id", item.topic_id)
             intent.putExtra("topic_from", 1)
             detailActivityLauncher.launch(intent)
-        }, promote={ item -> item.topic_id?.let { topic -> promotionWatch.start(topic,"my_posts") } },
-            help={ promotionWatch.showIntroduction() })
+        }, promote={ item -> item.topic_id?.let { topic -> promotionWatch?.start(topic,"my_posts") } },
+            help={ promotionWatch?.showIntroduction() })
     }
 
     private val showAdapter by lazy {
@@ -131,7 +131,7 @@ class UserTopicFragment: Fragment() {
             from==0 && viewModel.userIdLiveData.value==com.rescue.flutter_720yun.util.UserManager.userId
         }
 
-        binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
+        binding.refreshLayout.setRefreshHeader(MaterialHeader(requireContext()))
         binding.refreshLayout.setOnRefreshListener {
             loadData(RefreshState.REFRESH)
         }
@@ -277,9 +277,11 @@ class UserTopicFragment: Fragment() {
         com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.restore()
         if(_binding!=null && from==0) loadData(RefreshState.REFRESH)
     }
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        _binding?.recyclerview?.adapter = null
         _binding = null
+        promotionWatch = null
+        super.onDestroyView()
     }
 
     companion object {

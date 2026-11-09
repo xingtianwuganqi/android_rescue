@@ -66,12 +66,24 @@ class AnalyticsManagerTest {
         AnalyticsManager.showScreen("b","messages");take();AnalyticsManager.showScreen("a","home");take()
         assertEquals(3,server.requestCount)
     }
-    @Test fun formExposureEmitsMatchingPageAndTypeOnlyOnce() {
-        reply();reply();AnalyticsManager.showScreen("form","publish_find_pet")
-        val names=List(2) { JsonParser.parseString(take().body.readUtf8()).asJsonObject }.associateBy { it.get("event_name").asString }
-        assertEquals("publish_find_pet",names["publish_page_view"]!!.get("page").asString)
-        assertEquals("find_pet",names["publish_page_view"]!!.getAsJsonObject("properties").get("publish_type").asString)
-        AnalyticsManager.showScreen("form","publish_find_pet");assertEquals(2,server.requestCount)
+    @Test fun formExposureEmitsOnlyPublishPageView() {
+        reply();AnalyticsManager.showScreen("form","publish_find_pet")
+        val body=JsonParser.parseString(take().body.readUtf8()).asJsonObject
+        assertEquals("publish_page_view",body.get("event_name").asString)
+        assertEquals("publish_find_pet",body.get("page").asString)
+        assertEquals("find_pet",body.getAsJsonObject("properties").get("publish_type").asString)
+        AnalyticsManager.showScreen("form","publish_find_pet");assertEquals(1,server.requestCount)
+    }
+    @Test fun referrerUsesPreviousBusinessPageForSameAndUnsupportedScreens() {
+        repeat(3) { reply() }
+        AnalyticsManager.showScreen("a","home")
+        assertFalse(JsonParser.parseString(take().body.readUtf8()).asJsonObject.getAsJsonObject("properties").has("referrer_page"))
+        AnalyticsManager.showScreen("overlay",null)
+        assertEquals(1,server.requestCount)
+        AnalyticsManager.showScreen("b","topic_detail")
+        assertEquals("home",JsonParser.parseString(take().body.readUtf8()).asJsonObject.getAsJsonObject("properties").get("referrer_page").asString)
+        AnalyticsManager.showScreen("c","topic_detail")
+        assertEquals("topic_detail",JsonParser.parseString(take().body.readUtf8()).asJsonObject.getAsJsonObject("properties").get("referrer_page").asString)
     }
     @Test fun messageListTypeIsNestedEnumeratedProperty() {
         reply();AnalyticsManager.showScreen("like","message_list",mapOf("message_list_type" to "like"))
@@ -81,13 +93,18 @@ class AnalyticsManagerTest {
     }
     @Test fun rewardUsesOriginalAttemptAndIgnoresDuplicateAndOtherAccount() {
         account(1,"original");val id=UUID.randomUUID().toString()
-        reply();AnalyticsManager.rewardSuccess(1,123,"my_posts",id)
+        reply();AnalyticsManager.rewardSuccess(1,"original",123,"my_posts",id)
         val body=JsonParser.parseString(take().body.readUtf8()).asJsonObject
         assertEquals(id,body.get("event_id").asString)
         assertEquals("my_posts",body.getAsJsonObject("properties").get("ad_placement").asString)
-        AnalyticsManager.rewardSuccess(1,123,"my_posts",id);account(2,"new-account")
-        AnalyticsManager.rewardSuccess(1,123,"my_posts",UUID.randomUUID().toString())
+        AnalyticsManager.rewardSuccess(1,"original",123,"my_posts",id);account(2,"new-account")
+        AnalyticsManager.rewardSuccess(1,"original",123,"my_posts",UUID.randomUUID().toString())
         assertEquals(1,server.requestCount)
+    }
+    @Test fun rewardRequiresMatchingToken() {
+        account(1,"original")
+        AnalyticsManager.rewardSuccess(1,"stale-token",123,"my_posts",UUID.randomUUID().toString())
+        assertEquals(0,server.requestCount)
     }
     @Test fun internalDisableDoesNotBackfillEvents() {
         AnalyticsManager.setEnabled(false);AnalyticsManager.track("app_open")

@@ -20,13 +20,14 @@ android {
         applicationId = "com.rescue.flutter_720yun"
         minSdk = 28
         targetSdk = 34
-        versionCode = 21
+        versionCode = 22
         versionName = "1.3.0"
         val apiUrl = providers.gradleProperty("API_BASE_URL").getOrElse("http://test.rxswift.cn/")
         buildConfigField("String", "API_BASE_URL", "\"${apiUrl.replace("\"", "\\\"")}\"")
         val adoptionUrl = providers.gradleProperty("ADOPTION_BASE_URL").getOrElse(apiUrl)
         buildConfigField("String", "ADOPTION_BASE_URL", "\"${adoptionUrl.replace("\"", "\\\"")}\"")
 
+        buildConfigField("boolean", "STARTUP_SAFETY_ENABLED", providers.gradleProperty("STARTUP_SAFETY_ENABLED").getOrElse("true").toBooleanStrict().toString())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
@@ -87,6 +88,7 @@ android {
         }
 
         debug {
+            buildConfigField("boolean", "STARTUP_SAFETY_ENABLED", providers.gradleProperty("STARTUP_SAFETY_ENABLED").getOrElse("false").toBooleanStrict().toString())
             // 关闭混淆以方便调试
             isMinifyEnabled = false
         }
@@ -142,6 +144,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.glide)
+    implementation("com.airbnb.android:lottie:6.3.0")
     implementation(libs.roundedimageview)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.viewpager2.viewpager2)

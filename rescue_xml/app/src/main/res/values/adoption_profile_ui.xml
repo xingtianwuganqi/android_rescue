@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="adoption_profile_background">#F5F5F5</color>
+    <color name="adoption_profile_ink">#333333</color>
+    <color name="adoption_profile_title">#2E2E2E</color>
+    <color name="adoption_profile_secondary">#68686C</color>
+    <color name="adoption_profile_muted">#8E8E93</color>
+    <color name="adoption_profile_faint">#A0A0A5</color>
+    <color name="adoption_profile_line">#F0F0F0</color>
+    <color name="adoption_profile_field_line">#ECECEC</color>
+    <color name="adoption_profile_field_background">#FBFBFB</color>
+    <color name="adoption_profile_soft">#FFF4DF</color>
+    <color name="adoption_profile_soft_line">#FFE3B2</color>
+    <color name="adoption_profile_icon_tint">#D98A00</color>
+    <color name="adoption_profile_required_text">#B56A00</color>
+    <color name="adoption_profile_progress_text">#A86B00</color>
+    <color name="adoption_profile_intro_text">#7A746B</color>
+    <color name="adoption_profile_intro_muted">#9A8F7D</color>
+    <color name="adoption_profile_error">#E5484D</color>
+    <color name="adoption_profile_sheet_text">#4A4A4F</color>
+    <color name="adoption_profile_sheet_selected">#C67A00</color>
+    <color name="adoption_profile_disabled_fill">#E9E9EB</color>
+    <color name="adoption_profile_disabled_text">#A8A8AC</color>
+
+    <string name="adoption_profile_intro_title">让送养人更快了解你</string>
+    <string name="adoption_profile_intro_desc">填写一次，即可复用到之后的领养申请。送养人看到的是你提交时的资料快照。</string>
+    <string name="adoption_profile_progress_label">必填资料完成度</string>
+    <string name="adoption_profile_progress_value">%1$d / 4</string>
+    <string name="adoption_profile_safe_note">资料仅用于领养沟通，不会公开展示联系方式</string>
+    <string name="adoption_profile_section_basic">基本信息</string>
+    <string name="adoption_profile_section_living">居住与工作</string>
+    <string name="adoption_profile_section_experience">养宠经验</string>
+    <string name="adoption_profile_required">必填</string>
+    <string name="adoption_profile_optional">选填</string>
+    <string name="adoption_profile_age_label">年龄</string>
+    <string name="adoption_profile_age_placeholder">请输入年龄</string>
+    <string name="adoption_profile_age_suffix">周岁</string>
+    <string name="adoption_profile_age_hint">限 10–100 周岁</string>
+    <string name="adoption_profile_city_label">城市 / 区县</string>
+    <string name="adoption_profile_city_sub">用于匹配同城领养信息</string>
+    <string name="adoption_profile_city_placeholder">请选择城市 / 区县</string>
+    <string name="adoption_profile_housing_label">住房情况</string>
+    <string name="adoption_profile_housing_sub">帮助送养人了解居住环境</string>
+    <string name="adoption_profile_housing_placeholder">请选择住房情况</string>
+    <string name="adoption_profile_employment_label">工作状态</string>
+    <string name="adoption_profile_employment_sub">用于评估照护稳定性</string>
+    <string name="adoption_profile_employment_placeholder">请选择工作状态</string>
+    <string name="adoption_profile_experience_label">说说你的养宠经历</string>
+    <string name="adoption_profile_experience_hint">真实、具体的经历更容易获得送养人信任</string>
+    <string name="adoption_profile_experience_placeholder">例如：养猫 3 年，了解驱虫、疫苗和绝育护理。</string>
+    <string name="adoption_profile_counter">%1$d/200</string>
+    <string name="adoption_profile_save_note">保存后可随时修改</string>
+    <string name="adoption_profile_save">保存资料</string>
+    <string name="adoption_profile_city_error">请选择城市 / 区县</string>
+    <string name="adoption_profile_housing_error">请选择住房情况</string>
+    <string name="adoption_profile_employment_error">请选择工作状态</string>
+    <string name="adoption_profile_select_province">选择省份</string>
+    <string name="adoption_profile_select_city">选择城市</string>
+    <string name="adoption_profile_select_district">选择区县</string>
+
+    <style name="AdoptionProfileSectionTitle">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/adoption_profile_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionProfileFieldLabel">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/adoption_profile_secondary</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionProfileHint">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/adoption_profile_faint</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionProfileError">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/adoption_profile_error</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionProfileSelectValue">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/adoption_profile_ink</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionProfileSelectSub">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/adoption_profile_faint</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="AdoptionProfilePill">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">7dp</item>
+        <item name="android:paddingEnd">7dp</item>
+        <item name="android:minHeight">20dp</item>
+    </style>
+</resources>

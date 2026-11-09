@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_defIcon">
-        <com.scwang.smart.refresh.header.MaterialHeader
+        <com.rescue.flutter_720yun.views.SystemColorRefreshHeader
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <androidx.recyclerview.widget.RecyclerView

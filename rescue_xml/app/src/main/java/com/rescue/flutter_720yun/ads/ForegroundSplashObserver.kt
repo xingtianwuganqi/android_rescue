@@ -31,7 +31,7 @@ class ForegroundSplashObserver(application: Application) : Application.ActivityL
         started--
         if (started == 0 && !activity.isChangingConfigurations) {
             eligible = !suppressForFirstLaunch && !TakuAds.fullscreenPresented &&
-                activity !is SplashActivity && activity !is WarmSplashActivity && activity !is SupportActivity &&
+                activity !is SplashActivity && activity !is WarmSplashActivity && activity !is SupportActivity && activity !is com.rescue.flutter_720yun.safety.StartupSafetyGuideActivity &&
                 activity.javaClass.name.startsWith(activity.packageName)
             handler.postDelayed(markBackground, 700)
         }

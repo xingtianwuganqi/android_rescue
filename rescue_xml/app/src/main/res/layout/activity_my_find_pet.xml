@@ -20,7 +20,7 @@
     <TextView android:id="@+id/find_pet_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:padding="16dp" android:textColor="@color/color_system" android:visibility="gone" />
     <ProgressBar android:id="@+id/find_pet_loading" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:visibility="gone" />
     <com.scwang.smart.refresh.layout.SmartRefreshLayout android:id="@+id/find_pet_refresh" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <com.scwang.smart.refresh.header.MaterialHeader android:layout_width="match_parent" android:layout_height="wrap_content" />
+        <com.rescue.flutter_720yun.views.SystemColorRefreshHeader android:layout_width="match_parent" android:layout_height="wrap_content" />
         <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/find_pet_recommendations" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingTop="8dp" android:clipToPadding="false" android:saveEnabled="false" />
             <TextView android:id="@+id/find_pet_empty" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:padding="24dp" android:textColor="@color/color_desc" android:textSize="15sp" android:visibility="gone" />

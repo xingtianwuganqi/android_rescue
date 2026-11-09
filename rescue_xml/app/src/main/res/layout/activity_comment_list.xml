@@ -7,14 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".message.activity.CommentListActivity">
 
+    <com.rescue.flutter_720yun.adoption.ui.TopicSafetyNotice
+        android:id="@+id/comment_safety_notice" android:layout_width="0dp" android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
+
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/comment_safety_notice"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottom_frame"
-        android:layout_marginBottom="65dp">
+        android:layout_marginBottom="0dp">
 
         <TextView
             android:id="@+id/error_message"
@@ -39,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
-            <com.scwang.smart.refresh.header.MaterialHeader
+            <com.rescue.flutter_720yun.views.SystemColorRefreshHeader
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
             <androidx.recyclerview.widget.RecyclerView

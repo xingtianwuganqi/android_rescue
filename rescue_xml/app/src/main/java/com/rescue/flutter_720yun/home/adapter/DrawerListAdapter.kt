@@ -52,11 +52,10 @@ class DrawerListAdapter(val list: MutableList<DrawerListModel>): RecyclerView.Ad
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return list.size + 1
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = list[position]
         when (holder) {
             is DrawerHeadViewHolder -> {
                 if (UserManager.isLogin) {
@@ -74,6 +73,7 @@ class DrawerListAdapter(val list: MutableList<DrawerListModel>): RecyclerView.Ad
                 }
             }
             is DrawerInfoViewHolder -> {
+                val item = list[position - 1]
                 holder.headImage.setImageResource(item.icon.imageResourcesId())
                 holder.title.text = item.name
                 holder.contentBack.setOnClickListener { 

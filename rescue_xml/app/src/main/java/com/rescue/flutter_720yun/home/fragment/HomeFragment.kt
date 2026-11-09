@@ -40,7 +40,7 @@ import com.rescue.flutter_720yun.util.getImages
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import com.wei.wimagepreviewlib.WImagePreviewBuilder
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -136,7 +136,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
             recyclerView.adapter = nativeAdAdapter ?: adapter
         }
 
-        binding.refreshLayout.setRefreshHeader(MaterialHeader(activity))
+        binding.refreshLayout.setRefreshHeader(MaterialHeader(requireContext()))
         binding.refreshLayout.setRefreshFooter(ClassicsFooter(activity))
         binding.refreshLayout.setOnRefreshListener {
             refreshData()

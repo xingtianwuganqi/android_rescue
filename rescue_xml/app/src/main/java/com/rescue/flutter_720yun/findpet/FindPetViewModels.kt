@@ -97,7 +97,17 @@ class PetRequestViewModel(val source: FindPetRepository = FindPetRepository()) :
     fun save() = run {
         if(writeCommitted.value==true) throw AdoptionError(400,message="操作已成功，请先刷新本人资料")
         validate()?.let { throw AdoptionError(400,message=it) }
-        try { source.save(type,address,description.trim(),contact.trim(),cityId) }
+        val analyticsToken=com.rescue.flutter_720yun.util.UserManager.token
+        val analyticsRevision=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
+        try {
+            val result=source.save(type,address,description.trim(),contact.trim(),cityId)
+            if(result.created && result.objectId!=null &&
+                analyticsToken!=null && analyticsToken==com.rescue.flutter_720yun.util.UserManager.token &&
+                analyticsRevision==com.rescue.flutter_720yun.util.UserManager.sessionRevision.value) {
+                com.rescue.flutter_720yun.analytics.AnalyticsManager.track("publish_success",
+                    properties=mapOf("publish_type" to "find_pet","object_id" to result.objectId.toLong()))
+            }
+        }
         catch(e: AdoptionError) { resolveUnknown(e);throw e }
         writeCommitted.value=true;FindPetChanges.requestChanged();reconcile()
     }

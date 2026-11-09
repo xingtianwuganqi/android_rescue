@@ -24,7 +24,7 @@ import com.rescue.flutter_720yun.show.activity.ShowDetailActivity
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import kotlin.properties.Delegates
 
 class MessageSingleActivity : BaseActivity() {

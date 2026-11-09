@@ -26,7 +26,7 @@ import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.lazyLogin
 import com.rescue.flutter_720yun.util.toastString
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.MaterialHeader
+import com.rescue.flutter_720yun.views.SystemColorRefreshHeader as MaterialHeader
 import java.util.Timer
 import java.util.TimerTask
 
@@ -48,6 +48,8 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
         val commentText = resources.getString(R.string.home_common)
         setupToolbar(commentText)
         _binding = ActivityCommentListBinding.bind(baseBinding.contentFrame.getChildAt(2))
+
+        binding.commentSafetyNotice.showComment()
 
         val topicType = intent.getIntExtra("topicType", 0)
         val topicId = intent.getIntExtra("topicId", 0)
