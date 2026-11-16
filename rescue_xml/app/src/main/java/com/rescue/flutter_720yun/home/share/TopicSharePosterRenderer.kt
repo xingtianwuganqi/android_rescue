@@ -30,7 +30,7 @@ class TopicSharePosterRenderer(context: Context) {
             val textHeight=if(preview.text.isEmpty()) 0f else description.height.toFloat()
             val imageY=textY+textHeight+(if(preview.truncated) 28f else 0f)+(if(textHeight>0) 20f else 0f)
             val imageHeight=350f*petImage.height/petImage.width
-            val instruction=SpannableString("打开真命天喵 App，搜索「${content.topicId}」查看详情").apply {
+            val instruction=SpannableString(resources.getString(R.string.share_poster_search,content.topicId)).apply {
                 val number=content.topicId.toString();val start=indexOf(number)
                 setSpan(android.text.style.ForegroundColorSpan(themeColor),start,start+number.length,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 setSpan(android.text.style.AbsoluteSizeSpan(20,false),start,start+number.length,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -52,8 +52,8 @@ class TopicSharePosterRenderer(context: Context) {
                     val save=canvas.save();canvas.translate(x,y);layout(text,font,center=center).draw(canvas);canvas.restoreToCount(save)
                 }
                 rounded(icon,RectF(20f,24f,76f,80f),12f)
-                canvas.drawText("帮宠物找个家",90f,50f,paint(22f,Color.BLACK,true))
-                canvas.drawText("真命天喵 App",90f,76f,paint(13f,Color.rgb(122,122,122)))
+                canvas.drawText(resources.getString(R.string.share_brand_slogan),90f,50f,paint(22f,Color.BLACK,true))
+                canvas.drawText(resources.getString(R.string.share_brand_app),90f,76f,paint(13f,Color.rgb(122,122,122)))
                 if(status!=null) {
                     val statusPaint=paint(13f,if(content.workflow=="open") Color.rgb(46,122,64) else Color.DKGRAY,true)
                     val rect=RectF(20f,104f,44f+statusPaint.measureText(status),134f)
@@ -61,13 +61,13 @@ class TopicSharePosterRenderer(context: Context) {
                     canvas.drawText(status,32f,124f,statusPaint)
                 }
                 if(preview.text.isNotEmpty()) text(preview.text,20f,textY,paint(16f))
-                if(preview.truncated) text("完整介绍请在 App 中查看",20f,textY+textHeight+10,paint(13f,Color.GRAY))
+                if(preview.truncated) text(resources.getString(R.string.share_poster_full_hint),20f,textY+textHeight+10,paint(13f,Color.GRAY))
                 rounded(petImage,RectF(20f,imageY,370f,imageY+imageHeight),12f)
                 text(instruction,20f,searchY,paint(16f),true)
                 if(content.includeQr) {
                     canvas.drawLine(20f,footerY,370f,footerY,Paint().apply { color=Color.rgb(232,232,232);strokeWidth=1f/3 })
-                    text("扫码下载真命天喵 App",20f,footerY+20,paint(14f,Color.GRAY),true)
-                    text("最新状态以 App 内为准",20f,footerY+46,paint(12f,Color.GRAY),true)
+                    text(resources.getString(R.string.share_scan_download),20f,footerY+20,paint(14f,Color.GRAY),true)
+                    text(resources.getString(R.string.share_latest_in_app),20f,footerY+46,paint(12f,Color.GRAY),true)
                     // No smoothing/resampling of code modules. Original PNG already contains quiet space.
                     rounded(qr!!,RectF(123f,footerY+66,267f,footerY+210),0f,false)
                 }

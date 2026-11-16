@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ad_label">広告</string>
+    <string name="ad_close">広告を閉じる</string>
+    <string name="support_description">真命天喵は無料のペット譲渡・里親募集情報プラットフォームです。広告収益はプラットフォームの運営維持に使われ、皆様のご支援が多くのペットに温かい家を見つける助けになります！（収益を得るには広告動画を最後までご覧ください）</string>
+    <string name="support_start">応援を開始</string>
+    <string name="support_thanks">ご支援ありがとうございます</string>
+    <string name="support_ad_unavailable">広告はまだ読み込まれていません\nご支援ありがとうございます</string>
+</resources>

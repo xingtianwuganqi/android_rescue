@@ -20,7 +20,7 @@ class ShareVideoMusicActivity : BaseActivity() {
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     private val orange get() = ContextCompat.getColor(this,R.color.color_system)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState); setupToolbar("背景音乐管理")
+        super.onCreate(savedInstanceState); setupToolbar(getString(R.string.share_music_manage))
         rows = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(16),dp(24),dp(16),dp(24))
         }
@@ -31,7 +31,7 @@ class ShareVideoMusicActivity : BaseActivity() {
     private fun render() {
         rows.removeAllViews()
         rows.addView(TextView(this).apply {
-            text="视频导出配乐";textSize=13f;setTextColor(Color.rgb(110,110,115));setPadding(dp(16),0,dp(16),dp(8))
+            text=getString(R.string.share_music_title);textSize=13f;setTextColor(Color.rgb(110,110,115));setPadding(dp(16),0,dp(16),dp(8))
         })
         val group=LinearLayout(this).apply {
             orientation=LinearLayout.VERTICAL
@@ -46,7 +46,7 @@ class ShareVideoMusicActivity : BaseActivity() {
                 orientation=LinearLayout.HORIZONTAL;gravity=Gravity.CENTER_VERTICAL
                 minimumHeight=dp(86);setPadding(dp(16),dp(12),dp(8),dp(12))
                 isFocusable=true;isSelected=selected==music
-                contentDescription="${music.title}，${music.detail}，${if(selected==music) "已选择" else "未选择"}"
+                contentDescription=getString(R.string.share_music_row_desc,music.title,music.detail,getString(if(selected==music) R.string.share_music_selected else R.string.share_music_unselected))
                 val attributes=obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
                 foreground=attributes.getDrawable(0);attributes.recycle()
                 setOnClickListener { stop(false);ShareVideoMusic.select(this@ShareVideoMusicActivity,music);render() }
@@ -64,14 +64,14 @@ class ShareVideoMusicActivity : BaseActivity() {
             if(music!=ShareVideoMusic.NONE) row.addView(ImageButton(this).apply {
                 setImageResource(if(previewing==music) R.drawable.ic_music_stop else R.drawable.ic_music_play)
                 setBackgroundColor(Color.TRANSPARENT);setPadding(dp(10),dp(10),dp(10),dp(10))
-                contentDescription=if(previewing==music) "停止试听" else "试听${music.title}"
+                contentDescription=if(previewing==music) getString(R.string.share_music_stop_preview) else getString(R.string.share_music_preview,music.title)
                 setOnClickListener { if(previewing==music) stop() else play(music) }
             },LinearLayout.LayoutParams(dp(44),dp(44)))
             group.addView(row,LinearLayout.LayoutParams(-1,-2))
             if(index!=choices.lastIndex) group.addView(View(this).apply { setBackgroundColor(Color.rgb(230,230,233)) },LinearLayout.LayoutParams(-1,dp(1).coerceAtLeast(1)).apply { marginStart=dp(50) })
         }
         rows.addView(TextView(this).apply {
-            text="点击曲目即可选择并保存，点右侧按钮试听。所选配乐会自动添加到之后导出的视频中。三首内置配乐来自 FreePD 公共领域曲库（CC0），可免费商用。"
+            text=getString(R.string.share_music_note)
             textSize=13f;setTextColor(Color.rgb(110,110,115));setPadding(dp(16),dp(10),dp(16),0);setLineSpacing(dp(3).toFloat(),1f)
         })
     }
@@ -83,10 +83,10 @@ class ShareVideoMusicActivity : BaseActivity() {
             audio.setVolume(0.45f,0.45f)
             assets.openFd("ShareMusic/${music.asset}.m4a").use { audio.setDataSource(it.fileDescriptor,it.startOffset,it.length) }
             audio.setOnCompletionListener { if(player===it) stop() }
-            audio.setOnErrorListener { media,_,_ -> if(player===media) { stop();Toast.makeText(this,"音乐加载失败，请重试",Toast.LENGTH_SHORT).show() };true }
+            audio.setOnErrorListener { media,_,_ -> if(player===media) { stop();Toast.makeText(this,getString(R.string.share_music_load_failed),Toast.LENGTH_SHORT).show() };true }
             audio.setOnPreparedListener { if(player===it) it.start() }
             audio.prepareAsync();previewing=music;render()
-        } catch(e: Exception) { stop();Toast.makeText(this,"音乐加载失败，请重试",Toast.LENGTH_SHORT).show() }
+        } catch(e: Exception) { stop();Toast.makeText(this,getString(R.string.share_music_load_failed),Toast.LENGTH_SHORT).show() }
     }
     private fun stop(refresh: Boolean=true) { player?.release();player=null;previewing=null;if(refresh && ::rows.isInitialized) render() }
     override fun onPause() { stop();super.onPause() }

@@ -1,7 +1,9 @@
 package com.rescue.flutter_720yun.findpet
 
 import androidx.lifecycle.MutableLiveData
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.AdoptionError
+import com.rescue.flutter_720yun.util.localized
 import com.rescue.flutter_720yun.adoption.viewmodels.AdoptionViewModel
 
 /** Transient invalidation signal only; read state comes from the V3 recommendation response. */
@@ -87,15 +89,15 @@ class PetRequestViewModel(val source: FindPetRepository = FindPetRepository()) :
         }
     }
     fun validate(): String? = when {
-        !loaded -> "请先成功加载找宠信息"
-        type !in 1..2 -> "请选择宠物类型"
-        description.isBlank() -> "请输入简短的描述"
-        address.isBlank() -> "请选择地址"
-        contact.isBlank() -> "请填写联系方式"
+        !loaded -> localized(R.string.find_pet_validation_load_first,"请先成功加载找宠信息")
+        type !in 1..2 -> localized(R.string.find_pet_validation_type,"请选择宠物类型")
+        description.isBlank() -> localized(R.string.find_pet_validation_desc,"请输入简短的描述")
+        address.isBlank() -> localized(R.string.find_pet_validation_address,"请选择地址")
+        contact.isBlank() -> localized(R.string.find_pet_validation_contact,"请填写联系方式")
         else -> null
     }
     fun save() = run {
-        if(writeCommitted.value==true) throw AdoptionError(400,message="操作已成功，请先刷新本人资料")
+        if(writeCommitted.value==true) throw AdoptionError(400,message=localized(R.string.find_pet_operation_ok_refresh,"操作已成功，请先刷新本人资料"))
         validate()?.let { throw AdoptionError(400,message=it) }
         val analyticsToken=com.rescue.flutter_720yun.util.UserManager.token
         val analyticsRevision=com.rescue.flutter_720yun.util.UserManager.sessionRevision.value
@@ -112,7 +114,7 @@ class PetRequestViewModel(val source: FindPetRepository = FindPetRepository()) :
         writeCommitted.value=true;FindPetChanges.requestChanged();reconcile()
     }
     fun setEffective(open: Boolean) = run {
-        if(!loaded || info.value==null || writeCommitted.value==true) throw AdoptionError(400,message="请先成功加载找宠信息")
+        if(!loaded || info.value==null || writeCommitted.value==true) throw AdoptionError(400,message=localized(R.string.find_pet_validation_load_first,"请先成功加载找宠信息"))
         try { source.setEffective(open) } catch(e: AdoptionError) { resolveUnknown(e);throw e }
         writeCommitted.value=true;FindPetChanges.requestChanged();reconcile()
     }
@@ -120,16 +122,16 @@ class PetRequestViewModel(val source: FindPetRepository = FindPetRepository()) :
         if(error.status>=500 || error.status==0) {
             loaded=false
             try { fill(source.info(),true) } catch(cancel: kotlinx.coroutines.CancellationException) { throw cancel } catch(_: Exception) { }
-            throw AdoptionError(0,message=if(loaded) "写入结果未知，已重新读取资料，请核对后再决定是否重试。" else "写入结果未知，请先重试读取本人资料，再决定是否提交。")
+            throw AdoptionError(0,message=if(loaded) localized(R.string.find_pet_write_unknown_refreshed,"写入结果未知，已重新读取资料，请核对后再决定是否重试。") else localized(R.string.find_pet_write_unknown_retry,"写入结果未知，请先重试读取本人资料，再决定是否提交。"))
         }
     }
     private suspend fun reconcile() {
         loaded=false;refreshAfterWriteError.value=null
         try {
-            val result=source.info() ?: throw AdoptionError(502,message="本人找宠信息暂不可用")
+            val result=source.info() ?: throw AdoptionError(502,message=localized(R.string.find_pet_self_unavailable,"本人找宠信息暂不可用"))
             fill(result);saved.value=true
         } catch(cancel: kotlinx.coroutines.CancellationException) { throw cancel }
-        catch(_: Exception) { refreshAfterWriteError.value="操作已成功，最新资料读取失败，请点击重试；无需再次提交。" }
+        catch(_: Exception) { refreshAfterWriteError.value=localized(R.string.find_pet_write_ok_read_failed,"操作已成功，最新资料读取失败，请点击重试；无需再次提交。") }
     }
     override fun clearPrivateState() {
         info.value = null; saved.value = false; loaded = false;writeCommitted.value=false;refreshAfterWriteError.value=null

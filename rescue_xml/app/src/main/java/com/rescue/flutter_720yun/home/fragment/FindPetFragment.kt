@@ -76,7 +76,7 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
         vm.uiState.observe(viewLifecycleOwner) { ui ->
             val empty=vm.items.value.isNullOrEmpty()
             binding.errorView.isVisible=ui is UiState.Error || (ui is UiState.Success && empty)
-            binding.errorView.text=if(ui is UiState.Error) ui.message else "暂无数据\n请点击重试"
+            binding.errorView.text=if(ui is UiState.Error) ui.message else resources.getString(R.string.empty_retry)
             binding.progressBar.isVisible=ui is UiState.FirstLoading && empty && !binding.refreshLayout.isRefreshing
             if(ui is UiState.Success) adapter.refreshItem(ui.data)
         }
@@ -103,8 +103,8 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
         } }
         vm.copiedContact.observe(viewLifecycleOwner) { value -> if(value!=null) {
             vm.copiedContact.value=null
-            (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("找宠联系方式",value))
-            "已复制".toastString()
+            (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText(resources.getString(R.string.find_pet_contact_clip),value))
+            resources.getString(R.string.common_copied).toastString()
         } }
         var wasLoggedIn=UserManager.isLogin
         UserManager.sessionRevision.observe(viewLifecycleOwner) {
@@ -126,7 +126,7 @@ class FindPetFragment : Fragment(), FindPetItemClickListener {
     }
     override fun moreButtonClick(model: FindPetModel?)=authenticated(model) { item ->
         val own=item.user_id==UserManager.userId
-        val labels=if(own) arrayOf("管理找宠资料","取消") else arrayOf("屏蔽此找宠信息","投诉举报","取消")
+        val labels=if(own) arrayOf(resources.getString(R.string.find_pet_manage_profile),resources.getString(R.string.cancel)) else arrayOf(resources.getString(R.string.find_pet_block),resources.getString(R.string.more_report),resources.getString(R.string.cancel))
         dialog=AlertDialog.Builder(requireContext()).setItems(labels) { _,index ->
             if(own) { if(index==0) editor.launch(Intent(requireContext(),FindPetDetailActivity::class.java)) }
             else if(index==0) {

@@ -152,10 +152,10 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
 
         // 搜索添加点击
         binding.searchButton.setOnClickListener{
-            if (supportActionBar?.title == "首页") {
+            if (supportActionBar?.title == resources.getString(R.string.title_home)) {
                 val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
-            }else if (supportActionBar?.title == "我的"){
+            }else if (supportActionBar?.title == resources.getString(R.string.title_user)){
                 lazyLogin(this) {
                     val intent = Intent(this, UserSettingActivity::class.java)
                     startActivity(intent)
@@ -252,7 +252,7 @@ class MainActivity : AppCompatActivity(), DrawerListClickListener {
         }else if (item.name == resources.getString(R.string.drawer_recommend)) {
             val sendIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "帮宠物找个家")
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_brand_slogan))
             }
             startActivity(Intent.createChooser(sendIntent, getString(R.string.drawer_recommend)))
         }

@@ -10,8 +10,8 @@ import com.rescue.flutter_720yun.R
 /** 390 logical points, matching iOS cards. Owns only the current photo and two slide bitmaps. */
 class TopicShareVideoFrames(context: Context, private val content: VideoContent) : AutoCloseable {
     private val resources = context.resources
-    private val icon = BitmapFactory.decodeResource(resources, R.drawable.poster_app_icon) ?: error("视频素材加载失败")
-    private val qr = BitmapFactory.decodeResource(resources, R.drawable.poster_download_qr) ?: error("视频素材加载失败")
+    private val icon = BitmapFactory.decodeResource(resources, R.drawable.poster_app_icon) ?: error(resources.getString(R.string.share_video_material_failed))
+    private val qr = BitmapFactory.decodeResource(resources, R.drawable.poster_download_qr) ?: error(resources.getString(R.string.share_video_material_failed))
     private val height = 1280f * 390 / 720
     private val brandY = height - 112
     private val area = RectF(20f, 20f, 370f, brandY - 20)
@@ -34,8 +34,8 @@ class TopicShareVideoFrames(context: Context, private val content: VideoContent)
     private fun brand(canvas: Canvas) {
         canvas.drawLine(20f, brandY, 370f, brandY, Paint().apply { color = Color.rgb(232, 232, 232); strokeWidth = .5f })
         rounded(canvas, icon, RectF(20f, brandY + 24, 76f, brandY + 80))
-        text(canvas, "帮宠物找个家", 90f, brandY + 27, 280, 22f, Color.BLACK, bold = true)
-        text(canvas, "真命天喵 App", 90f, brandY + 61, 280, 13f, Color.GRAY)
+        text(canvas, resources.getString(R.string.share_brand_slogan), 90f, brandY + 27, 280, 22f, Color.BLACK, bold = true)
+        text(canvas, resources.getString(R.string.share_brand_app), 90f, brandY + 61, 280, 13f, Color.GRAY)
     }
     private fun card(canvas: Canvas, color: Int) {
         canvas.drawRoundRect(area, 20f, 20f, Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color })
@@ -63,23 +63,23 @@ class TopicShareVideoFrames(context: Context, private val content: VideoContent)
                 "introduction" -> introduction(c)
                 "search" -> {
                     card(c, Color.rgb(255, 252, 247))
-                    text(c, "想了解它？", 20f, 139f, 350, 26f, center = true, bold = true)
-                    text(c, "打开真命天喵 App，搜索", 20f, 204f, 350, 18f, center = true)
+                    text(c, resources.getString(R.string.share_want_to_know), 20f, 139f, 350, 26f, center = true, bold = true)
+                    text(c, resources.getString(R.string.share_open_app_search), 20f, 204f, 350, 18f, center = true)
                     val number = content.poster.topicId.toString()
                     val size = minOf(64f, 64f * 330 / maxOf(330f, textPaint(64f, bold = true).measureText(number)))
                     text(c, number, 20f, 250f, 350, size, orange, true, true)
-                    text(c, "查看详情与最新送养状态", 20f, 344f, 350, 15f, Color.GRAY, true)
+                    text(c, resources.getString(R.string.share_view_detail_status), 20f, 344f, 350, 15f, Color.GRAY, true)
                 }
                 "download" -> {
                     card(c, Color.rgb(255, 252, 247))
-                    text(c, "扫码下载真命天喵 App", 20f, 100f, 350, 22f, center = true, bold = true)
-                    text(c, "最新状态以 App 内为准", 20f, 137f, 350, 13f, Color.GRAY, true)
+                    text(c, resources.getString(R.string.share_scan_download), 20f, 100f, 350, 22f, center = true, bold = true)
+                    text(c, resources.getString(R.string.share_latest_in_app), 20f, 137f, 350, 13f, Color.GRAY, true)
                     rounded(c, qr, RectF(99f, 186f, 291f, 378f), 0f, false)
-                    text(c, "打开真命天喵 App，搜索", 20f, 400f, 350, 15f, Color.DKGRAY, true)
+                    text(c, resources.getString(R.string.share_open_app_search), 20f, 400f, 350, 15f, Color.DKGRAY, true)
                     val number = "「${content.poster.topicId}」"
                     val size = minOf(38f, 38f * 330 / maxOf(330f, textPaint(38f, bold = true).measureText(number)))
                     text(c, number, 20f, 432f, 350, size, orange, true, true)
-                    text(c, "查看详情", 20f, 486f, 350, 13f, Color.GRAY, true)
+                    text(c, resources.getString(R.string.share_view_detail), 20f, 486f, 350, 13f, Color.GRAY, true)
                 }
             }
             brand(c); return bitmap
@@ -88,7 +88,7 @@ class TopicShareVideoFrames(context: Context, private val content: VideoContent)
     private fun introduction(c: Canvas) {
         card(c, Color.rgb(255, 250, 240))
         val tags = content.tags.filter(String::isNotBlank)
-        val body = content.bodyDescription.ifEmpty { "更多宠物信息，请在 App 内查看。" }
+        val body = content.bodyDescription.ifEmpty { resources.getString(R.string.share_more_in_app) }
         val preview = PosterText.preview(body) { layout(it, 16f, 302).lineCount <= 8 }
         val pills = mutableListOf<Pair<String, RectF>>()
         var x = 0f; var y = 0f; var omitted = false
@@ -125,7 +125,7 @@ class TopicShareVideoFrames(context: Context, private val content: VideoContent)
             val address = android.text.TextUtils.ellipsize("⌖  ${content.location}", textPaint(13f), 302f, android.text.TextUtils.TruncateAt.END).toString()
             text(c, address, 44f, top + descriptionHeight + 14, 302, 13f, Color.rgb(120, 110, 94))
         }
-        if (guide) text(c, "下载 App 查看完整介绍", 44f, top + descriptionHeight + locationHeight + 18, 302, 13f, orange, true)
+        if (guide) text(c, resources.getString(R.string.share_download_full), 44f, top + descriptionHeight + locationHeight + 18, 302, 13f, orange, true)
     }
     fun drawFrame(target: Bitmap, base: Bitmap, previous: Bitmap?, photo: Bitmap?, index: Int, count: Int, frame: Int, frames: Int) {
         val c = Canvas(target); c.drawBitmap(base, 0f, 0f, null)

@@ -38,7 +38,7 @@ open class AdoptionActivity : BaseActivity() {
             notice(error.message)
             if(replaceContentOnError && error.status in listOf(403,404)) {
                 content.removeAllViews(); content.label(error.message)
-                content.button("重新加载") { onAuthenticated() }
+                content.button(getString(R.string.adoption_reload)) { onAuthenticated() }
             }
             if(error.status == 401 && lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) requireLogin()
         } }
@@ -49,7 +49,7 @@ open class AdoptionActivity : BaseActivity() {
             content.removeAllViews()
             if(UserManager.isLogin && previousUser != null && previousUser != UserManager.userId) finish()
             else if(UserManager.isLogin) onAuthenticated()
-            else { content.label("请登录后查看"); requireLogin() }
+            else { content.label(getString(R.string.adoption_login_to_view)); requireLogin() }
         }
     }
 }

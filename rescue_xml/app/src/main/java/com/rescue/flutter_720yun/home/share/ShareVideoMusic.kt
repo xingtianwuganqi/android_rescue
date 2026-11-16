@@ -2,6 +2,8 @@ package com.rescue.flutter_720yun.home.share
 
 import android.content.Context
 import android.media.*
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.localized
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
@@ -9,10 +11,10 @@ import java.nio.ByteOrder
 
 /** Same bundled CC0 choices and persisted default as iOS. */
 enum class ShareVideoMusic(val asset: String?, val title: String, val detail: String) {
-    HAPPY("happy_whistling_ukulele", "快乐口哨", "Happy Whistling Ukulele · 口哨与尤克里里"),
-    CITY("city_sunshine", "阳光漫步", "City Sunshine · 明亮轻快"),
-    UKULELE("ukulele_song", "轻快尤克里里", "Ukulele Song · 轻松温暖"),
-    NONE(null, "无音乐", "导出不含声音的视频");
+    HAPPY("happy_whistling_ukulele", localized(R.string.music_happy,"快乐口哨"), localized(R.string.music_happy_detail,"Happy Whistling Ukulele · 口哨与尤克里里")),
+    CITY("city_sunshine", localized(R.string.music_city,"阳光漫步"), localized(R.string.music_city_detail,"City Sunshine · 明亮轻快")),
+    UKULELE("ukulele_song", localized(R.string.music_ukulele,"轻快尤克里里"), localized(R.string.music_ukulele_detail,"Ukulele Song · 轻松温暖")),
+    NONE(null, localized(R.string.music_none,"无音乐"), localized(R.string.music_none_detail,"导出不含声音的视频"));
     companion object {
         fun selected(context: Context) = values().firstOrNull { it.name == context.getSharedPreferences("share_video",0).getString("music",null) } ?: HAPPY
         fun select(context: Context, music: ShareVideoMusic) { context.getSharedPreferences("share_video",0).edit().putString("music",music.name).apply() }

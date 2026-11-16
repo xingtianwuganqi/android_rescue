@@ -5,12 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Lifecycle
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.ui.notice
 import com.rescue.flutter_720yun.ads.*
 import com.rescue.flutter_720yun.adoption.repository.AdoptionError
 import com.rescue.flutter_720yun.promotion.models.*
 import com.rescue.flutter_720yun.promotion.repository.*
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.*
 import java.util.UUID
 
@@ -82,7 +84,7 @@ object RewardedTopicPromotionCoordinator {
         if (!com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED) return
         initialize()
         val account=UserManager.userId ?: return
-        if(hasPendingReward(topic)) { restore(); host.notice("上次观看奖励正在提交，请稍后重试，无需再看视频"); return }
+        if(hasPendingReward(topic)) { restore(); host.notice(localized(R.string.promotion_last_submitting,"上次观看奖励正在提交，请稍后重试，无需再看视频")); return }
         if(topic<=0 || scene !in listOf("my_posts","publish_success") || busy || TakuAds.fullscreenPresented) return
         val a=Attempt(account,UserManager.sessionRevision.value,topic,scene,UUID.randomUUID().toString())
         active=a; publish(a,"preparing")
@@ -97,7 +99,7 @@ object RewardedTopicPromotionCoordinator {
         }
         a.detachPreparation={ ownerRef.get()?.lifecycle?.removeObserver(loadingObserver) }
         owner.lifecycle.addObserver(loadingObserver)
-        host.notice("正在准备视频，请稍候")
+        host.notice(localized(R.string.promotion_preparing_video,"正在准备视频，请稍候"))
         task=scope.launch {
             try {
                 val state=repository.state(topic)
@@ -117,13 +119,13 @@ object RewardedTopicPromotionCoordinator {
                     } else event(a,sdkEvent)
                 })
                 a.controller=controller
-                if(!controller.loadRewarded()) { active=null;publish(a,"failed","视频暂不可用，请稍后重试");releaseAd(a);return@launch }
+                if(!controller.loadRewarded()) { active=null;publish(a,"failed",localized(R.string.promotion_video_unavailable,"视频暂不可用，请稍后重试"));releaseAd(a);return@launch }
                 // Loading timeout releases the application gate without inventing a reward.
                 scope.launch { delay(20000); if(active==a && a.phase=="preparing") {
-                    active=null;publish(a,"failed","暂无可用视频，请稍后再试");releaseAd(a)
+                    active=null;publish(a,"failed",localized(R.string.promotion_no_video,"暂无可用视频，请稍后再试"));releaseAd(a)
                 } }
             } catch(e: CancellationException) { throw e }
-            catch(e: Exception) { if(active==a) active=null;releaseAd(a);publish(a,"failed",(e as? AdoptionError)?.message ?: "推广资格查询失败，请重试") }
+            catch(e: Exception) { if(active==a) active=null;releaseAd(a);publish(a,"failed",(e as? AdoptionError)?.message ?: localized(R.string.promotion_qualification_failed,"推广资格查询失败，请重试")) }
         }
     }
     private fun event(a: Attempt,event: RewardedAdEvent) {
@@ -131,14 +133,14 @@ object RewardedTopicPromotionCoordinator {
             is RewardedAdEvent.Loaded -> {
                 if(!PromotionUiPolicy.acceptsLoaded(a.phase,active==a,current(a))) return
                 if(event.show()) { publish(a,"playing");a.detachPreparation?.invoke();a.detachPreparation=null }
-                else if(active==a) { active=null;publish(a,"cancelled","请返回页面后重新观看");releaseAd(a) }
+                else if(active==a) { active=null;publish(a,"cancelled",localized(R.string.promotion_return_rewatch,"请返回页面后重新观看"));releaseAd(a) }
             }
             RewardedAdEvent.Reward -> {
                 // Late reward still belongs to this attempt, even after close or account switch.
                 val record=a.reward.receive(RewardObservation.Signal.REWARD,System.currentTimeMillis()) ?: return
                 if(!persist(record)) {
                     if(active==a) active=null
-                    publish(a,"storage_pending","奖励暂未保存，将重试保存，请保持应用打开，无需再看视频")
+                    publish(a,"storage_pending",localized(R.string.promotion_reward_not_saved_retry,"奖励暂未保存，将重试保存，请保持应用打开，无需再看视频"))
                     schedulePersistence(record)
                     return
                 }
@@ -148,14 +150,14 @@ object RewardedTopicPromotionCoordinator {
             RewardedAdEvent.Closed -> {
                 val wasActive=active==a
                 if(wasActive) active=null
-                if(wasActive && !a.reward.observed) publish(a,"cancelled","尚未获得奖励，请完整观看视频后再试")
+                if(wasActive && !a.reward.observed) publish(a,"cancelled",localized(R.string.promotion_no_reward,"尚未获得奖励，请完整观看视频后再试"))
                 releaseAd(a)
                 updates.value=updates.value?.copy()
             }
             RewardedAdEvent.Failed -> {
                 val wasActive=active==a
                 if(wasActive) active=null
-                if(wasActive && !a.reward.observed) publish(a,"failed","视频加载或播放失败，请重试")
+                if(wasActive && !a.reward.observed) publish(a,"failed",localized(R.string.promotion_video_play_failed,"视频加载或播放失败，请重试"))
                 releaseAd(a)
             }
             RewardedAdEvent.Destroyed -> {
@@ -199,7 +201,7 @@ object RewardedTopicPromotionCoordinator {
                 val checkpoint=record.copy(next_retry_at=maxOf(record.next_retry_at,
                     System.currentTimeMillis()+PromotionPolicy.UNKNOWN_RESULT_BACKOFF).coerceAtMost(record.retry_until))
                 if(!persist(checkpoint,2)) {
-                    publish(a,"storage_pending","奖励保存失败，已暂停提交，将重试保存，无需再看视频")
+                    publish(a,"storage_pending",localized(R.string.promotion_reward_save_failed,"奖励保存失败，已暂停提交，将重试保存，无需再看视频"))
                     schedulePersistence(checkpoint)
                     return@launch
                 }
@@ -229,9 +231,9 @@ object RewardedTopicPromotionCoordinator {
                     if(current(a)) changes.value=(changes.value ?: 0)+1
                 }
                 publish(a,if(retry && saved) "retry_pending" else if(retry) "storage_pending" else "failed",
-                    if(retry && saved) "奖励已保存，将使用本次观看记录重试，无需再看视频"
-                    else if(retry) "重试时间暂未保存，已暂停提交，请保持应用打开"
-                    else error?.message ?: "推广失败")
+                    if(retry && saved) localized(R.string.promotion_reward_saved_retry,"奖励已保存，将使用本次观看记录重试，无需再看视频")
+                    else if(retry) localized(R.string.promotion_retry_time_not_saved,"重试时间暂未保存，已暂停提交，请保持应用打开")
+                    else error?.message ?: localized(R.string.promotion_failed,"推广失败"))
                 if(retry && saved && updated.next_retry_at<record.retry_until) scheduleRetry(updated)
             } finally {
                 if(submissionJobs[a.key]===coroutineContext[Job]) {
@@ -260,7 +262,7 @@ object RewardedTopicPromotionCoordinator {
             if(record.reward_attempt_id in submitting) return@forEach
             if(record.reward_attempt_id in pendingPersistence && !persist(record,2)) {
                 if(record.retry_until>now) schedulePersistence(record)
-                updates.value=Update(account,record.topic_id,"storage_pending","奖励记录暂未保存，已暂停提交，请保持应用打开")
+                updates.value=Update(account,record.topic_id,"storage_pending",localized(R.string.promotion_reward_record_not_saved,"奖励记录暂未保存，已暂停提交，请保持应用打开"))
                 return@forEach
             }
             if(record.retry_until<=now && record.retry_state=="pending") {
@@ -268,7 +270,7 @@ object RewardedTopicPromotionCoordinator {
                 val revision=UserManager.sessionRevision.value
                 scope.launch {
                     runCatching { repository.state(record.topic_id) }
-                    if(UserManager.userId==account && UserManager.sessionRevision.value==revision) updates.value=Update(account,record.topic_id,"failed","奖励恢复已超过24小时，请刷新确认推广状态")
+                    if(UserManager.userId==account && UserManager.sessionRevision.value==revision) updates.value=Update(account,record.topic_id,"failed",localized(R.string.promotion_reward_recovery_expired,"奖励恢复已超过24小时，请刷新确认推广状态"))
                 }
             } else if(record.retry_state=="pending" && record.next_retry_at>now && record.next_retry_at<record.retry_until) {
                 scheduleRetry(record)

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="adoption_filter_all">すべて</string>
+    <string name="adoption_filter_applying">申請中</string>
+    <string name="adoption_filter_communicating">やり取り中</string>
+    <string name="adoption_filter_ended">終了</string>
+    <string name="adoption_profile_snapshot_label">申請時のプロフィール · ユーザー入力</string>
+    <string name="adoption_owner_contact_label">譲渡人の連絡先</string>
+    <string name="adoption_no_contact">取得済みの連絡先はありません</string>
+    <string name="adoption_profile_unavailable">プロフィールは利用できません</string>
+    <string name="adoption_applicant_unavailable">アカウントまたはプロフィールは利用できません</string>
+    <string name="adoption_topic_unavailable">投稿は削除されたか利用できません</string>
+    <string name="adoption_view_topic">元の投稿を見る：%1$s</string>
+    <string name="adoption_view_snapshot">申請時のプロフィールを見る</string>
+    <string name="adoption_topic_fallback">投稿 %1$d</string>
+</resources>

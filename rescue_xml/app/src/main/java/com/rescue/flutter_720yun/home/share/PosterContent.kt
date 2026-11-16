@@ -1,5 +1,7 @@
 package com.rescue.flutter_720yun.home.share
 
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.localized
 import java.net.URI
 import java.util.regex.Pattern
 
@@ -10,10 +12,10 @@ data class PosterContent(val topicId: Int, val description: String, val photoUrl
     val statusText: String? get()=status(workflow,legacyComplete)
     companion object {
         fun status(workflow: String?,complete: Boolean): String?=when(workflow) {
-            "open" -> "送养中"
-            "adopted" -> "送养已结束 · 已完成送养"
-            "closed" -> "送养已结束 · 已关闭送养"
-            else -> if(complete) "送养已结束" else null
+            "open" -> localized(R.string.poster_status_open,"送养中")
+            "adopted" -> localized(R.string.poster_status_adopted,"送养已结束 · 已完成送养")
+            "closed" -> localized(R.string.poster_status_closed,"送养已结束 · 已关闭送养")
+            else -> if(complete) localized(R.string.poster_status_ended,"送养已结束") else null
         }
         fun introduction(tags: List<String>,body: String?): String =
             listOf(tags.map(String::trim).filter(String::isNotEmpty).distinct().joinToString(" · "),body.orEmpty().trim())

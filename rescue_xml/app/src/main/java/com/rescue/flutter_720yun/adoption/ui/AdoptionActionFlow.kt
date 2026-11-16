@@ -21,41 +21,41 @@ class AdoptionActionFlow(private val host: FragmentActivity, private val vm: Ado
         vm.run {
             val app=vm.repository.application(original.application_id)
             if(app.topic?.topic_id != original.topic?.topic_id || action !in AdoptionOperations.actions(app,mine))
-                throw AdoptionError(409,message="申请状态已变化，请刷新后重试")
-            if(mine && app.applicant?.user_id != UserManager.userId) throw AdoptionError(403,message="无申请权限")
+                throw AdoptionError(409,message=host.getString(R.string.adoption_status_changed_retry))
+            if(mine && app.applicant?.user_id != UserManager.userId) throw AdoptionError(403,message=host.getString(R.string.adoption_no_permission))
             if(!mine) {
                 val state=vm.repository.state(app.topic!!.topic_id)
-                if(!state.can_manage || state.workflow_status != "open") throw AdoptionError(409,message="当前帖子不能执行此操作")
+                if(!state.can_manage || state.workflow_status != "open") throw AdoptionError(409,message=host.getString(R.string.adoption_action_unavailable))
             }
             if(!host.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) return@run
             val message=when(action) {
-                "communicate" -> "同意沟通将会把联系方式显示给申请人，确认沟通吗"
-                "reject" -> "确认拒绝该申请人的沟通申请吗？"
-                "complete" -> "确认该申请人已实际接走宠物并完成领养吗？确认后，这条送养帖子将结束，其他进行中的申请也会自动结束。"
-                "end" -> "确认结束与该申请人的沟通吗？"
-                else -> "确认放弃申请吗？"
+                "communicate" -> host.getString(R.string.adoption_confirm_communicate)
+                "reject" -> host.getString(R.string.adoption_confirm_reject_communication)
+                "complete" -> host.getString(R.string.adoption_confirm_complete)
+                "end" -> host.getString(R.string.adoption_confirm_end_communication)
+                else -> host.getString(R.string.adoption_confirm_abandon)
             }
             val box=android.widget.LinearLayout(host).apply { orientation=android.widget.LinearLayout.VERTICAL;setPadding(32,16,32,16);label(message) }
-            val note=if(action=="end") box.field("结束说明（选填，最多200字）") else null
-            val actionDialog=AlertDialog.Builder(host).setView(box).setNegativeButton("取消") { _,_ -> dialog=null }
-                .setPositiveButton("确认") { d,_ ->
+            val note=if(action=="end") box.field(host.getString(R.string.adoption_end_note_hint)) else null
+            val actionDialog=AlertDialog.Builder(host).setView(box).setNegativeButton(host.getString(R.string.cancel)) { _,_ -> dialog=null }
+                .setPositiveButton(host.getString(R.string.confirm_d)) { d,_ ->
                     d.dismiss(); dialog=null
                     if(revision==UserManager.sessionRevision.value) vm.run {
                         val fresh=vm.repository.application(app.application_id)
                         if(fresh.version != app.version || fresh.topic?.topic_id != app.topic?.topic_id || action !in AdoptionOperations.actions(fresh,mine))
-                            throw AdoptionError(409,message="申请状态已变化，请重新确认")
+                            throw AdoptionError(409,message=host.getString(R.string.adoption_status_changed_confirm))
                         var fingerprint="${app.application_id}:$action:${fresh.version}:${note?.text?.toString()?.trim().orEmpty()}"
                         if(action=="complete") {
                             val state=vm.repository.state(app.topic!!.topic_id)
                             if(!state.can_manage || state.workflow_status!="open" || state.workflow_version==null)
-                                throw AdoptionError(409,message="送养状态已变化，请刷新")
+                                throw AdoptionError(409,message=host.getString(R.string.adoption_workflow_changed_refresh))
                             fingerprint="${app.application_id}:complete:${state.workflow_version}"
                             vm.repository.topicAction(app.topic.topic_id,TopicAction("complete",true,state.workflow_version,app.application_id),vm.operationKey(fingerprint))
                         } else vm.repository.action(app.application_id,ApplicationAction(if(action=="communicate") "communicate" else "end",fresh.version,
                             if(action=="reject") "拒绝沟通申请" else note?.text?.toString()?.trim()),vm.operationKey(fingerprint))
                         vm.operationSucceeded(fingerprint)
                         AdoptionNotificationChanges.changed()
-                        host.notice("操作成功")
+                        host.notice(host.getString(R.string.adoption_operation_success))
                         // Schedule refresh after AdoptionViewModel.run releases its busy flag.
                         host.window.decorView.post { changed() }
                     }

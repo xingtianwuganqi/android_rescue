@@ -133,8 +133,8 @@ class UserFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when(position) {
-                0 -> tab.text = "领养"
-                1 -> tab.text = "秀宠"
+                0 -> tab.text = resources.getString(R.string.adoption_tab)
+                1 -> tab.text = resources.getString(R.string.title_dashboard)
             }
         }.attach()
     }

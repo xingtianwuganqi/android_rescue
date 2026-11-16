@@ -2,10 +2,12 @@ package com.rescue.flutter_720yun.home.repository
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.*
 import com.rescue.flutter_720yun.home.models.*
 import com.rescue.flutter_720yun.network.*
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.CancellationException
 
 data class FeedPage(val items: List<HomeListModel>,val meta: FeedMeta)
@@ -26,9 +28,9 @@ class FeedRepository(private val service: HomeService=ServiceCreator.create()) {
             }
             throw error
         }
-        if(body.data?.isJsonArray!=true) throw AdoptionError(502,message="服务返回了无效列表，请稍后重试")
+        if(body.data?.isJsonArray!=true) throw AdoptionError(502,message=localized(R.string.common_list_invalid,"服务返回了无效列表，请稍后重试"))
         val items=Gson().fromJson<List<HomeListModel>>(body.data,object:TypeToken<List<HomeListModel>>(){}.type)
-        val meta=body.meta ?: throw AdoptionError(502,message="推广列表服务暂不可用，请稍后重试")
+        val meta=body.meta ?: throw AdoptionError(502,message=localized(R.string.promotion_list_unavailable,"推广列表服务暂不可用，请稍后重试"))
         return FeedPage(items,meta)
     }
 }

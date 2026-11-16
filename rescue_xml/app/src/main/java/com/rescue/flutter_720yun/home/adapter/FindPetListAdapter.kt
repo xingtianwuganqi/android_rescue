@@ -29,18 +29,18 @@ class FindPetListAdapter(var list: MutableList<FindPetModel>, val clickListener:
     fun setBusy(keys: Set<String>) { busy=keys;notifyDataSetChanged() }
     override fun onCreateViewHolder(parent: ViewGroup, type: Int)=Holder(FindPetListItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val item=list[position];val b=holder.b;val id=item.findId ?: 0
+        val item=list[position];val b=holder.b;val id=item.findId ?: 0;val context=b.root.context
         holder.boundId=id
-        b.nickName.text=item.userInfo?.username?.takeIf { it.isNotBlank() } ?: "用户"
+        b.nickName.text=item.userInfo?.username?.takeIf { it.isNotBlank() } ?: context.getString(R.string.common_user)
         Glide.with(b.headImg).load(item.userInfo?.avator?.toImgUrl()).placeholder(R.drawable.icon_eee).error(R.drawable.icon_eee).into(b.headImg)
-        b.timeText.text=listOf(AdoptionTime.display(item.update_time ?: item.create_time).let { if(it.matches(Regex("[0-9]{4}-[0-9]{2}-[0-9]{2} .*"))) it.substring(5,16).replace('-','.') else it },item.address?.replace('.', ' ')?.takeIf { it.isNotBlank() } ?: "地区未填写").joinToString(" · ")
-        b.tagTitle.text=when(item.pet_type) { 1->"猫咪";2->"狗狗";else->"宠物" }
+        b.timeText.text=listOf(AdoptionTime.display(item.update_time ?: item.create_time).let { if(it.matches(Regex("[0-9]{4}-[0-9]{2}-[0-9]{2} .*"))) it.substring(5,16).replace('-','.') else it },item.address?.replace('.', ' ')?.takeIf { it.isNotBlank() } ?: context.getString(R.string.common_region_not_filled)).joinToString(" · ")
+        b.tagTitle.text=when(item.pet_type) { 1->context.getString(R.string.common_cat);2->context.getString(R.string.common_dog);else->context.getString(R.string.common_pet) }
         b.content.text=item.desc.orEmpty()
         val open=id in expanded
         b.content.maxLines=if(open) Int.MAX_VALUE else 7
         b.content.ellipsize=if(open) null else TextUtils.TruncateAt.END
         b.expandContent.isVisible=item.desc.orEmpty().isNotEmpty()
-        b.expandContent.text=if(open) "收起" else "展开"
+        b.expandContent.text=if(open) context.getString(R.string.content_close) else context.getString(R.string.content_open)
         b.content.post {
             val layout=b.content.layout
             if(holder.boundId==id && layout!=null && layout.lineCount>0)
@@ -49,11 +49,11 @@ class FindPetListAdapter(var list: MutableList<FindPetModel>, val clickListener:
         b.expandContent.setOnClickListener { if(id in expanded) expanded.remove(id) else expanded.add(id);val current=list.indexOfFirst { it.findId==id };if(current>=0) notifyItemChanged(current) }
         val available=item.effective==1 && item.is_delete==1
         val contact=item.contact_info?.takeIf { available && item.getedcontact==true && it.isNotBlank() }
-        b.findContact.text=if(!available) "找宠已关闭或不可用" else contact?.let { "$it（点击复制）" } ?: "获取联系方式"
+        b.findContact.text=if(!available) context.getString(R.string.find_pet_closed_unavailable) else contact?.let { context.getString(R.string.find_pet_contact_copy_format, it) } ?: context.getString(R.string.find_pet_get_contact)
         b.findContact.isEnabled=available && "$id:contact" !in busy
-        b.likeButton.text="点赞 ${item.likeNum ?: 0}";b.likeButton.setIconResource(if(item.liked==true) R.drawable.icon_zan_se else R.drawable.icon_zan_un)
-        b.collectButton.text="收藏 ${item.collectionNum ?: 0}";b.collectButton.setIconResource(if(item.collection==true) R.drawable.icon_collection_se else R.drawable.icon_collection_un)
-        b.commentButton.text="评论 ${item.commNum ?: 0}"
+        b.likeButton.text=context.getString(R.string.count_like, item.likeNum ?: 0);b.likeButton.setIconResource(if(item.liked==true) R.drawable.icon_zan_se else R.drawable.icon_zan_un)
+        b.collectButton.text=context.getString(R.string.count_collection, item.collectionNum ?: 0);b.collectButton.setIconResource(if(item.collection==true) R.drawable.icon_collection_se else R.drawable.icon_collection_un)
+        b.commentButton.text=context.getString(R.string.count_comment, item.commNum ?: 0)
         b.likeButton.isEnabled=available && "$id:like" !in busy;b.collectButton.isEnabled=available && "$id:collect" !in busy
         b.commentButton.isEnabled=available
         b.headImg.setOnClickListener { clickListener.userClick(item) };b.nickName.setOnClickListener { clickListener.userClick(item) }

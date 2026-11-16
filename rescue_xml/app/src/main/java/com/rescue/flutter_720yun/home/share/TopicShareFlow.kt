@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.rescue.flutter_720yun.BuildConfig
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.ui.notice
 import com.rescue.flutter_720yun.util.UserManager
 import kotlinx.coroutines.*
@@ -36,7 +37,7 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
             saveOnResume=true
             if(host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) resumeSave()
         } else {
-            host.notice("保存失败")
+            host.notice(host.getString(R.string.common_save_failed))
             clearPoster()
         }
     }
@@ -46,8 +47,8 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
     }
     private fun setBusy(value: Boolean) { imageBusy=value;busyChanged() }
     fun showMenu() {
-        val id=topic()?.takeIf { it>0 } ?: run { host.notice("帖子参数无效");return }
-        if(busy || !available()) { host.notice("帖子已删除或暂不可用");return }
+        val id=topic()?.takeIf { it>0 } ?: run { host.notice(host.getString(R.string.common_post_parameter_invalid));return }
+        if(busy || !available()) { host.notice(host.getString(R.string.common_post_unavailable));return }
         menu=TopicShareSheet.show(host) { index ->
             menu=null
             if(topic()==id && available() && !busy) when(index) {
@@ -62,21 +63,21 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
                 2 -> shareLink(id)
                 3 -> {
                     val url=PosterContent.shareLink(BuildConfig.API_BASE_URL,id)
-                    (host.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("帖子链接",url))
-                    host.notice("复制成功")
+                    (host.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText(host.getString(R.string.common_topic_link),url))
+                    host.notice(host.getString(R.string.copy_success))
                 }
             }
         }
     }
     private fun shareLink(id: Int) {
-        if(topic()!=id || !available()) { host.notice("帖子已删除或暂不可用");return }
+        if(topic()!=id || !available()) { host.notice(host.getString(R.string.common_post_unavailable));return }
         val url=PosterContent.shareLink(BuildConfig.API_BASE_URL,id)
         try {
             host.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                 type="text/plain"
                 putExtra(Intent.EXTRA_TEXT,url)
-            },"分享链接"))
-        } catch(e: Exception) { host.notice("分享失败，请稍后重试") }
+            },host.getString(R.string.common_share_link)))
+        } catch(e: Exception) { host.notice(host.getString(R.string.common_share_failed)) }
     }
 
     private fun current(operation: Long,id: Int)=generation==operation && topic()==id && available() &&
@@ -89,7 +90,7 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
     private fun generate(id: Int) {
         val includeQr=true
         if(busy) return
-        cancel();val operation=++generation;setBusy(true);showProgress("正在生成图片…")
+        cancel();val operation=++generation;setBusy(true);showProgress(host.getString(R.string.common_image_generating))
         job=host.lifecycleScope.launch {
             var file: File?=null
             try {
@@ -99,7 +100,7 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
                 val latest=repository.withImage(initial.photoUrl) { photo ->
                     // Recheck availability/status after the download. Never reuse a changed image.
                     val verified=repository.content(id,includeQr)
-                    if(verified.photoUrl!=initial.photoUrl) throw PosterUnavailable("图片生成失败")
+                    if(verified.photoUrl!=initial.photoUrl) throw PosterUnavailable(host.getString(R.string.common_image_generation_failed))
                     withContext(Dispatchers.Default) {
                         val bitmap=TopicSharePosterRenderer(host.applicationContext).render(verified,photo)
                         try {
@@ -117,16 +118,16 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
                 if(Build.VERSION.SDK_INT<29 && ContextCompat.checkSelfPermission(host,Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED) {
                     permissionPending=true
                     try { permission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE) }
-                    catch(e: Exception) { permissionPending=false;clearPoster();host.notice("保存失败") }
+                    catch(e: Exception) { permissionPending=false;clearPoster();host.notice(host.getString(R.string.common_save_failed)) }
                 } else {
                     try { writePoster(generated,latest,operation) }
                     catch(e: CancellationException) { throw e }
-                    catch(e: Exception) { if(current(operation,id)) host.notice("保存失败") }
+                    catch(e: Exception) { if(current(operation,id)) host.notice(host.getString(R.string.common_save_failed)) }
                     finally { clearPoster() }
                 }
             } catch(e: CancellationException) { throw e }
-            catch(e: Exception) { if(current(operation,id)) host.notice((e as? PosterUnavailable)?.message ?: "图片生成失败") }
-            catch(e: OutOfMemoryError) { if(current(operation,id)) host.notice("图片生成失败") }
+            catch(e: Exception) { if(current(operation,id)) host.notice((e as? PosterUnavailable)?.message ?: host.getString(R.string.common_image_generation_failed)) }
+            catch(e: OutOfMemoryError) { if(current(operation,id)) host.notice(host.getString(R.string.common_image_generation_failed)) }
             finally {
                 file?.delete()
                 if(operation==generation) { progress?.dismiss();progress=null;if(!permissionPending) setBusy(false) }
@@ -136,7 +137,7 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
     private fun resumeSave() {
         if(!saveOnResume) return
         saveOnResume=false
-        if(output!=null && available()) save() else { clearPoster();host.notice("保存失败") }
+        if(output!=null && available()) save() else { clearPoster();host.notice(host.getString(R.string.common_save_failed)) }
     }
     private fun save() {
         val file=output ?: return
@@ -147,16 +148,16 @@ class TopicShareFlow(private val host: androidx.fragment.app.FragmentActivity,pr
             try {
                 writePoster(file,content,operation)
             } catch(e: CancellationException) { throw e }
-            catch(e: Exception) { if(current(operation,content.topicId)) host.notice("保存失败") }
+            catch(e: Exception) { if(current(operation,content.topicId)) host.notice(host.getString(R.string.common_save_failed)) }
             finally { if(operation==generation) { clearPoster();setBusy(false) } }
         }
     }
     private fun clearPoster() { output?.delete();output=null;bound=null }
     private suspend fun writePoster(file: File,content: PosterContent,operation: Long) {
         val latest=repository.content(content.topicId,content.includeQr)
-        if(latest!=content || !current(operation,content.topicId)) throw PosterUnavailable("图片生成失败")
+        if(latest!=content || !current(operation,content.topicId)) throw PosterUnavailable(host.getString(R.string.common_image_generation_failed))
         PosterGallery.save(host.applicationContext,file,content.topicId)
-        if(current(operation,content.topicId)) host.notice("成功保存到相册")
+        if(current(operation,content.topicId)) host.notice(host.getString(R.string.common_save_success_gallery))
     }
     fun cancel() {
         video.cancel()

@@ -22,14 +22,14 @@ class MyFindPetActivity : AdoptionActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         routeComplete = savedInstanceState?.getBoolean("route_complete") ?: false
-        setupToolbar("我的找宠")
+        setupToolbar(getString(R.string.find_pet_my_title))
         render(); observe(vm, false)
         vm.items.observe(this) { update() }; vm.state.observe(this) { update() }
         vm.busy.observe(this) { update() }; vm.error.observe(this) { update() }
         vm.destination.observe(this) { destination -> if (destination != null) {
             vm.destination.value = null; routeComplete = true
             if (destination.available) startActivity(Intent(this, HomeDetailActivity::class.java).putExtra("topic_id", destination.topicId))
-            else { notice("帖子已删除或不可用"); binding?.root?.post { if (!isFinishing && UserManager.isLogin) vm.load() } }
+            else { notice(getString(R.string.common_post_deleted)); binding?.root?.post { if (!isFinishing && UserManager.isLogin) vm.load() } }
         } }
         requireLogin()
     }
@@ -56,28 +56,28 @@ class MyFindPetActivity : AdoptionActivity() {
         val restricted = vm.error.value?.status == 403
         val failed = vm.error.value != null && vm.error.value?.status !in listOf(401,403)
         b.findPetState.text = when {
-            restricted -> "账号受限，暂时无法查看找宠推荐。"
-            failed -> if (empty) "同城推荐暂时无法加载。" else "推荐加载失败，可重试；已有推荐仍可查看。"
-            busy && empty -> "正在加载同城推荐…"
-            state == "no_request" -> "发布找宠信息，接收同城送养推荐。"
-            state == "closed" -> "找宠已关闭。开启后可继续接收同城推荐，历史推荐仍可查看。"
-            else -> if (empty) "暂无同城推荐，下拉刷新试试。" else "为你推荐同城送养信息，点击查看详情。"
+            restricted -> getString(R.string.find_pet_restricted)
+            failed -> getString(if (empty) R.string.find_pet_recommend_unavailable else R.string.find_pet_recommend_failed_keep)
+            busy && empty -> getString(R.string.find_pet_recommend_loading)
+            state == "no_request" -> getString(R.string.find_pet_recommend_prompt)
+            state == "closed" -> getString(R.string.find_pet_closed_prompt)
+            else -> getString(if (empty) R.string.find_pet_recommend_empty else R.string.find_pet_recommend_desc)
         }
-        b.findPetManage.text = when (state) { "no_request" -> "发布找宠信息"; "closed" -> "开启找宠信息"; else -> "管理找宠信息" }
+        b.findPetManage.text = when (state) { "no_request" -> getString(R.string.find_pet_publish); "closed" -> getString(R.string.find_pet_open); else -> getString(R.string.find_pet_manage_info) }
         b.findPetManage.isVisible = !state.isNullOrBlank()
         b.findPetManage.isEnabled = !busy && !restricted
         b.findPetManage.alpha = if (busy || restricted) 0.5f else 1f
         b.findPetLoading.isVisible = busy && empty && !b.findPetRefresh.isRefreshing
         b.findPetError.isVisible = false
-        b.findPetError.text = vm.error.value?.message.orEmpty() + "\n点击重试"
+        b.findPetError.text = vm.error.value?.message.orEmpty() + getString(R.string.common_tap_retry_suffix)
         b.findPetEmpty.isVisible = !busy && empty
         b.findPetEmpty.translationY=-resources.displayMetrics.heightPixels*.1f
         b.findPetEmpty.text = when {
-            vm.error.value!=null -> if(vm.error.value!!.status in listOf(401,403,404)) vm.error.value!!.message+"\n请点击重试" else "网络加载失败\n请检查网络后重试"
-            state=="no_request" -> "尚未发布找宠信息，请通过上方入口发布\n请点击重试"
-            state=="closed" -> "找宠已关闭，暂无历史推荐\n请点击重试"
-            state=="open" -> "暂无同城推荐\n下拉刷新或点击重试"
-            else -> "暂无数据\n请点击重试"
+            vm.error.value!=null -> if(vm.error.value!!.status in listOf(401,403,404)) vm.error.value!!.message+getString(R.string.common_tap_retry_suffix) else getString(R.string.common_network_load_failed)
+            state=="no_request" -> getString(R.string.find_pet_not_published_empty)
+            state=="closed" -> getString(R.string.find_pet_closed_empty)
+            state=="open" -> getString(R.string.find_pet_no_recommend)
+            else -> getString(R.string.empty_retry)
         }
         b.findPetRefresh.setEnableLoadMore(!empty)
         if (!busy) { b.findPetRefresh.finishRefresh(200); b.findPetRefresh.finishLoadMore(200);b.findPetRefresh.setNoMoreData(!vm.hasMore) }

@@ -18,6 +18,7 @@ import com.rescue.flutter_720yun.network.awaitResp
 import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.SharedPreferencesUtil
 import com.rescue.flutter_720yun.util.UiState
+import com.rescue.flutter_720yun.util.localized
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
 import kotlinx.coroutines.launch
@@ -104,8 +105,8 @@ class HomeViewModel(
                 val error=e as? com.rescue.flutter_720yun.adoption.repository.AdoptionError
                 expired=error?.errorCode in listOf("FEED_SNAPSHOT_EXPIRED","FEED_SNAPSHOT_MISMATCH")
                 if(!expired) {
-                    if(_isFirstLoading.value==true) _uiState.value=UiState.Error(error?.message ?: "列表加载失败，请点击重试")
-                    else _errorMsg.value=error?.message ?: "加载失败，请重试"
+                    if(_isFirstLoading.value==true) _uiState.value=UiState.Error(error?.message ?: localized(R.string.common_list_load_failed,"列表加载失败，请点击重试"))
+                    else _errorMsg.value=error?.message ?: localized(R.string.common_load_failed_retry,"加载失败，请重试")
                 }
             } }
             finally { if(generation==feedGeneration) {

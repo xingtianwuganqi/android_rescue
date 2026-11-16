@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="adoption_profile_intro_title">譲渡人にもっと早く知ってもらいましょう</string>
+    <string name="adoption_profile_intro_desc">一度入力すれば、今後の譲渡申請に再利用できます。譲渡人には申請時に提出したプロフィールのスナップショットが表示されます。</string>
+    <string name="adoption_profile_progress_label">必須項目の入力状況</string>
+    <string name="adoption_profile_progress_value">%1$d / 4</string>
+    <string name="adoption_profile_safe_note">プロフィールは譲渡のやり取りにのみ使用され、連絡先が公開されることはありません</string>
+    <string name="adoption_profile_section_basic">基本情報</string>
+    <string name="adoption_profile_section_living">住まいと仕事</string>
+    <string name="adoption_profile_section_experience">ペット飼育経験</string>
+    <string name="adoption_profile_required">必須</string>
+    <string name="adoption_profile_optional">任意</string>
+    <string name="adoption_profile_age_label">年齢</string>
+    <string name="adoption_profile_age_placeholder">年齢を入力してください</string>
+    <string name="adoption_profile_age_suffix">歳</string>
+    <string name="adoption_profile_age_hint">10～100歳まで</string>
+    <string name="adoption_profile_city_label">市区町村</string>
+    <string name="adoption_profile_city_sub">近くの譲渡情報のマッチングに使用します</string>
+    <string name="adoption_profile_city_placeholder">市区町村を選択してください</string>
+    <string name="adoption_profile_housing_label">住まいの状況</string>
+    <string name="adoption_profile_housing_sub">譲渡人が居住環境を把握するのに役立ちます</string>
+    <string name="adoption_profile_housing_placeholder">住まいの状況を選択してください</string>
+    <string name="adoption_profile_employment_label">就業状況</string>
+    <string name="adoption_profile_employment_sub">飼育の安定性を評価するために使用します</string>
+    <string name="adoption_profile_employment_placeholder">就業状況を選択してください</string>
+    <string name="adoption_profile_experience_label">ペット飼育経験を教えてください</string>
+    <string name="adoption_profile_experience_hint">具体的で真実の経験は譲渡人の信頼を得やすくなります</string>
+    <string name="adoption_profile_experience_placeholder">例：猫を3年間飼育し、駆虫・ワクチン・避妊去勢のケアを理解しています。</string>
+    <string name="adoption_profile_counter">%1$d/200</string>
+    <string name="adoption_profile_save_note">保存後はいつでも変更できます</string>
+    <string name="adoption_profile_save">プロフィールを保存</string>
+    <string name="adoption_profile_city_error">市区町村を選択してください</string>
+    <string name="adoption_profile_housing_error">住まいの状況を選択してください</string>
+    <string name="adoption_profile_employment_error">就業状況を選択してください</string>
+    <string name="adoption_profile_select_province">都道府県を選択</string>
+    <string name="adoption_profile_select_city">市区町村を選択</string>
+    <string name="adoption_profile_select_district">区を選択</string>
+</resources>

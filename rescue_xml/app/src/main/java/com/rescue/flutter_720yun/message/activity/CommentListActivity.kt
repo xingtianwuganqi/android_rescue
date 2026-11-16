@@ -86,9 +86,9 @@ class CommentListActivity : BaseActivity(), CommentClickListener {
             override fun onFocusChange(v: View?, hasFocus: Boolean) {
                 if (hasFocus) {
                     if (viewModel.currentCommentModel != null && viewModel.currentReplyModel == null) {
-                        binding.commentEdit.hint = "回复${viewModel.currentCommentModel?.userInfo?.username}"
+                        binding.commentEdit.hint = resources.getString(R.string.reply_to_user,viewModel.currentCommentModel?.userInfo?.username.orEmpty())
                     }else if (viewModel.currentCommentModel == null && viewModel.currentReplyModel != null) {
-                        binding.commentEdit.hint = "回复${viewModel.currentReplyModel?.fromInfo?.username}"
+                        binding.commentEdit.hint = resources.getString(R.string.reply_to_user,viewModel.currentReplyModel?.fromInfo?.username.orEmpty())
                     }else{
                         binding.commentEdit.hint = resources.getString(R.string.comment_placeholder)
                     }

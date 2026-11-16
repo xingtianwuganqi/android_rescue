@@ -163,7 +163,7 @@ class ReplyListViewHolder(var binding: ReplyListItemBinding): RecyclerView.ViewH
         binding.timeText.text = item.create_time?.formatTime()
         binding.content.text = item.content
 
-        binding.nickName.text = "${item.fromInfo?.username} 回复 ${item.toInfo?.username}"
+        binding.nickName.text = binding.root.context.getString(R.string.comment_reply_format,item.fromInfo?.username.orEmpty(),item.toInfo?.username.orEmpty())
 
         binding.replyButton.setOnClickListener {
             listener.replyAction(item)
@@ -178,9 +178,9 @@ class ReplyListViewHolder(var binding: ReplyListItemBinding): RecyclerView.ViewH
 class ReplyBottomViewHolder(var binding: ReplyBottomItemBinding): RecyclerView.ViewHolder(binding.root) {
     fun bind(item: CommentListModel, listener: CommentClickListener) {
         if (item.replys?.size == item.reply_count) {
-            binding.replyBottomText.text = "暂无更多评论"
+            binding.replyBottomText.text = binding.root.context.getString(R.string.comment_no_more)
         }else{
-            binding.replyBottomText.text = "加载更多评论"
+            binding.replyBottomText.text = binding.root.context.getString(R.string.comment_load_more)
             binding.replyBottomText.setOnClickListener{
                 listener.loadMoreReplys(item)
             }

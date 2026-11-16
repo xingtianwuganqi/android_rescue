@@ -15,7 +15,7 @@
             style="@style/FindPetManageEntryButton"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_marginTop="12dp" android:layout_gravity="start"
-            android:text="管理找宠信息" android:visibility="gone" />
+            android:text="@string/find_pet_manage" android:visibility="gone" />
     </LinearLayout>
     <TextView android:id="@+id/find_pet_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:padding="16dp" android:textColor="@color/color_system" android:visibility="gone" />
     <ProgressBar android:id="@+id/find_pet_loading" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:visibility="gone" />

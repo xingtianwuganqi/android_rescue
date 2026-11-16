@@ -21,9 +21,9 @@ class BrowsingHistoryActivity : AdoptionActivity() {
     override val contentLayoutRes get()=R.layout.activity_adoption_applications
     private val vm by lazy { ViewModelProvider(this)[BrowsingHistoryViewModel::class.java] }
     private lateinit var b: ActivityMyFindPetBinding
-    private val adapter=HistoryAdapter { row -> if(row.available) startActivity(Intent(this,HomeDetailActivity::class.java).putExtra("topic_id",row.topic)) else notice("帖子已删除或不可用") }
+    private val adapter=HistoryAdapter { row -> if(row.available) startActivity(Intent(this,HomeDetailActivity::class.java).putExtra("topic_id",row.topic)) else notice(getString(R.string.common_post_deleted)) }
     override fun onCreate(state: Bundle?) {
-        super.onCreate(state);setupToolbar("浏览记录");render();observe(vm,false)
+        super.onCreate(state);setupToolbar(getString(R.string.drawer_footer));render();observe(vm,false)
         vm.rows.observe(this) { update() };vm.busy.observe(this) { update() };vm.error.observe(this) { update() }
         requireLogin()
     }
@@ -41,7 +41,7 @@ class BrowsingHistoryActivity : AdoptionActivity() {
         b.findPetLoading.isVisible=busy && empty && !b.findPetRefresh.isRefreshing
         b.findPetEmpty.isVisible=!busy && empty
         b.findPetEmpty.translationY=-resources.displayMetrics.heightPixels*.1f
-        b.findPetEmpty.text=if(vm.error.value!=null) "网络加载失败\n请检查网络后重试" else "暂无数据\n请点击重试"
+        b.findPetEmpty.text=if(vm.error.value!=null) getString(R.string.common_network_load_failed) else getString(R.string.empty_retry)
         if(!busy) { b.findPetRefresh.finishRefresh(200,vm.error.value==null,false);b.findPetRefresh.finishLoadMore(200,vm.error.value==null,false);b.findPetRefresh.setNoMoreData(vm.error.value==null && !vm.hasMore) }
         b.findPetRefresh.setEnableLoadMore(!empty)
     }
@@ -61,7 +61,7 @@ private class HistoryAdapter(private val click: (BrowsingRecord)->Unit) : Recycl
         row.addView(text,LinearLayout.LayoutParams(0,-2,1f).apply { marginStart=dp(12) });return Holder(row,image,text)
     }
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val item=rows[position];holder.text.text=if(item.available) listOf(item.content.ifBlank { "查看送养帖子" },item.address).filter(String::isNotBlank).joinToString("\n") else "帖子已删除或不可用"
+        val item=rows[position];holder.text.text=if(item.available) listOf(item.content.ifBlank { holder.text.context.getString(R.string.find_pet_recommend_view) },item.address).filter(String::isNotBlank).joinToString("\n") else holder.text.context.getString(R.string.common_post_deleted)
         Glide.with(holder.image).load(if(item.available) item.image?.toImgUrl() else null).placeholder(R.drawable.icon_eee).into(holder.image)
         holder.row.setOnClickListener { click(item) }
     }

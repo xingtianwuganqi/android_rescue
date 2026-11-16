@@ -19,6 +19,7 @@ import com.anythink.core.api.AdError
 import com.anythink.nativead.api.*
 import com.bumptech.glide.Glide
 import com.rescue.flutter_720yun.BuildConfig
+import com.rescue.flutter_720yun.R
 
 /** One optional feed row; no placeholder row on empty configuration or load failure. */
 class NativeAdAdapter(
@@ -116,9 +117,9 @@ class NativeAdAdapter(
         }
         val cta = Button(activity).apply { text = material.callToActionText }
         content.addView(cta)
-        val privacy = TextView(activity).apply { text = "隐私政策" }
-        val permission = TextView(activity).apply { text = "权限说明" }
-        val function = TextView(activity).apply { text = "功能介绍" }
+        val privacy = TextView(activity).apply { text = activity.getString(R.string.ad_privacy_policy) }
+        val permission = TextView(activity).apply { text = activity.getString(R.string.ad_permission_description) }
+        val function = TextView(activity).apply { text = activity.getString(R.string.ad_function_description) }
         material.adAppInfo?.let { appInfo ->
             content.addView(TextView(activity).apply {
                 text = "${appInfo.appName} · ${appInfo.publisher} · ${appInfo.appVersion}"

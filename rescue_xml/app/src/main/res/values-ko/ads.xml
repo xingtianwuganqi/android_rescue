@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ad_label">광고</string>
+    <string name="ad_close">광고 닫기</string>
+    <string name="support_description">真命天喵는 무료 반려동물 입양·분양 정보 플랫폼입니다. 광고 수익은 플랫폼 운영에 사용되며, 여러분의 응원과 선행이 더 많은 반려동물이 따뜻한 가정을 찾도록 도와줍니다! (수익을 받으려면 광고 영상을 끝까지 시청해야 합니다)</string>
+    <string name="support_start">응원 시작</string>
+    <string name="support_thanks">응원해 주셔서 감사합니다</string>
+    <string name="support_ad_unavailable">광고가 아직 로드되지 않았습니다\n응원해 주셔서 감사합니다</string>
+</resources>

@@ -2,17 +2,19 @@ package com.rescue.flutter_720yun.promotion.repository
 
 import com.rescue.flutter_720yun.adoption.models.V2Response
 import com.rescue.flutter_720yun.adoption.ui.notice
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.*
 import com.rescue.flutter_720yun.network.*
 import com.rescue.flutter_720yun.promotion.models.*
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.CancellationException
 import retrofit2.Response
 
 class PromotionRepository(private val service: PromotionService=AdoptionServiceCreator.retrofit.create(PromotionService::class.java),
     private val account: () -> AdoptionAccount={ AdoptionAccount(UserManager.userId,UserManager.token,UserManager.sessionRevision.value) },
     private val invalidate: () -> Unit={
-        com.rescue.flutter_720yun.BaseApplication.context.notice("登录已失效，请重新登录。")
+        com.rescue.flutter_720yun.BaseApplication.context.notice(localized(R.string.promotion_login_expired_dot,"登录已失效，请重新登录。"))
         UserManager.logout(); org.greenrobot.eventbus.EventBus.getDefault().post(com.rescue.flutter_720yun.home.models.LoginEvent(null)) },
     private val rewardAuthenticationRequired: (PendingReward) -> Unit = {
         com.rescue.flutter_720yun.promotion.RewardedTopicPromotionCoordinator.requireReauthentication(it.account_id,it.reward_attempt_id)
@@ -21,15 +23,15 @@ class PromotionRepository(private val service: PromotionService=AdoptionServiceC
         val identity=account()
         val token=identity.token ?: run {
             if(reward!=null) { invalidate(); rewardAuthenticationRequired(reward) }
-            throw AdoptionError(401,message="请先登录")
+            throw AdoptionError(401,message=localized(R.string.common_login_required,"请先登录"))
         }
         val response=try { call("Bearer $token") } catch(e: com.google.gson.JsonParseException) {
             if(identity!=account()) throw CancellationException("Account changed")
-            throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+            throw AdoptionError(502,message=localized(R.string.common_service_unavailable,"服务暂不可用，请稍后重试"))
         }
         if(identity!=account()) throw CancellationException("Account changed")
         val body=response.body()
-        if(response.code()==200 && body==null) throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+        if(response.code()==200 && body==null) throw AdoptionError(502,message=localized(R.string.common_service_unavailable,"服务暂不可用，请稍后重试"))
         if(response.code()!=200 || body?.code!=200) {
             val text=if(response.isSuccessful) com.google.gson.JsonObject().apply {
                 addProperty("code",body?.code);addProperty("message",body?.message);add("data",body?.errorData)
@@ -42,19 +44,19 @@ class PromotionRepository(private val service: PromotionService=AdoptionServiceC
             throw AdoptionError(error.http,error.errorCode,error.message,error.fields,error.code,
                 response.headers()["Retry-After"]?.toLongOrNull() ?: error.retryAfter)
         }
-        return body.data ?: throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+        return body.data ?: throw AdoptionError(502,message=localized(R.string.common_service_unavailable,"服务暂不可用，请稍后重试"))
     }
     suspend fun state(topic: Int, reward: PendingReward? = null): PromotionState {
         require(topic>0)
         val state=request(reward) { service.state(it,topic) }
-        if(state.topic_id!=topic) throw AdoptionError(502,message="服务返回了无效推广状态，请重试")
+        if(state.topic_id!=topic) throw AdoptionError(502,message=localized(R.string.promotion_invalid_status,"服务返回了无效推广状态，请重试"))
         return state
     }
     suspend fun submit(record: PendingReward): PromotionResult {
         require(record.account_id==account().userId && record.topic_id>0 && record.scene in listOf("my_posts","publish_success"))
         java.util.UUID.fromString(record.reward_attempt_id)
         val result=request(record) { service.promote(it,record.topic_id,record.reward_attempt_id,PromotionWrite(record.reward_attempt_id,record.scene)) }
-        if(result.topic_id!=record.topic_id || result.promotion_id<=0) throw AdoptionError(502,message="服务返回了无效推广结果，请稍后重试")
+        if(result.topic_id!=record.topic_id || result.promotion_id<=0) throw AdoptionError(502,message=localized(R.string.promotion_invalid_result,"服务返回了无效推广结果，请稍后重试"))
         return result
     }
 }

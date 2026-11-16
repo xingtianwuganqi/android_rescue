@@ -55,7 +55,7 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
         vm.event.value = null
         when(event) {
             AdoptionDetailEvent.EditProfile -> requireProfile()
-            AdoptionDetailEvent.Applied -> host.notice("申请成功，等待送养人反馈。")
+            AdoptionDetailEvent.Applied -> host.notice(host.getString(R.string.adoption_apply_success_wait))
             AdoptionDetailEvent.Manage -> manage()
             is AdoptionDetailEvent.Failure -> handleError(event.error,event.submission)
             is AdoptionDetailEvent.Notice -> message(event.title,event.message)
@@ -68,10 +68,10 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
     fun refresh() { if (UserManager.isLogin && vm.topic > 0) vm.refresh() else render(null) }
     private fun render(state: ApplicationState?) {
         button.text = when {
-            !UserManager.isLogin -> if (complete()) "送养已结束" else "申请领养"
+            !UserManager.isLogin -> if (complete()) host.getString(R.string.adoption_workflow_ended) else host.getString(R.string.adoption_apply)
             state != null -> AdoptionDetailPolicy.title(state)
-            vm.error.value != null -> if (vm.error.value?.status == 404) "帖子不可用" else "状态加载失败 · 重试"
-            else -> "正在查询状态"
+            vm.error.value != null -> if (vm.error.value?.status == 404) host.getString(R.string.adoption_topic_unavailable) else host.getString(R.string.adoption_status_load_failed_retry)
+            else -> host.getString(R.string.adoption_querying_status)
         }
         button.isEnabled = vm.busy.value != true
     }
@@ -86,20 +86,20 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
     }
     private fun requireProfile() {
         clearDialog()
-        dialog = AlertDialog.Builder(host).setTitle("领养资料").setMessage("没有领养资料，需要填写后再申请。")
-            .setNegativeButton("取消",null).setPositiveButton("去申请") { d,_ ->
+        dialog = AlertDialog.Builder(host).setTitle(host.getString(R.string.adoption_profile_title)).setMessage(host.getString(R.string.adoption_no_profile_to_apply))
+            .setNegativeButton(host.getString(R.string.cancel),null).setPositiveButton(host.getString(R.string.adoption_go_apply)) { d,_ ->
                 d.dismiss(); profile.launch(Intent(host,AdoptionProfileActivity::class.java))
             }.show()
     }
     private fun message(title: String?, text: String) {
         clearDialog()
-        dialog = AlertDialog.Builder(host).setTitle(title).setMessage(text).setPositiveButton("知道了",null).show()
+        dialog = AlertDialog.Builder(host).setTitle(title).setMessage(text).setPositiveButton(host.getString(R.string.adoption_got_it),null).show()
     }
     private fun confirm(profileData: ProfileData) {
         clearDialog()
-        val instruction = "《领养说明》"
-        val warning = "不要相信任何理由的提前转账要求，如定金、运费等。若是红包领养，请当面给送养人。"
-        val text = "请仔细阅读${instruction}，${warning}领养更多是一种爱心行为，一些必要的程序，如领养协议、互换身份证复印件等必不可少。宠物是生命不是物品或工具，一切领养活动都应在为生命负责的态度下进行。"
+        val instruction = host.getString(R.string.adoption_guide_title)
+        val warning = host.getString(R.string.adoption_guide_warning)
+        val text = host.getString(R.string.adoption_guide_full,instruction,warning)
         val styled = android.text.SpannableString(text).apply {
             val start = text.indexOf(instruction)
             setSpan(object : android.text.style.ClickableSpan() {
@@ -126,9 +126,9 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
         }
         (host.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
             ?.hideSoftInputFromWindow(host.window.decorView.windowToken,0)
-        val builder = AlertDialog.Builder(host).setTitle("领养须知").setView(scroll)
-            .setNegativeButton("取消",null)
-            .setPositiveButton("继续申请") { d,_ -> d.dismiss(); vm.submit(profileData,"") }
+        val builder = AlertDialog.Builder(host).setTitle(host.getString(R.string.adoption_notice_title)).setView(scroll)
+            .setNegativeButton(host.getString(R.string.cancel),null)
+            .setPositiveButton(host.getString(R.string.adoption_continue_apply)) { d,_ -> d.dismiss(); vm.submit(profileData,"") }
         val noticeDialog = builder.create()
         dialog = noticeDialog
         noticeDialog.show()
@@ -136,24 +136,24 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
     private fun showApplication(app: AdoptionApplication, submitted: Boolean) {
         clearDialog()
         val contact = AdoptionContact.visible(app.topic)
-        if (submitted && app.status == "applying") { host.notice("申请成功，等待送养人反馈。"); return }
+        if (submitted && app.status == "applying") { host.notice(host.getString(R.string.adoption_apply_success_wait)); return }
         if (submitted && app.status !in listOf("applying","communicating")) {
-            message("申请状态已变化","未创建新的有效申请，请刷新后重新申请。"); return
+            message(host.getString(R.string.adoption_status_changed),host.getString(R.string.adoption_no_new_application)); return
         }
-        val body = if (submitted) contact?.let { "可联系送养人\n送养人联系方式：$it" }
-            ?: "申请成功，联系方式暂不可用，请稍后在「我的申请」中查看。"
+        val body = if (submitted) contact?.let { host.getString(R.string.adoption_contact_available_format,it) }
+            ?: host.getString(R.string.adoption_apply_success_contact_later)
         else (when (app.status) {
-            "applying" -> "已申请，等待送养人同意"
-            "communicating" -> "可联系送养人"
+            "applying" -> host.getString(R.string.adoption_applied_wait_owner)
+            "communicating" -> host.getString(R.string.adoption_contact_available)
             else -> AdoptionDetailPolicy.title(app)
-        }) + (contact?.let { "\n送养人联系方式：$it" } ?: "")
-        val builder = AlertDialog.Builder(host).setTitle(if (submitted) "申请成功" else AdoptionDetailPolicy.title(app))
-            .setMessage(body).setNegativeButton("关闭",null)
-        if (contact != null) builder.setPositiveButton("复制联系方式") { _,_ ->
+        }) + (contact?.let { host.getString(R.string.adoption_contact_line,it) } ?: "")
+        val builder = AlertDialog.Builder(host).setTitle(if (submitted) host.getString(R.string.adoption_apply_success) else AdoptionDetailPolicy.title(app))
+            .setMessage(body).setNegativeButton(host.getString(R.string.common_close),null)
+        if (contact != null) builder.setPositiveButton(host.getString(R.string.common_copy_contact)) { _,_ ->
             // Re-read the acquisition fields before writing any private value to the clipboard.
             AdoptionContactCopy.copy(host,vm,app.application_id)
         }
-        if (!submitted && AdoptionDetailPolicy.canReapply(vm.state.value,app)) builder.setNeutralButton("重新申请") { _,_ -> vm.resetAttempt(); vm.prepare() }
+        if (!submitted && AdoptionDetailPolicy.canReapply(vm.state.value,app)) builder.setNeutralButton(host.getString(R.string.adoption_reapply)) { _,_ -> vm.resetAttempt(); vm.prepare() }
         dialog = builder.show()
     }
     private fun handleError(error: AdoptionError, submission: Boolean) {
@@ -163,22 +163,22 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
             error.status == 401 || error.code == 401 -> { vm.pendingLogin = false; login.launch(Intent(host,LoginActivity::class.java)) }
             error.errorCode == "PROFILE_REQUIRED" -> requireProfile()
             error.errorCode == "PROFILE_CHANGED" -> {
-                vm.resetAttempt(); refresh(); message("资料已更新","领养资料已变化，请重新点击申请领养。")
+                vm.resetAttempt(); refresh(); message(host.getString(R.string.adoption_profile_updated),host.getString(R.string.adoption_profile_changed_reapply))
             }
             submission && error.code in listOf(209,210) -> {
                 val unbound = error.code == 209
-                dialog = AlertDialog.Builder(host).setTitle("申请失败").setMessage(if (unbound) "未绑定手机号" else "未验证手机号")
-                    .setNegativeButton("取消",null).setPositiveButton(if (unbound) "去绑定" else "去验证") { _,_ ->
+                dialog = AlertDialog.Builder(host).setTitle(host.getString(R.string.adoption_apply_failed)).setMessage(host.getString(if (unbound) R.string.adoption_phone_not_bound else R.string.adoption_phone_not_verified))
+                    .setNegativeButton(host.getString(R.string.cancel),null).setPositiveButton(host.getString(if (unbound) R.string.adoption_go_bind else R.string.adoption_go_verify)) { _,_ ->
                         login.launch(Intent(host,LoginActivity::class.java).putExtra("type",if (unbound) "bindPhone" else "checkPhone"))
                     }.show()
             }
             else -> {
                 if (error.errorCode == "IDEMPOTENCY_CONFLICT") vm.resetAttempt()
-                val generic = error.message in listOf("操作失败，请刷新重试","拒绝访问")
-                val text = if (generic && (error.errorCode == "BLACKLISTED" || error.code == 202)) "当前账号受限制，无法申请领养。"
-                    else if (generic && submission) "申请失败，请稍后重试。" else error.message
+                val generic = error.message in listOf(host.getString(R.string.adoption_operation_failed_refresh),host.getString(R.string.adoption_access_denied),"操作失败，请刷新重试","拒绝访问")
+                val text = if (generic && (error.errorCode == "BLACKLISTED" || error.code == 202)) host.getString(R.string.adoption_account_restricted_apply)
+                    else if (generic && submission) host.getString(R.string.adoption_apply_failed_later) else error.message
                 if (error.status == 409) refresh()
-                message(if (submission) "申请失败" else null,text)
+                message(if (submission) host.getString(R.string.adoption_apply_failed) else null,text)
             }
         }
     }
@@ -186,29 +186,29 @@ class AdoptionDetailFlow(private val host: HomeDetailActivity, private val butto
     fun manage() { if(vm.state.value?.can_manage == true) host.startActivity(Intent(host, AdoptionApplicationsActivity::class.java).putExtra("topic_id",vm.topic)) }
     fun ownerMore() {
         val state = vm.state.value ?: run { refresh(); return }
-        if(!state.can_manage) { host.notice("当前账号无权管理此帖"); return }
-        dialog = AlertDialog.Builder(host).setTitle("管理送养").setItems(arrayOf("管理申请 / 选择接宠人完成送养", "关闭送养", "重新送养", "删除帖子")) { _,i -> when(i) {
+        if(!state.can_manage) { host.notice(host.getString(R.string.adoption_no_manage_permission)); return }
+        dialog = AlertDialog.Builder(host).setTitle(host.getString(R.string.adoption_manage_workflow)).setItems(arrayOf(host.getString(R.string.adoption_manage_applications_desc), host.getString(R.string.adoption_close_workflow), host.getString(R.string.adoption_reopen_workflow), host.getString(R.string.adoption_delete_post))) { _,i -> when(i) {
             0 -> manage()
             1 -> closeTopic()
             2 -> vm.run {
                 val current = vm.repository.state(vm.topic); vm.state.value = current
                 if(current.can_manage && current.application_count == 0 && current.workflow_status == "adopted") host.reopenLegacyTopic()
-                else host.notice("有申请历史或已关闭的帖子不能重开，请重新发布")
+                else host.notice(host.getString(R.string.adoption_reopen_not_allowed))
             }
             3 -> host.confirmDeleteTopic()
         } }.show()
     }
     private fun closeTopic() {
-        dialog = AlertDialog.Builder(host).setTitle("关闭送养？").setMessage("所有有效申请将结束，不会记录为完成送养。")
-            .setPositiveButton("确认关闭") { _,_ -> vm.run {
+        dialog = AlertDialog.Builder(host).setTitle(host.getString(R.string.adoption_confirm_close_workflow_title)).setMessage(host.getString(R.string.adoption_confirm_close_workflow_desc))
+            .setPositiveButton(host.getString(R.string.adoption_confirm_close)) { _,_ -> vm.run {
                 val state=vm.repository.state(vm.topic)
-                if(!state.can_manage || state.workflow_status!="open") throw com.rescue.flutter_720yun.adoption.repository.AdoptionError(409,message="帖子状态已变化，请刷新")
-                val version=state.workflow_version ?: throw com.rescue.flutter_720yun.adoption.repository.AdoptionError(409,message="流程版本暂不可用，请刷新")
+                if(!state.can_manage || state.workflow_status!="open") throw com.rescue.flutter_720yun.adoption.repository.AdoptionError(409,message=host.getString(R.string.adoption_topic_status_changed))
+                val version=state.workflow_version ?: throw com.rescue.flutter_720yun.adoption.repository.AdoptionError(409,message=host.getString(R.string.adoption_flow_version_unavailable))
                 val fingerprint="${vm.topic}:close:$version"
                 vm.repository.topicAction(vm.topic,TopicAction("close",true,version),vm.operationKey(fingerprint))
                 vm.operationSucceeded(fingerprint)
                 vm.state.value=vm.repository.state(vm.topic); host.reloadAdoptionTopic()
-            } }.setNegativeButton("取消",null).show()
+            } }.setNegativeButton(host.getString(R.string.cancel),null).show()
     }
     fun clearDialog() { dialog?.setMessage(null); dialog?.dismiss(); dialog=null }
 }

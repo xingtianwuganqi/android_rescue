@@ -37,9 +37,9 @@ import com.rescue.flutter_720yun.user.adapter.UserCollectionAdapter
              viewPager
          ) { tab, position ->
              when(position) {
-                 0 -> tab.text = "领养"
-                 1 -> tab.text = "秀宠"
-                 2 -> tab.text = "找宠"
+                 0 -> tab.text = getString(R.string.adoption_tab)
+                 1 -> tab.text = getString(R.string.title_dashboard)
+                 2 -> tab.text = getString(R.string.home_tab_find_pet)
              }
          }.attach()
          viewPager.offscreenPageLimit = 3

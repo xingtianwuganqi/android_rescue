@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="adoption_filter_all">전체</string>
+    <string name="adoption_filter_applying">신청 중</string>
+    <string name="adoption_filter_communicating">소통 중</string>
+    <string name="adoption_filter_ended">종료됨</string>
+    <string name="adoption_profile_snapshot_label">신청 시 프로필 · 사용자 작성</string>
+    <string name="adoption_owner_contact_label">보호자 연락처</string>
+    <string name="adoption_no_contact">받은 연락처가 없습니다</string>
+    <string name="adoption_profile_unavailable">프로필을 사용할 수 없습니다</string>
+    <string name="adoption_applicant_unavailable">계정 또는 프로필을 사용할 수 없습니다</string>
+    <string name="adoption_topic_unavailable">게시글이 삭제되었거나 사용할 수 없습니다</string>
+    <string name="adoption_view_topic">원본 게시글 보기: %1$s</string>
+    <string name="adoption_view_snapshot">신청 시 프로필 보기</string>
+    <string name="adoption_topic_fallback">게시글 %1$d</string>
+</resources>

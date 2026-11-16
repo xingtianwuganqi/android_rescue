@@ -89,7 +89,9 @@ class SplashActivity : AppCompatActivity() {
         var btnDisagree = inflate.findViewById<TextView>(R.id.btn_disagree)
         tvContent.text = str
         // 查看完整版《用户协议》和《隐私政策》
-        val fullText = "查看完整版《用户协议》和《隐私政策》"
+        val userAgreement = resources.getString(R.string.user_agreement_name)
+        val privacyPolicy = resources.getString(R.string.privacy_policy_name)
+        val fullText = resources.getString(R.string.agreement_link_text, userAgreement, privacyPolicy)
         // 创建 SpannableString
         val spannableString = SpannableString(fullText)
         // 定义"用户协议"的点击事件
@@ -108,11 +110,11 @@ class SplashActivity : AppCompatActivity() {
         val userAgreementColor = ForegroundColorSpan(Color.parseColor("#ffa500")) // 橙色
         val privacyPolicyColor = ForegroundColorSpan(Color.parseColor("#ffa500")) // 蓝色
         // "用户协议" 位置
-        val userStart = fullText.indexOf("《用户协议》")
-        val userEnd = userStart + "《用户协议》".length
+        val userStart = fullText.indexOf(userAgreement)
+        val userEnd = userStart + userAgreement.length
         // "隐私政策" 位置
-        val privacyStart = fullText.indexOf("《隐私政策》")
-        val privacyEnd = privacyStart + "《隐私政策》".length
+        val privacyStart = fullText.indexOf(privacyPolicy)
+        val privacyEnd = privacyStart + privacyPolicy.length
         // 应用点击事件和颜色
         spannableString.setSpan(userAgreementClick, userStart, userEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannableString.setSpan(userAgreementColor, userStart, userEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

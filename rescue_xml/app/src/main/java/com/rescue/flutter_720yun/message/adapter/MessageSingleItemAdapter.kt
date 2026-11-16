@@ -57,15 +57,15 @@ class MessageSingleItemAdapter(var list: MutableList<MessageSingleListModel>, va
 
             val msg_type = item.msg_type
             if (msg_type == 1 || msg_type == 5 || msg_type == 10) {
-                binding.desc.text = "赞了这条帖子"
+                binding.desc.text = binding.root.context.getString(R.string.message_liked_post)
             }else if (msg_type == 2 || msg_type == 6 || msg_type == 11) {
-                binding.desc.text = "收藏了这条帖子"
+                binding.desc.text = binding.root.context.getString(R.string.message_collected_post)
             }else if (msg_type == 3 || msg_type == 4 || msg_type == 7 || msg_type == 8 || msg_type == 12 || msg_type == 13)  {
                 if (item.reply_type == 1) {
-                    binding.desc.text = "评论说：${item.commentInfo?.content ?: ""}"
+                    binding.desc.text = binding.root.context.getString(R.string.message_commented_format,item.commentInfo?.content ?: "")
 
                 }else{
-                    binding.desc.text = "回复说：${item.replyInfo?.content ?: ""}"
+                    binding.desc.text = binding.root.context.getString(R.string.message_replied_format,item.replyInfo?.content ?: "")
                 }
             }
             binding.backLinear.setOnClickListener {

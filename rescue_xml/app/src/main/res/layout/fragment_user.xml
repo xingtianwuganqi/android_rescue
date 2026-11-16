@@ -57,7 +57,7 @@
                     android:id="@+id/right_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="编辑个人资料"
+                    android:contentDescription="@string/edit_profile_desc"
                     android:src="@drawable/icon_message_right"
                     android:layout_marginEnd="20dp"
                     android:layout_marginStart="10dp"

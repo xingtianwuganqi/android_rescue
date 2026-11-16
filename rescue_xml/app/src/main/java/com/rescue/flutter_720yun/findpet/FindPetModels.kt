@@ -1,6 +1,8 @@
 package com.rescue.flutter_720yun.findpet
 
 import com.google.gson.annotations.SerializedName
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.localized
 
 /** Public recommendation fields only; no contact or authorization data is consumed here. */
 data class PetRecommendation(
@@ -10,9 +12,9 @@ data class PetRecommendation(
 ) {
     val available get() = topic_available && topic_status in listOf("open", "adopted", "closed") && topic_id > 0
     val image get() = if (available) (preview_img.orEmpty() + imgs.orEmpty()).firstOrNull { it.isNotBlank() } else null
-    val statusLabel get() = if(!available) "帖子暂不可用" else when (topic_status) {
-        "open" -> "送养中"; "adopted" -> "送养已结束 · 已完成送养"
-        "closed" -> "送养已结束 · 已关闭送养"; else -> "帖子暂不可用"
+    val statusLabel get() = if(!available) localized(R.string.common_post_unavailable_short,"帖子暂不可用") else when (topic_status) {
+        "open" -> localized(R.string.poster_status_open,"送养中"); "adopted" -> localized(R.string.poster_status_adopted,"送养已结束 · 已完成送养")
+        "closed" -> localized(R.string.poster_status_closed,"送养已结束 · 已关闭送养"); else -> localized(R.string.common_post_unavailable_short,"帖子暂不可用")
     }
 }
 data class PetRecommendations(

@@ -43,13 +43,13 @@ class FindPetDetailActivity : AdoptionActivity() {
     private var region: LocationSheetFragment?=null
     private var dialog: AlertDialog?=null
     override fun onCreate(state: Bundle?) {
-        super.onCreate(state);setupToolbar("找宠小助手")
+        super.onCreate(state);setupToolbar(getString(R.string.find_title))
         window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         render();observe(vm,false)
         vm.info.observe(this) { if(vm.loaded && ::save.isInitialized && save.parent==content) fill() }
         vm.busy.observe(this) { update() }
         vm.refreshAfterWriteError.observe(this) { update() }
-        vm.writeCommitted.observe(this) { if(it==true) { notice("操作成功，正在更新找宠信息");setResult(RESULT_OK) };update() }
+        vm.writeCommitted.observe(this) { if(it==true) { notice(getString(R.string.find_pet_operation_ok_updating));setResult(RESULT_OK) };update() }
         vm.saved.observe(this) { if(it==true) { setResult(RESULT_OK);finish() } }
         requireLogin()
     }
@@ -69,13 +69,13 @@ class FindPetDetailActivity : AdoptionActivity() {
         val bubble=FrameLayout(this).apply { setPadding(dp(12),dp(12),dp(12),dp(12));setBackgroundColor(0xffcdd1ba.toInt()) }
         header.addView(bubble,LinearLayout.LayoutParams(0,-2,1f).apply { marginStart=dp(10) })
         bubble.addView(TextView(this).apply {
-            text="没有找到想要的宠物？\n可以提交相关信息给小助手，有合适的宠物后会通知您~"
+            text=getString(R.string.find_remind)
             textSize=14f;setTextColor(ContextCompat.getColor(context,R.color.color_node));setPadding(dp(10),dp(8),dp(10),dp(8));setBackgroundColor(android.graphics.Color.WHITE)
         },FrameLayout.LayoutParams(-1,-2))
         closedImage=ImageView(this).apply { setImageResource(R.drawable.icon_find_hadclose);importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO }
         bubble.addView(closedImage,FrameLayout.LayoutParams(dp(72),dp(72),Gravity.END or Gravity.TOP))
         stateText=content.label("").apply { setPadding(dp(20),dp(8),dp(20),dp(8));textSize=12f;setTextColor(ContextCompat.getColor(context,R.color.color_desc)) }
-        val typeRow=row();title(typeRow,"类别：")
+        val typeRow=row();title(typeRow,getString(R.string.find_pet_type_label))
         types=RadioGroup(this).apply { orientation=RadioGroup.HORIZONTAL }
         typeRow.addView(types,LinearLayout.LayoutParams(0,-2,1f))
         fun choice(text: String)=RadioButton(this).apply {
@@ -86,16 +86,16 @@ class FindPetDetailActivity : AdoptionActivity() {
             }
             types.addView(this,RadioGroup.LayoutParams(0,-2,1f))
         }
-        cat=choice("猫咪");dog=choice("狗狗")
+        cat=choice(getString(R.string.common_cat));dog=choice(getString(R.string.common_dog))
         types.setOnCheckedChangeListener { _,id -> vm.type=if(id==dog.id) 2 else 1 }
         separator()
-        content.label("描述：").apply { setPadding(dp(20),dp(16),dp(20),dp(8));setTypeface(null,Typeface.BOLD) }
-        description=content.field("请输入简短的描述",Int.MAX_VALUE).apply { inputType=InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE;minLines=5;setPadding(dp(8),dp(8),dp(8),dp(8));background=GradientDrawable().apply { setColor(android.graphics.Color.WHITE);setStroke(dp(1),0xffeeeeee.toInt()) }
+        content.label(getString(R.string.find_pet_desc_label)).apply { setPadding(dp(20),dp(16),dp(20),dp(8));setTypeface(null,Typeface.BOLD) }
+        description=content.field(getString(R.string.find_pet_desc_placeholder),Int.MAX_VALUE).apply { inputType=InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE;minLines=5;setPadding(dp(8),dp(8),dp(8),dp(8));background=GradientDrawable().apply { setColor(android.graphics.Color.WHITE);setStroke(dp(1),0xffeeeeee.toInt()) }
             layoutParams=LinearLayout.LayoutParams(-1,-2).apply { marginStart=dp(20);marginEnd=dp(20);bottomMargin=dp(12) }
         }
         separator()
-        val addressRow=row();title(addressRow,"地址：")
-        location=content.button("选择省 / 市 / 区县") {
+        val addressRow=row();title(addressRow,getString(R.string.find_pet_address_label))
+        location=content.button(getString(R.string.find_pet_select_region)) {
             region=LocationSheetFragment().also { sheet ->
                 sheet.selectCompletion={ items ->
                     vm.address=items.joinToString(".") { it.name };vm.cityId=resolveCity(vm.address);location.text=vm.address
@@ -109,19 +109,19 @@ class FindPetDetailActivity : AdoptionActivity() {
         location.backgroundTintList=ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
         location.setTextColor(ContextCompat.getColor(this,R.color.color_content))
         separator()
-        val contactRow=row();title(contactRow,"联系方式：")
-        contact=content.field("手机号或微信等联系方式",Int.MAX_VALUE)
+        val contactRow=row();title(contactRow,getString(R.string.find_pet_contact_label))
+        contact=content.field(getString(R.string.find_pet_contact_placeholder),Int.MAX_VALUE)
         content.removeView(contact);contactRow.addView(contact,LinearLayout.LayoutParams(0,-2,1f));contact.background=null
         separator()
-        content.label("发布后，其他用户可通过平台获取你留下的联系方式。不希望继续被联系，可以关闭找宠信息。").apply { textSize=12f;setPadding(dp(20),dp(10),dp(20),dp(10));setTextColor(ContextCompat.getColor(context,R.color.color_desc)) }
-        save=content.button("发布") { saveRequest() }
-        effective=content.button("关闭找宠") {
+        content.label(getString(R.string.find_pet_publish_notice)).apply { textSize=12f;setPadding(dp(20),dp(10),dp(20),dp(10));setTextColor(ContextCompat.getColor(context,R.color.color_desc)) }
+        save=content.button(getString(R.string.release_push)) { saveRequest() }
+        effective=content.button(getString(R.string.find_pet_close)) {
             val open=vm.info.value?.effective!=1
-            dialog=AlertDialog.Builder(this).setMessage(if(open) "确认重新开启找宠信息？" else "关闭后将停止新增推荐和后续获取联系，已复制的联系方式无法追回。确认关闭？")
-                .setNegativeButton("取消",null).setPositiveButton("确认") { d,_ -> d.dismiss();vm.setEffective(open) }.show()
+            dialog=AlertDialog.Builder(this).setMessage(getString(if(open) R.string.find_pet_confirm_reopen else R.string.find_pet_confirm_close))
+                .setNegativeButton(R.string.cancel,null).setPositiveButton(R.string.confirm_d) { d,_ -> d.dismiss();vm.setEffective(open) }.show()
         }
         (effective as MaterialButton).setIconResource(R.drawable.icon_more_close)
-        retry=content.button("点击重试加载资料") { vm.load() }
+        retry=content.button(getString(R.string.find_pet_retry_load)) { vm.load() }
         for(index in 0 until content.childCount) (content.getChildAt(index) as? MaterialButton)?.apply {
             val primary=this==save
             backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(context,if(primary) R.color.color_system else R.color.adoption_panel_background))
@@ -149,27 +149,27 @@ class FindPetDetailActivity : AdoptionActivity() {
     }
     private fun fill() {
         types.check(if(vm.type==2) dog.id else cat.id)
-        location.text=vm.address.ifBlank { "选择省 / 市 / 区县" };description.setText(vm.description);contact.setText(vm.contact);update()
+        location.text=vm.address.ifBlank { getString(R.string.find_pet_select_region) };description.setText(vm.description);contact.setText(vm.contact);update()
     }
     private fun update() {
         if(!::save.isInitialized) return
         val busy=vm.busy.value==true;val info=vm.info.value;val committed=vm.writeCommitted.value==true
         stateText.text=vm.refreshAfterWriteError.value ?: when {
-            busy && !vm.loaded -> "正在加载找宠资料…";!vm.loaded -> "找宠资料未加载成功，请点击重试"
-            info==null -> "发布领养意愿";info.effective==1 -> "找宠中";else -> "找宠已关闭"
+            busy && !vm.loaded -> getString(R.string.find_pet_loading);!vm.loaded -> getString(R.string.find_pet_load_failed)
+            info==null -> getString(R.string.find_pet_publish_wish);info.effective==1 -> getString(R.string.find_pet_active);else -> getString(R.string.find_pet_closed)
         }
         closedImage.isVisible=info?.effective==2
-        save.text=when { info==null -> "发布";info.effective!=1 -> "修改并重新开启找宠";else -> "修改并提交" }
+        save.text=when { info==null -> getString(R.string.release_push);info.effective!=1 -> getString(R.string.find_pet_edit_reopen);else -> getString(R.string.find_pet_edit_submit) }
         save.isEnabled=!busy && vm.loaded && !committed
         effective.isVisible=false;effective.isEnabled=!busy && vm.loaded && !committed
-        effective.text=if(info?.effective==1) "关闭找宠" else "重新开启找宠"
+        effective.text=getString(if(info?.effective==1) R.string.find_pet_close else R.string.find_pet_reopen)
         retry.isVisible=!busy && (!vm.loaded || vm.refreshAfterWriteError.value!=null)
         location.isEnabled=!busy && !committed;cat.isEnabled=!busy && !committed;dog.isEnabled=!busy && !committed
         description.isEnabled=!busy && !committed;contact.isEnabled=!busy && !committed
         invalidateOptionsMenu()
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0,1001,0,"更多").setIcon(R.drawable.icon_detail_more).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        menu.add(0,1001,0,getString(R.string.common_more)).setIcon(R.drawable.icon_detail_more).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         return true
     }
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -178,7 +178,7 @@ class FindPetDetailActivity : AdoptionActivity() {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==1001) {
-            dialog=AlertDialog.Builder(this).setItems(arrayOf(if(vm.info.value?.effective==1) "关闭找宠" else "重新开启找宠","取消")) { _,index -> if(index==0) effective.callOnClick() }.show()
+            dialog=AlertDialog.Builder(this).setItems(arrayOf(getString(if(vm.info.value?.effective==1) R.string.find_pet_close else R.string.find_pet_reopen),getString(R.string.cancel))) { _,index -> if(index==0) effective.callOnClick() }.show()
             return true
         }
         return super.onOptionsItemSelected(item)

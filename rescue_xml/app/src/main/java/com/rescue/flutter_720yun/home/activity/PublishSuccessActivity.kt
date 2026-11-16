@@ -17,9 +17,9 @@ class PublishSuccessActivity: BaseActivity() {
 
         val topic = intent.getIntExtra("topic_id", 0)
         binding.successMessage.text = if (topic > 0) {
-            "帖子已发布，可查看帖子或稍后在我的发布查看。"
+            getString(R.string.publish_success_with_post)
         } else {
-            "帖子已发布，可稍后在我的发布查看。"
+            getString(R.string.publish_success_only)
         }
         binding.viewTopic.isVisible = topic > 0
         binding.viewTopic.setOnClickListener {

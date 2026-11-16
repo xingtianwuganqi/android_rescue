@@ -36,7 +36,7 @@ class GambitListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_gambit_list)
-        setupToolbar("话题")
+        setupToolbar(getString(R.string.topic_label))
         _binding = ActivityGambitListBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
         // 获取页面类型

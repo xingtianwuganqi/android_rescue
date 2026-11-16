@@ -2,10 +2,12 @@ package com.rescue.flutter_720yun.adoption.repository
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.models.*
 import com.rescue.flutter_720yun.network.AdoptionService
 import com.rescue.flutter_720yun.network.AdoptionServiceCreator
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.CancellationException
 import retrofit2.Response
 
@@ -21,8 +23,8 @@ object AdoptionErrors {
             key to if(value.isJsonArray) value.asJsonArray.joinToString("；") { it.asString } else value.asString
         } }.getOrNull().orEmpty()
         return AdoptionError(http, string(data, "error_code"), string(json, "message") ?: when(http) {
-            401 -> "登录已失效，请重新登录"; 403 -> "当前账号无权执行此操作"; 404 -> "资源或新版服务暂不可用"
-            409 -> "状态已变化，请刷新后重试"; else -> "服务暂不可用，请稍后重试"
+            401 -> localized(R.string.common_login_expired,"登录已失效，请重新登录"); 403 -> localized(R.string.adoption_no_permission_operation,"当前账号无权执行此操作"); 404 -> localized(R.string.adoption_resource_unavailable,"资源或新版服务暂不可用")
+            409 -> localized(R.string.adoption_state_changed_retry,"状态已变化，请刷新后重试"); else -> localized(R.string.adoption_service_unavailable,"服务暂不可用，请稍后重试")
         }, errors, code=runCatching { json?.get("code")?.asInt }.getOrNull() ?: http,
             retryAfter=runCatching { data?.get("retry_after")?.asLong }.getOrNull())
     }
@@ -40,15 +42,15 @@ class AdoptionRepository(
 ) {
     private suspend fun <T> request(call: suspend (String) -> Response<V2Response<T>>): T {
         val identity = account()
-        val token = identity.token ?: throw AdoptionError(401, message = "请先登录")
+        val token = identity.token ?: throw AdoptionError(401, message = localized(R.string.common_login_required,"请先登录"))
         val response = try { call("Bearer $token") } catch(e: com.google.gson.JsonParseException) {
             if(identity != account()) throw CancellationException("Account changed")
-            throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+            throw AdoptionError(502,message=localized(R.string.adoption_service_unavailable,"服务暂不可用，请稍后重试"))
         } // Retrofit suspend requests cancel the underlying Call.
         if (identity != account())
             throw CancellationException("Account changed")
         val body = response.body()
-        if(response.code()==200 && body==null) throw AdoptionError(502,message="服务暂不可用，请稍后重试")
+        if(response.code()==200 && body==null) throw AdoptionError(502,message=localized(R.string.adoption_service_unavailable,"服务暂不可用，请稍后重试"))
         if (response.code() != 200 || body?.code != 200) {
             val error = if(response.isSuccessful && body != null)
                 AdoptionErrors.parse(response.code(), com.google.gson.JsonObject().apply {
@@ -58,7 +60,7 @@ class AdoptionRepository(
             if(error.status == 401) invalidateLogin()
             throw error
         }
-        return body.data ?: throw AdoptionError(502, message = "服务返回了无效数据，请重试")
+        return body.data ?: throw AdoptionError(502, message = localized(R.string.adoption_invalid_data,"服务返回了无效数据，请重试"))
     }
     suspend fun preview(topic: Int): String? {
         val identity=account()
@@ -93,7 +95,7 @@ class AdoptionRepository(
         do {
             ensureAccount(identity)
             val batch=request { service.notifications(it,page++,unread=true) }
-            val items=batch.items ?: throw AdoptionError(502,message="提醒数据暂不可用，请点击重试")
+            val items=batch.items ?: throw AdoptionError(502,message=localized(R.string.adoption_reminder_data_unavailable,"提醒数据暂不可用，请点击重试"))
             items.forEach { notifications[it.id]=it }
             val more=batch.has_more
         } while(more)
@@ -103,7 +105,7 @@ class AdoptionRepository(
             do {
                 ensureAccount(identity)
                 val batch=mine("",page++) // Include terminal applications and all history pages.
-                own.addAll((batch.items ?: throw AdoptionError(502,message="申请归属暂不可用，请点击重试")).map { it.application_id })
+                own.addAll((batch.items ?: throw AdoptionError(502,message=localized(R.string.adoption_ownership_unavailable,"申请归属暂不可用，请点击重试"))).map { it.application_id })
                 val more=batch.has_more
             } while(more)
         }

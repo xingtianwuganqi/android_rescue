@@ -1,5 +1,8 @@
 package com.rescue.flutter_720yun.promotion.models
 
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.localized
+
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -32,11 +35,11 @@ object PromotionPolicy {
         record.account_id==account && record.reward_observed_at<=now && record.retry_until>now && record.next_retry_at<=now && record.retry_state=="pending"
     fun retryable(http: Int)=http==0 || http==429 || http>=500
     fun reason(value: String?)=when(value) {
-        "FEATURE_DISABLED" -> "推广功能暂未开放"
-        "DAILY_LIMIT_REACHED" -> "今日推广次数已用完"
-        "TOPIC_NOT_OPEN" -> "帖子已结束送养"
-        "NOT_OWNER" -> "仅送养人可推广此帖"
-        "ACCOUNT_RESTRICTED" -> "当前账号无法推广"
-        else -> "当前暂不能推广，请刷新后重试"
+        "FEATURE_DISABLED" -> localized(R.string.promotion_feature_disabled,"推广功能暂未开放")
+        "DAILY_LIMIT_REACHED" -> localized(R.string.promotion_daily_limit,"今日推广次数已用完")
+        "TOPIC_NOT_OPEN" -> localized(R.string.promotion_post_ended,"帖子已结束送养")
+        "NOT_OWNER" -> localized(R.string.promotion_owner_only,"仅送养人可推广此帖")
+        "ACCOUNT_RESTRICTED" -> localized(R.string.promotion_account_unavailable,"当前账号无法推广")
+        else -> localized(R.string.promotion_cannot_now,"当前暂不能推广，请刷新后重试")
     }
 }

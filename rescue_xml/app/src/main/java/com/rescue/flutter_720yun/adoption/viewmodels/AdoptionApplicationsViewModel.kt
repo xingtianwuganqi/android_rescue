@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.rescue.flutter_720yun.adoption.models.*
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.AdoptionError
+import com.rescue.flutter_720yun.util.localized
 import com.rescue.flutter_720yun.adoption.ui.AdoptionNotificationChanges
 import kotlinx.coroutines.*
 
@@ -87,7 +89,7 @@ open class AdoptionApplicationsViewModel(private val saved: SavedStateHandle) : 
             } catch(e: CancellationException) { throw e }
             catch(e: Exception) { if(operation == reminderOperation) {
                 reminderFailedAppend=!refresh
-                reminderError.value=(e as? AdoptionError)?.message ?: "提醒加载失败，请点击重试"
+                reminderError.value=(e as? AdoptionError)?.message ?: localized(R.string.adoption_reminder_load_failed,"提醒加载失败，请点击重试")
             } }
             finally { if(operation == reminderOperation) reminderBusy.value=false }
         }
@@ -112,7 +114,7 @@ open class AdoptionApplicationsViewModel(private val saved: SavedStateHandle) : 
                 readingId.value=null
                 loadReminders()
             } catch(e: CancellationException) { throw e }
-            catch(e: Exception) { if(operation==readOperation) reminderError.value=(e as? AdoptionError)?.message ?: "标记已读失败，请重试" }
+            catch(e: Exception) { if(operation==readOperation) reminderError.value=(e as? AdoptionError)?.message ?: localized(R.string.adoption_mark_read_failed,"标记已读失败，请重试") }
             finally { if(operation==readOperation) readingId.value=null }
         }
     }

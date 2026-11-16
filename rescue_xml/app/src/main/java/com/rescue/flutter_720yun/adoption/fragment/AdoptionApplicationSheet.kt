@@ -1,4 +1,5 @@
 package com.rescue.flutter_720yun.adoption.fragment
+import com.rescue.flutter_720yun.R
 import android.os.Bundle
 import android.view.*
 import android.widget.*
@@ -57,34 +58,34 @@ class AdoptionApplicationSheet:BottomSheetDialogFragment() {
             error != null -> {
                 r.removeAllViews()
                 r.label(error.message)
-                r.button("重新加载") { vm.load(applicationId) }.isEnabled = !busy
+                r.button(getString(R.string.adoption_reload)) { vm.load(applicationId) }.isEnabled = !busy
             }
             app != null -> render(app)
             else -> {
                 r.removeAllViews()
-                r.label(if(busy) "正在加载申请资料…" else "暂无申请资料")
-                if(!busy) r.button("重新加载") { vm.load(applicationId) }
+                r.label(getString(if(busy) R.string.adoption_loading_application else R.string.adoption_no_application_data))
+                if(!busy) r.button(getString(R.string.adoption_reload)) { vm.load(applicationId) }
             }
         }
         for(i in 0 until r.childCount) r.getChildAt(i).isEnabled = !busy
     }
     private fun render(app:AdoptionApplication) {
         val r=root ?: return;r.removeAllViews()
-        r.label("${app.applicant?.nickname ?: "账号或资料已不可用"}\n${AdoptionOperations.status(app)}")
-        if(app.topic?.unavailable==true || app.topic?.is_delete==0) { r.label("帖子已删除，不能操作");return }
-        r.label("申请时资料 · 用户填写\n${AdoptionLabels.summary(app.profile_snapshot)}")
-        r.label("养宠经验：${app.profile_snapshot?.pet_experience.orEmpty()}\n申请说明：${app.statement.orEmpty()}\n结束说明：${app.end_note.orEmpty()}")
-        if(app.topic?.unavailable==true || app.topic?.is_delete==0) { r.label("帖子已删除，不能操作");return }
+        r.label("${app.applicant?.nickname ?: getString(R.string.adoption_applicant_unavailable)}\n${AdoptionOperations.status(app)}")
+        if(app.topic?.unavailable==true || app.topic?.is_delete==0) { r.label(getString(R.string.common_post_deleted_no_action));return }
+        r.label(getString(R.string.adoption_profile_snapshot_label)+"\n"+AdoptionLabels.summary(app.profile_snapshot))
+        r.label(getString(R.string.adoption_experience_format,app.profile_snapshot?.pet_experience.orEmpty(),app.statement.orEmpty(),app.end_note.orEmpty()))
+        if(app.topic?.unavailable==true || app.topic?.is_delete==0) { r.label(getString(R.string.common_post_deleted_no_action));return }
         if(!ownerHint) {
             val contact = AdoptionContact.visible(app.topic)
-            r.label(if(contact != null) "送养人联系方式：$contact" else "暂无可显示的联系方式")
-            if(contact != null) r.button("复制联系方式") { AdoptionContactCopy.copy(requireActivity(), vm, applicationId) { vm.application.value=it } }
+            r.label(if(contact != null) getString(R.string.adoption_owner_contact_value,contact) else getString(R.string.adoption_no_display_contact))
+            if(contact != null) r.button(getString(R.string.common_copy_contact)) { AdoptionContactCopy.copy(requireActivity(), vm, applicationId) { vm.application.value=it } }
         }
     }
 
     private suspend fun changed() { vm.reload(applicationId);setFragmentResult("adoption_changed",Bundle()) }
     private fun confirm(title:String,message:String,action:()->Unit) { confirmation=AlertDialog.Builder(requireContext()).setTitle(title).setMessage(message)
-        .setPositiveButton("确认") { _,_ -> action() }.setNegativeButton("取消",null).show() }
+        .setPositiveButton(getString(R.string.confirm_d)) { _,_ -> action() }.setNegativeButton(getString(R.string.cancel),null).show() }
     override fun onResume() { super.onResume(); if(UserManager.isLogin && vm.busy.value != true) vm.load(applicationId) }
     override fun onPause() { confirmation?.dismiss(); confirmation=null; vm.cancelWork(); vm.application.value=null; root?.removeAllViews(); super.onPause() }
     override fun onDestroyView() { confirmation?.dismiss();confirmation=null;root?.removeAllViews();root=null;super.onDestroyView() }

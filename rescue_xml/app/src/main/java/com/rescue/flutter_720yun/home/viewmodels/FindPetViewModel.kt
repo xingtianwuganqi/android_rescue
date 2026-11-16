@@ -2,6 +2,7 @@ package com.rescue.flutter_720yun.home.viewmodels
 
 import androidx.lifecycle.*
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.AdoptionError
 import com.rescue.flutter_720yun.findpet.FindPetRepository
 import com.rescue.flutter_720yun.home.models.FindPetModel
@@ -59,8 +60,8 @@ class FindPetViewModel(
                 pageChange.value=FindPetPageChange(combined.size-previous.size,reload)
             } catch(e: CancellationException) { throw e }
             catch(e: Exception) { if(request==generation) {
-                if(items.value.isNullOrEmpty()) uiState.value=UiState.Error("网络加载失败\n请检查网络后重试")
-                else errorMsg.value="网络加载失败，请稍后重试"
+                if(items.value.isNullOrEmpty()) uiState.value=UiState.Error(localized(R.string.common_network_load_failed,"网络加载失败\n请检查网络后重试"))
+                else errorMsg.value=localized(R.string.common_network_retry,"网络加载失败，请稍后重试")
                 if(e is AdoptionError && e.status==401) actionError.value=e
             } }
             finally { if(request==generation) loading.value=false }
@@ -79,7 +80,7 @@ class FindPetViewModel(
     }
     private fun operation(model: FindPetModel, kind: String, call: suspend (Int)->Unit) {
         val id=model.findId?.takeIf { it>0 } ?: return
-        if(model.effective!=1 || model.is_delete!=1) { errorMsg.value="找宠信息已关闭或不可用";return }
+        if(model.effective!=1 || model.is_delete!=1) { errorMsg.value=localized(R.string.find_pet_closed_unavailable,"找宠信息已关闭或不可用");return }
         val key="$id:$kind"
         if(key in operations.value.orEmpty()) return
         val revision=UserManager.sessionRevision.value
@@ -91,7 +92,7 @@ class FindPetViewModel(
                 if(e is AdoptionError) {
                     actionError.value=e
                     if(kind=="contact") update(id) { it.copy(getedcontact=false,contact_info=null) }
-                } else errorMsg.value="操作失败，请重试"
+                } else errorMsg.value=localized(R.string.common_operation_failed,"操作失败，请重试")
             } }
             finally { if(revision==UserManager.sessionRevision.value) operations.value=operations.value.orEmpty()-key }
         }

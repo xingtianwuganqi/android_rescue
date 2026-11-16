@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="adoption_profile_intro_title">보호자에게 더 빨리 알려주세요</string>
+    <string name="adoption_profile_intro_desc">한 번 작성하면 이후 입양 신청에 재사용할 수 있습니다. 보호자에게는 신청 시 제출한 프로필 스냅샷이 표시됩니다.</string>
+    <string name="adoption_profile_progress_label">필수 항목 완성도</string>
+    <string name="adoption_profile_progress_value">%1$d / 4</string>
+    <string name="adoption_profile_safe_note">프로필은 입양 소통에만 사용되며 연락처는 공개되지 않습니다</string>
+    <string name="adoption_profile_section_basic">기본 정보</string>
+    <string name="adoption_profile_section_living">거주 및 직업</string>
+    <string name="adoption_profile_section_experience">반려동물 양육 경험</string>
+    <string name="adoption_profile_required">필수</string>
+    <string name="adoption_profile_optional">선택</string>
+    <string name="adoption_profile_age_label">나이</string>
+    <string name="adoption_profile_age_placeholder">나이를 입력하세요</string>
+    <string name="adoption_profile_age_suffix">세</string>
+    <string name="adoption_profile_age_hint">10~100세까지</string>
+    <string name="adoption_profile_city_label">시/군/구</string>
+    <string name="adoption_profile_city_sub">가까운 입양 정보 매칭에 사용됩니다</string>
+    <string name="adoption_profile_city_placeholder">시/군/구를 선택하세요</string>
+    <string name="adoption_profile_housing_label">주거 형태</string>
+    <string name="adoption_profile_housing_sub">보호자가 거주 환경을 이해하는 데 도움이 됩니다</string>
+    <string name="adoption_profile_housing_placeholder">주거 형태를 선택하세요</string>
+    <string name="adoption_profile_employment_label">고용 상태</string>
+    <string name="adoption_profile_employment_sub">돌봄 안정성을 평가하는 데 사용됩니다</string>
+    <string name="adoption_profile_employment_placeholder">고용 상태를 선택하세요</string>
+    <string name="adoption_profile_experience_label">반려동물 양육 경험을 알려주세요</string>
+    <string name="adoption_profile_experience_hint">사실적이고 구체적인 경험은 보호자의 신뢰를 얻기 쉽습니다</string>
+    <string name="adoption_profile_experience_placeholder">예: 고양이를 3년간 키우며 구충, 백신, 중성화 관리를 이해하고 있습니다.</string>
+    <string name="adoption_profile_counter">%1$d/200</string>
+    <string name="adoption_profile_save_note">저장 후 언제든지 수정할 수 있습니다</string>
+    <string name="adoption_profile_save">프로필 저장</string>
+    <string name="adoption_profile_city_error">시/군/구를 선택하세요</string>
+    <string name="adoption_profile_housing_error">주거 형태를 선택하세요</string>
+    <string name="adoption_profile_employment_error">고용 상태를 선택하세요</string>
+    <string name="adoption_profile_select_province">도/광역시 선택</string>
+    <string name="adoption_profile_select_city">시/군/구 선택</string>
+    <string name="adoption_profile_select_district">읍/면/동 선택</string>
+</resources>

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.SystemClock
 import kotlinx.coroutines.*
+import com.rescue.flutter_720yun.R
 import java.io.File
 import java.util.UUID
 
@@ -20,16 +21,16 @@ class TopicShareVideoExporter(private val context: Context) {
                 try {
                     repository.withImage(url,1280) { bitmap -> file.outputStream().use { check(bitmap.compress(Bitmap.CompressFormat.PNG,100,it)) } }
                 } catch (e: CancellationException) { throw e }
-                catch (e: Exception) { throw PosterUnavailable("图片加载失败，请检查网络后重试") }
+                catch (e: Exception) { throw PosterUnavailable(context.getString(R.string.common_image_load_failed)) }
                 file
             }
-            check(repository.videoContent(content.poster.topicId) == content) { "帖子信息已变化，请重新导出" }
+            check(repository.videoContent(content.poster.topicId) == content) { context.getString(R.string.common_post_changed) }
             val slides = VideoExportPlan.slides(photos.size,content.poster.topicId)
             val total = slides.sumOf { it.frames }; val duration = total.toDouble()/30
             val video = File(work,"silent.mp4")
             val deadline = SystemClock.elapsedRealtime() + 120_000
             val operation = currentCoroutineContext()
-            val checkpoint = { operation.ensureActive(); check(SystemClock.elapsedRealtime() < deadline) { "视频生成超时，请重试" } }
+            val checkpoint = { operation.ensureActive(); check(SystemClock.elapsedRealtime() < deadline) { context.getString(R.string.common_video_timeout) } }
             val frame = Bitmap.createBitmap(720,1280,Bitmap.Config.ARGB_8888)
             var previous: Bitmap? = null
             try {
@@ -38,7 +39,7 @@ class TopicShareVideoExporter(private val context: Context) {
                         var frameIndex = 0
                         for (slide in slides) {
                             checkpoint()
-                            val photo = slide.photoIndex?.let { BitmapFactory.decodeFile(photos[it].path) ?: error("图片加载失败") }
+                            val photo = slide.photoIndex?.let { BitmapFactory.decodeFile(photos[it].path) ?: error(context.getString(R.string.common_image_load_failed_short)) }
                             var base: Bitmap? = null
                             try {
                                 base = renderer.base(slide,photo)
@@ -58,14 +59,14 @@ class TopicShareVideoExporter(private val context: Context) {
             if (music == ShareVideoMusic.NONE) check(video.renameTo(output))
             else {
                 val audioDeadline = SystemClock.elapsedRealtime() + 120_000
-                val audioCheck = { operation.ensureActive(); check(SystemClock.elapsedRealtime() < audioDeadline) { "视频配乐超时，请重试" } }
+                val audioCheck = { operation.ensureActive(); check(SystemClock.elapsedRealtime() < audioDeadline) { context.getString(R.string.common_video_music_timeout) } }
                 progress(85)
                 val audio = ShareVideoAudio.create(context,music,work,duration,audioCheck)
                 progress(95)
                 ShareVideoAudio.mux(video,audio,output,(duration*1_000_000).toLong(),audioCheck)
             }
             ensureActive()
-            check(repository.videoContent(content.poster.topicId) == content) { "帖子信息已变化，请重新导出" }
+            check(repository.videoContent(content.poster.topicId) == content) { context.getString(R.string.common_post_changed) }
             successful = true; progress(100); output
         } finally { work.deleteRecursively(); if (!successful) output.delete() }
     }

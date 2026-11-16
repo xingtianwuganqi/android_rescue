@@ -1,8 +1,10 @@
 package com.rescue.flutter_720yun.adoption.viewmodels
 
 import androidx.lifecycle.*
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.*
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.*
 
 open class AdoptionViewModel : ViewModel() {
@@ -34,7 +36,7 @@ open class AdoptionViewModel : ViewModel() {
             try { action() }
             catch(cancel: CancellationException) { throw cancel }
             catch(e: AdoptionError) { if(operation == currentOperation) { busy.value = false; if(e.status==403) clearPrivateState() else if(e.status==404) clearUnavailableState(); error.value = e } }
-            catch(e: Exception) { if(operation == currentOperation) { busy.value = false; error.value = AdoptionError(0, message = "网络结果未知，请刷新状态后重试") } }
+            catch(e: Exception) { if(operation == currentOperation) { busy.value = false; error.value = AdoptionError(0, message = localized(R.string.adoption_network_unknown_refresh,"网络结果未知，请刷新状态后重试")) } }
             finally { if(operation == currentOperation) busy.value = false }
         }
     }

@@ -45,10 +45,10 @@ class AdoptionApplicationAdapter(
         val time = AdoptionTime.display(app.created_at)
         val fullStatus = AdoptionOperations.status(app)
         val badge = when (app.status) {
-            "applying" -> "申请中"
-            "communicating" -> "沟通中"
-            "ended" -> if (fullStatus.endsWith("被拒绝")) "被拒绝" else "已结束"
-            else -> "状态暂不可用"
+            "applying" -> context.getString(R.string.adoption_filter_applying)
+            "communicating" -> context.getString(R.string.adoption_filter_communicating)
+            "ended" -> if (app.result == "not_completed" && app.end_reason == "owner_ended" && app.end_note == "拒绝沟通申请") context.getString(R.string.adoption_status_rejected) else context.getString(R.string.adoption_filter_ended)
+            else -> context.getString(R.string.adoption_status_unavailable)
         }
         b.applicationMineHeader.isVisible = mine
         b.applicationReceivedContent.isVisible = !mine
@@ -70,7 +70,7 @@ class AdoptionApplicationAdapter(
         b.applicationApplicant.text = app.applicant?.nickname?.takeIf { it.isNotBlank() }
             ?: context.getString(R.string.adoption_applicant_unavailable)
         b.applicationResult.text = when {
-            app.status == "ended" && app.result == "completed" -> "已结束 · 完成送养（送养人报告）"
+            app.status == "ended" && app.result == "completed" -> context.getString(R.string.adoption_ended_completed_report)
             else -> fullStatus
         }
         b.applicationResult.isVisible = app.status == "ended"
@@ -105,7 +105,7 @@ class AdoptionApplicationAdapter(
             if (contact == null) R.color.adoption_text_secondary else R.color.color_content))
         b.applicationActions.removeAllViews()
         if (contact != null && app.status == "communicating") {
-            addAction(b, "复制联系方式", false, disabled) { copyContact?.invoke(app) }
+            addAction(b, context.getString(R.string.common_copy_contact), false, disabled) { copyContact?.invoke(app) }
         }
         AdoptionOperations.actions(app, mine).forEach { code ->
             addAction(b, AdoptionOperations.title(code), code in listOf("communicate", "complete"), disabled) { action(app, code) }

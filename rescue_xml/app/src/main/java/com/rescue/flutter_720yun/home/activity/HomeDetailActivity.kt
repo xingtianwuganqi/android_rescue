@@ -52,11 +52,11 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_home_detail)
         _binding = ActivityHomeDetailBinding.bind(baseBinding.contentFrame.getChildAt(2))
-        setupToolbar("详情")
+        setupToolbar(getString(R.string.home_detail_title))
         UserManager.sessionRevision.observe(this) { updateSafetyNotice() }
 
         val topic = intent.getIntExtra("topic_id", 0)
-        if (topic <= 0) { "帖子参数无效".toastString(); finish(); return }
+        if (topic <= 0) { getString(R.string.common_post_parameter_invalid).toastString(); finish(); return }
         viewModel.topicId = topic
         adoptionFlow = com.rescue.flutter_720yun.adoption.ui.AdoptionDetailFlow(this, binding.getContactBtn) { viewModel.homeData.value?.is_complete == true }
         adoptionFlow.setTopic(topic)
@@ -273,7 +273,7 @@ class HomeDetailActivity : BaseActivity(), DetailImgClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
-        menu.add(0,10009,0,"分享").setIcon(R.drawable.icon_topic_share).setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        menu.add(0,10009,0,getString(R.string.share_action)).setIcon(R.drawable.icon_topic_share).setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM)
         return true
     }
     override fun onPrepareOptionsMenu(menu: android.view.Menu): Boolean {

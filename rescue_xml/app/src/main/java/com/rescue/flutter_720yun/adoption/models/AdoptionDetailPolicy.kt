@@ -1,5 +1,8 @@
 package com.rescue.flutter_720yun.adoption.models
 
+import com.rescue.flutter_720yun.R
+import com.rescue.flutter_720yun.util.localized
+
 /** Mirrors iOS AdoptionApplicationState and the detail button routing order. */
 object AdoptionDetailPolicy {
     enum class Route { MANAGE, ENDED, UNAVAILABLE, APPLICATION, APPLY, BLOCKED }
@@ -12,21 +15,21 @@ object AdoptionDetailPolicy {
         else -> Route.BLOCKED
     }
     fun title(state: ApplicationState): String = when {
-        state.can_manage -> "管理申请"
-        state.workflow_status in listOf("adopted","closed") -> "送养已结束"
-        state.workflow_status != "open" -> "状态暂不可用"
-        state.application_status == "applying" -> "申请中"
-        state.application_status == "communicating" -> if (state.contact_authorized) "查看联系方式" else "沟通中"
-        state.application_status == "ended" -> if (state.can_apply && state.application_result == "not_completed") "查看结果 / 重新申请" else "申请已结束"
-        state.can_apply -> "申请领养"
-        else -> "暂不可申请"
+        state.can_manage -> localized(R.string.adoption_apply_manage,"管理申请")
+        state.workflow_status in listOf("adopted","closed") -> localized(R.string.adoption_workflow_ended,"送养已结束")
+        state.workflow_status != "open" -> localized(R.string.adoption_status_unavailable,"状态暂不可用")
+        state.application_status == "applying" -> localized(R.string.adoption_filter_applying,"申请中")
+        state.application_status == "communicating" -> if (state.contact_authorized) localized(R.string.adoption_view_contact,"查看联系方式") else localized(R.string.adoption_filter_communicating,"沟通中")
+        state.application_status == "ended" -> if (state.can_apply && state.application_result == "not_completed") localized(R.string.adoption_view_result_reapply,"查看结果 / 重新申请") else localized(R.string.adoption_application_ended,"申请已结束")
+        state.can_apply -> localized(R.string.adoption_apply,"申请领养")
+        else -> localized(R.string.adoption_cannot_apply,"暂不可申请")
     }
     fun title(app: AdoptionApplication): String = when {
-        app.status == "ended" && app.result == "not_completed" && app.end_reason == "owner_ended" && app.end_note == "拒绝沟通申请" -> "被拒绝"
-        app.status == "applying" -> "申请中"
-        app.status == "communicating" -> "沟通中"
-        app.result == "completed" -> "已结束 · 完成送养（送养人报告）"
-        else -> "已结束 · 未完成送养"
+        app.status == "ended" && app.result == "not_completed" && app.end_reason == "owner_ended" && app.end_note == "拒绝沟通申请" -> localized(R.string.adoption_status_title_rejected,"被拒绝")
+        app.status == "applying" -> localized(R.string.adoption_filter_applying,"申请中")
+        app.status == "communicating" -> localized(R.string.adoption_filter_communicating,"沟通中")
+        app.result == "completed" -> localized(R.string.adoption_ended_completed_report,"已结束 · 完成送养（送养人报告）")
+        else -> localized(R.string.adoption_ended_not_completed,"已结束 · 未完成送养")
     }
     fun profileReady(data: ProfileData): Boolean {
         val p = data.profile ?: return false

@@ -5,7 +5,7 @@
         android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="92dp"
         android:layout_marginHorizontal="15dp" android:layout_marginVertical="8dp"
         android:paddingVertical="16dp" android:background="@drawable/find_pet_header_background"
-        android:foreground="?attr/selectableItemBackground" android:contentDescription="找宠小助手，去找宠">
+        android:foreground="?attr/selectableItemBackground" android:contentDescription="@string/find_pet_assistant_desc">
         <ImageView android:id="@+id/find_header_image" android:layout_width="169dp" android:layout_height="0dp" android:src="@drawable/icon_find_line"
             android:scaleType="fitCenter" android:importantForAccessibility="no" android:clickable="false"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" />
@@ -13,15 +13,15 @@
             android:layout_marginStart="20dp" android:layout_marginEnd="12dp" android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/find_button"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="找宠小助手" android:textColor="@color/white" android:textStyle="bold" android:textSize="20sp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/find_title" android:textColor="@color/white" android:textStyle="bold" android:textSize="20sp" />
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp"
-                android:text="发布领养意愿，让合适的宠物和送养人找到你" android:textSize="12sp" android:textColor="@color/white" />
+                android:text="@string/find_pet_banner_desc" android:textSize="12sp" android:textColor="@color/white" />
         </LinearLayout>
         <com.google.android.material.button.MaterialButton android:id="@+id/find_button"
             android:layout_width="98dp" android:layout_height="wrap_content" android:minHeight="36dp"
             android:minWidth="0dp" android:paddingHorizontal="8dp" android:layout_marginEnd="20dp"
             android:insetTop="0dp" android:insetBottom="0dp" app:cornerRadius="18dp" app:backgroundTint="@color/white"
-            android:text="去找宠" android:textColor="@color/color_vip" android:textSize="16sp"
+            android:text="@string/find_go" android:textColor="@color/color_vip" android:textSize="16sp"
             app:icon="@drawable/icon_find_right" app:iconSize="13dp" app:iconGravity="textEnd" app:iconTint="@null"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -33,7 +33,7 @@
         </com.scwang.smart.refresh.layout.SmartRefreshLayout>
         <ProgressBar android:id="@+id/progressBar" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:visibility="gone" />
         <TextView android:id="@+id/errorView" android:layout_width="match_parent" android:layout_height="match_parent"
-            android:gravity="center" android:padding="24dp" android:translationY="-40dp" android:text="暂无数据\n请点击重试"
+            android:gravity="center" android:padding="24dp" android:translationY="-40dp" android:text="@string/empty_retry"
             android:textSize="@dimen/address_font" android:textColor="@color/color_desc" android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>

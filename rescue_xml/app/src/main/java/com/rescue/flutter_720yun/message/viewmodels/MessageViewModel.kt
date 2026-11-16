@@ -14,10 +14,10 @@ class MessageViewModel : ViewModel() {
     private val adoption = AdoptionRepository()
     private val findPet = com.rescue.flutter_720yun.findpet.FindPetRepository()
     private fun entries() = listOf(
-        MessageListModel("icon_message_sys", "系统消息", category="system"),
-        MessageListModel("icon_message_find_pet", "我的找宠", unread=null, category="my_find_pet"),
-        MessageListModel("icon_message_sys", "我的申请", unread=null, category="my_applications"),
-        MessageListModel("icon_message_sys", "收到的申请", unread=null, category="received_applications"),
+        MessageListModel("icon_message_sys", BaseApplication.context.getString(R.string.message_system), category="system"),
+        MessageListModel("icon_message_find_pet", BaseApplication.context.getString(R.string.find_pet_my_title), unread=null, category="my_find_pet"),
+        MessageListModel("icon_message_sys", BaseApplication.context.getString(R.string.adoption_my_applications), unread=null, category="my_applications"),
+        MessageListModel("icon_message_sys", BaseApplication.context.getString(R.string.adoption_received_applications), unread=null, category="received_applications"),
         MessageListModel("icon_message_like", BaseApplication.context.getString(R.string.like_action), category="like"),
         MessageListModel("icon_message_collect", BaseApplication.context.getString(R.string.collection_action), category="collection"),
         MessageListModel("icon_message_com", BaseApplication.context.getString(R.string.comment_action), category="comment")
@@ -86,7 +86,7 @@ class MessageViewModel : ViewModel() {
                     _messageList.value=_messageList.value?.map { it.copy(unread=values[it.category] ?: it.unread) }; updateBadge()
                 }
             } catch(e: CancellationException) { throw e } catch(e: Exception) {
-                if(session==UserManager.sessionRevision.value) findPetUnreadError.value="消息提醒统计更新失败，请点击重试"
+                if(session==UserManager.sessionRevision.value) findPetUnreadError.value=BaseApplication.context.getString(R.string.message_reminder_stats_failed)
             }
         }
         adoptionJob?.cancel()
@@ -103,7 +103,7 @@ class MessageViewModel : ViewModel() {
                     else -> it
                 } }; updateBadge()
             } catch(e: CancellationException) { throw e } catch(e: Exception) {
-                if(session==UserManager.sessionRevision.value) adoptionUnreadError.value="申请提醒统计更新失败，请点击重试"
+                if(session==UserManager.sessionRevision.value) adoptionUnreadError.value=BaseApplication.context.getString(R.string.message_application_stats_failed)
             }
         }
 

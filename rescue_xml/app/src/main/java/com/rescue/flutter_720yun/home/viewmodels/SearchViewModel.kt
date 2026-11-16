@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource
 import com.rescue.flutter_720yun.BaseApplication
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.home.models.BaseListResp
 import com.rescue.flutter_720yun.home.models.HomeListModel
 import com.rescue.flutter_720yun.home.models.SearchHistoryItemModel
@@ -20,6 +21,7 @@ import com.rescue.flutter_720yun.util.RefreshState
 import com.rescue.flutter_720yun.util.UiState
 import com.rescue.flutter_720yun.util.convertAnyToList
 import com.rescue.flutter_720yun.util.paramDic
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -66,7 +68,7 @@ class SearchViewModel: ViewModel() {
                 val historyItems = mutableListOf<SearchHistoryItemModel>()
                 if ((response as BaseListResp<SearchKeywordModel>) != null) {
                     val resp = response.data as List<SearchKeywordModel>
-                    val historyItemModel = SearchHistoryItemModel("热门搜索",
+                    val historyItemModel = SearchHistoryItemModel(localized(R.string.search_hot,"热门搜索"),
                         resp)
                     historyItems.add(historyItemModel)
                 }
@@ -75,7 +77,7 @@ class SearchViewModel: ViewModel() {
                         SearchKeywordModel(0,it)
                     }
                     if (list?.isNotEmpty() == true) {
-                        val localHistory = SearchHistoryItemModel("历史搜索", list)
+                        val localHistory = SearchHistoryItemModel(localized(R.string.history_search,"历史搜索"), list)
                         historyItems.add(localHistory)
                     }
                 }
@@ -129,7 +131,7 @@ class SearchViewModel: ViewModel() {
                 val list = words.map {
                     SearchKeywordModel(0,it)
                 }
-                val localHistory = SearchHistoryItemModel("历史搜索", list)
+                val localHistory = SearchHistoryItemModel(localized(R.string.history_search,"历史搜索"), list)
 
                 val historyItems = mutableListOf<SearchHistoryItemModel>()
                 _keywordModels.value?.first()?.let {
@@ -146,7 +148,7 @@ class SearchViewModel: ViewModel() {
 
             // 更新
             val item = SearchKeywordModel(0,keyword)
-            val localHistory = SearchHistoryItemModel("历史搜索", listOf(item))
+            val localHistory = SearchHistoryItemModel(localized(R.string.history_search,"历史搜索"), listOf(item))
 
             val historyItems = mutableListOf<SearchHistoryItemModel>()
             _keywordModels.value?.first()?.let {
@@ -210,19 +212,19 @@ class SearchViewModel: ViewModel() {
                         _uiState.value = UiState.Success<List<HomeListModel>>(items)
                     }else{
                         if (page == 1) {
-                            _uiState.value = UiState.Error("暂无数据")
+                            _uiState.value = UiState.Error(localized(R.string.no_data,"暂无数据"))
                         }else{
                             _isLastPage.value = true
                         }
                     }
                 }else{
                     if (page == 1) {
-                        _uiState.value = UiState.Error("暂无数据")
+                        _uiState.value = UiState.Error(localized(R.string.no_data,"暂无数据"))
                     }
                 }
             }catch (e: Exception) {
                 if (page == 1) {
-                    _uiState.value = UiState.Error("暂无数据")
+                    _uiState.value = UiState.Error(localized(R.string.no_data,"暂无数据"))
                 }
             }finally {
                 isLoading = false

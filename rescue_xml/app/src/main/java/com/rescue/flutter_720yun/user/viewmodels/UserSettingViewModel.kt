@@ -32,14 +32,14 @@ class UserSettingViewModel : ViewModel() {
     fun refreshEntries() {
         val context = BaseApplication.context
         entries.value = buildList {
-            add(MessageListModel("ic_setting_music", "背景音乐管理", category = "share_video_music"))
+            add(MessageListModel("ic_setting_music", context.getString(R.string.share_music_manage), category = "share_video_music"))
             add(MessageListModel("icon_mi_zeliao", context.getString(R.string.adoption_profile_title), category = "adoption_profile"))
             add(MessageListModel("icon_message_find_pet", context.getString(R.string.find_pet_profile_title), category = "find_pet_profile"))
             add(MessageListModel("icon_setting_pswd", context.getString(R.string.user_change_password), category = "password"))
             add(MessageListModel("icon_setting_fk", context.getString(R.string.user_suggestion), category = "feedback"))
             add(MessageListModel("icon_acc_sec", context.getString(R.string.user_account), category = "account_security"))
-            add(MessageListModel("icon_me_black", "黑名单", category = "blacklist"))
-            if (UserManager.isLogin && needsEmailBinding) add(MessageListModel("icon_check_email", "绑定邮箱", category="bind_email"))
+            add(MessageListModel("icon_me_black", context.getString(R.string.user_black), category = "blacklist"))
+            if (UserManager.isLogin && needsEmailBinding) add(MessageListModel("icon_check_email", context.getString(R.string.login_bind_phone), category="bind_email"))
             if (UserManager.isLogin) add(MessageListModel("icon_mi_inter", context.getString(R.string.logout), category = "logout"))
         }
     }

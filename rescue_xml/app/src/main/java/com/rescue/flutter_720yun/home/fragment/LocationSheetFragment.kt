@@ -60,7 +60,7 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
 
         repeat(3) {
             binding.tabLayout.addTab(tabLayout.newTab()
-                .setText(if (it == 0) "请选择" else ""))
+                .setText(if (it == 0) getString(R.string.common_please_select) else ""))
         }
 
         updatePage(0, addressData)
@@ -98,7 +98,7 @@ class LocationSheetFragment : BottomSheetDialogFragment() {
                 }else{
                     updatePage(level + 1, it.children ?: emptyList())
                     viewPager.currentItem = level + 1
-                    tabLayout.getTabAt(level + 1)?.text = "请选择"
+                    tabLayout.getTabAt(level + 1)?.text = getString(R.string.common_please_select)
                 }
             }
         }

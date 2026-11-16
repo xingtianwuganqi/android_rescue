@@ -1,4 +1,5 @@
 package com.rescue.flutter_720yun.adoption.adapter
+import com.rescue.flutter_720yun.R
 
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -24,6 +25,6 @@ class AdoptionReminderAdapter(private val click: (AdoptionNotification) -> Unit)
         val time=runCatching { OffsetDateTime.parse(item.created_at).atZoneSameInstant(ZoneId.systemDefault())
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) }.getOrNull() ?: item.created_at.orEmpty()
         holder.root.label(item.message.orEmpty()+"\n"+time)
-        holder.root.button(if(reading==item.id) "处理中…" else "查看提醒", primary = false) { click(item) }.isEnabled=reading==null
+        holder.root.button(if(reading==item.id) holder.root.context.getString(R.string.adoption_application_processing) else holder.root.context.getString(R.string.adoption_view_reminder), primary = false) { click(item) }.isEnabled=reading==null
     }
 }

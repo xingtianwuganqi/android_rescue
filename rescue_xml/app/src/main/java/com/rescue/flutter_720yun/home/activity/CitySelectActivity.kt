@@ -36,7 +36,7 @@ class CitySelectActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentLayout(R.layout.activity_city_select)
-        setupToolbar("请选择城市")
+        setupToolbar(getString(R.string.city_select_title))
         _binding = ActivityCitySelectBinding.bind(baseBinding.contentFrame.getChildAt(2))
 
         addViewModelObserver()

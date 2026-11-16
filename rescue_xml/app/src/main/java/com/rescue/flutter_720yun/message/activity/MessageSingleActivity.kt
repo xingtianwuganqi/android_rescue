@@ -45,11 +45,11 @@ class MessageSingleActivity : BaseActivity() {
 
         messageType = intent.getIntExtra("messageType", 0)
         if (messageType == 1) {
-            setupToolbar("点赞")
+            setupToolbar(getString(R.string.like_action))
         }else if (messageType == 2) {
-            setupToolbar("收藏")
+            setupToolbar(getString(R.string.collection_action))
         }else if (messageType == 3) {
-            setupToolbar("评论")
+            setupToolbar(getString(R.string.comment_action))
         }
 
         addViewAction()

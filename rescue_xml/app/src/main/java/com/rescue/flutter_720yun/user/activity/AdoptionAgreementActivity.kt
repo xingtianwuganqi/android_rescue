@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.rescue.flutter_720yun.BaseActivity
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.ui.notice
 import kotlinx.coroutines.*
 import java.util.zip.ZipInputStream
@@ -20,14 +21,14 @@ class AdoptionAgreementActivity : BaseActivity() {
             saving=true;invalidateOptionsMenu()
             try {
                 withContext(Dispatchers.IO) { assets.open("adoption_agreement.docx").use { input -> contentResolver.openOutputStream(uri)?.use { input.copyTo(it) } ?: error("Cannot save") } }
-                notice("领养协议已保存")
-            } catch(e: CancellationException) { throw e } catch(e: Exception) { notice("保存失败，请稍后重试") }
+                notice(getString(R.string.adoption_agreement_saved))
+            } catch(e: CancellationException) { throw e } catch(e: Exception) { notice(getString(R.string.save_failed_later)) }
             finally { saving=false;invalidateOptionsMenu() }
         }
     }
     override fun onCreate(state: Bundle?) {
-        super.onCreate(state);setupToolbar("领养协议")
-        val text=TextView(this).apply { textSize=16f;setTextColor(android.graphics.Color.DKGRAY);setTextIsSelectable(true);setPadding(24,24,24,24);text="正在加载协议…" }
+        super.onCreate(state);setupToolbar(getString(R.string.drawer_protocol))
+        val text=TextView(this).apply { textSize=16f;setTextColor(android.graphics.Color.DKGRAY);setTextIsSelectable(true);setPadding(24,24,24,24);text=getString(R.string.adoption_agreement_loading) }
         baseBinding.contentFrame.addView(ScrollView(this).apply { addView(text) })
         lifecycleScope.launch {
             try {
@@ -50,10 +51,10 @@ class AdoptionAgreementActivity : BaseActivity() {
                     }
                     result
                 }
-            } catch(e: CancellationException) { throw e } catch(e: Exception) { text.text="协议加载失败，请返回重试" }
+            } catch(e: CancellationException) { throw e } catch(e: Exception) { text.text=getString(R.string.adoption_agreement_load_failed) }
         }
     }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean { menu.add("下载").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);return true }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean { menu.add(0,1001,0,getString(R.string.download)).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);return true }
     override fun onPrepareOptionsMenu(menu: Menu): Boolean { menu.getItem(0).isEnabled=!saving;return super.onPrepareOptionsMenu(menu) }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { if(item.title=="下载") { if(!saving) save.launch("领养协议.docx");return true };return super.onOptionsItemSelected(item) }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean { if(item.itemId==1001) { if(!saving) save.launch(getString(R.string.adoption_agreement_file));return true };return super.onOptionsItemSelected(item) }
 }

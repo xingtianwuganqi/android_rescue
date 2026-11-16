@@ -34,16 +34,16 @@ class TopicSafetyNotice @JvmOverloads constructor(context: Context, attrs: Attri
     fun showDetail(owner: Boolean) {
         if(owner) {
             icon.visibility=View.GONE;setBackgroundColor(Color.WHITE)
-            label.text="点击管理申请可处理领养申请。完成送养时，请选择实际接宠人；其他有效申请将结束，联系方式授权将撤销。"
+            label.text=context.getString(R.string.adoption_manage_notice)
             label.textSize=13f;label.typeface=Typeface.DEFAULT;label.setTextColor(Color.rgb(153,153,153));label.movementMethod=null
-        } else warning("特别提醒：请勿相信以任何名义(包括运费、押金、定金等)要求的提前转帐与打款的行为。请提高警惕，以防被骗！")
+        } else warning(context.getString(R.string.adoption_safety_warning))
     }
-    fun showComment() { warning("请提高警惕！以避免不必要的财产损失！") }
+    fun showComment() { warning(context.getString(R.string.adoption_safety_short)) }
     private fun warning(body: String) {
         icon.visibility=View.VISIBLE;setBackgroundColor(Color.rgb(255,245,218))
         label.textSize=14f;label.typeface=Typeface.create(Typeface.DEFAULT,500,false)
         label.setTextColor(Color.rgb(246,131,31));label.movementMethod=LinkMovementMethod.getInstance()
-        val cases="查看案例->"
+        val cases=context.getString(R.string.adoption_view_cases)
         label.text=SpannableString(body+cases).apply {
             fun link(start: Int,end: Int,color: Int,action: () -> Unit) {
                 setSpan(object: ClickableSpan() {

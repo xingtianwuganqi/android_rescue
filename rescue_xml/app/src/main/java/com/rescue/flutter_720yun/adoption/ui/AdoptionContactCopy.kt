@@ -5,13 +5,15 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.models.AdoptionContact
 import com.rescue.flutter_720yun.adoption.models.AdoptionApplication
 import com.rescue.flutter_720yun.adoption.viewmodels.AdoptionViewModel
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 
 object AdoptionContactCopy {
-    const val SAFETY_TIP = "请核实宠物与送养人信息，谨防收费领养、押金和诈骗；不要提前转账。"
+    val SAFETY_TIP get() = localized(R.string.adoption_verify_warning,"请核实宠物与送养人信息，谨防收费领养、押金和诈骗；不要提前转账。")
     fun copy(host: FragmentActivity, vm: AdoptionViewModel, applicationId: Int, refreshed: (AdoptionApplication) -> Unit = {}) {
         vm.run {
             val app=vm.repository.application(applicationId)
@@ -19,13 +21,13 @@ object AdoptionContactCopy {
             if(!host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return@run
             refreshed(app)
             if(app.applicant?.user_id!=UserManager.userId || contact==null) {
-                host.notice("当前没有可显示的联系方式，请刷新申请列表");return@run
+                host.notice(host.getString(R.string.adoption_no_contact_refresh));return@run
             }
-            val clip = ClipData.newPlainText("送养人联系方式",contact).apply {
+            val clip = ClipData.newPlainText(host.getString(R.string.adoption_owner_contact_title),contact).apply {
                 description.extras = android.os.PersistableBundle().apply { putBoolean("android.content.extra.IS_SENSITIVE",true) }
             }
             (host.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
-            host.notice("已复制联系方式")
+            host.notice(host.getString(R.string.adoption_contact_copied))
         }
     }
 }

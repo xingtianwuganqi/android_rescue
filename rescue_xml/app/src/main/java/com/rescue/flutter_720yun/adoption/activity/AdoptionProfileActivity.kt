@@ -394,7 +394,7 @@ class AdoptionProfileActivity : AdoptionActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (vm.error.value != null && !vm.loaded) {
-            menu.add(0, 901, 0, "重试").apply {
+            menu.add(0, 901, 0, getString(R.string.common_retry)).apply {
                 isEnabled = vm.busy.value != true
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }

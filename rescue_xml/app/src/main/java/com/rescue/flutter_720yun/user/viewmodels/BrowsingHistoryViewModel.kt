@@ -2,10 +2,12 @@ package com.rescue.flutter_720yun.user.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonObject
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.repository.AdoptionError
 import com.rescue.flutter_720yun.adoption.viewmodels.AdoptionViewModel
 import com.rescue.flutter_720yun.network.*
 import com.rescue.flutter_720yun.util.UserManager
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.CancellationException
 
 data class BrowsingRecord(val id: Int, val topic: Int, val content: String, val address: String, val image: String?, val available: Boolean) {
@@ -39,7 +41,7 @@ class BrowsingHistoryViewModel : AdoptionViewModel() {
                 org.greenrobot.eventbus.EventBus.getDefault().post(com.rescue.flutter_720yun.home.models.LoginEvent(null))
                 throw CancellationException("Authentication expired")
             }
-            if(!response.isSuccessful || body?.code!=200) throw AdoptionError(response.code(),message=body?.message ?: "网络加载失败",code=body?.code ?: response.code())
+            if(!response.isSuccessful || body?.code!=200) throw AdoptionError(response.code(),message=body?.message ?: localized(R.string.load_failed_title,"网络加载失败"),code=body?.code ?: response.code())
             val raw=body.data
             val incoming=raw.mapNotNull(BrowsingRecord::parse)
             rows.value=if(refresh) incoming else rows.value.orEmpty()+incoming

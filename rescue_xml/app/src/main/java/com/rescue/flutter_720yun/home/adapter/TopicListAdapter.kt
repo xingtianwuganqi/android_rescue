@@ -95,7 +95,7 @@ class HomeListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
         imgView.scaleType = ImageView.ScaleType.CENTER_CROP
         timeText.text = "${item?.create_time?.formatTime()}•${item?.address_info}" +
-            if(item?.promotion?.is_promoted==true) " · ${item.promotion.label ?: "推广"}" else ""
+            if(item?.promotion?.is_promoted==true) " · ${item.promotion.label ?: context.getString(R.string.promotion_label_short)}" else ""
 
         content.text = item?.content
 
@@ -225,19 +225,19 @@ class HomeLoadStateViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 // 显示加载中的 ProgressBar
                 progressBar.visibility = View.VISIBLE
                 errorMessage.visibility = View.VISIBLE
-                errorMessage.text = "加载中..."
+                errorMessage.text = errorMessage.context.getString(R.string.common_loading)
             }
             is LoadState.Error -> {
                 progressBar.visibility = View.GONE
                 errorMessage.visibility = View.VISIBLE
                 // 显示具体的错误信息
-                errorMessage.text = "加载出错"
+                errorMessage.text = errorMessage.context.getString(R.string.common_load_error)
             }
             is LoadState.NotLoading -> {
                 // 隐藏所有状态视图
                 progressBar.visibility = View.GONE
                 errorMessage.visibility = View.VISIBLE
-                errorMessage.text = "没有更多了"
+                errorMessage.text = errorMessage.context.getString(R.string.common_no_more)
             }
         }
     }

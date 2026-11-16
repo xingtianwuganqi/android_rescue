@@ -5,6 +5,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.adoption.ui.notice
 import com.rescue.flutter_720yun.util.UserManager
 import kotlinx.coroutines.*
@@ -26,7 +27,7 @@ class TopicVideoExportFlow(private val host: FragmentActivity, private val topic
         if (busy || !available() || topic() != id) return
         val operation = ++generation
         busy = true; changed()
-        val label = TextView(host).apply { text = "正在加载视频图片…"; setPadding(24,24,24,24) }
+        val label = TextView(host).apply { text = host.getString(R.string.common_video_image_loading); setPadding(24,24,24,24) }
         progress = AlertDialog.Builder(host).setView(label).setCancelable(false).show()
         job = host.lifecycleScope.launch {
             var output: File? = null
@@ -34,7 +35,7 @@ class TopicVideoExportFlow(private val host: FragmentActivity, private val topic
                 val content = PosterRepository(host).videoContent(id)
                 val destination = ShareFiles.newFile(host,"mp4"); output = destination
                 TopicShareVideoExporter(host.applicationContext).export(content,ShareVideoMusic.selected(host),destination) { percent ->
-                    host.runOnUiThread { if (generation == operation) label.text = "正在生成视频 $percent%" }
+                    host.runOnUiThread { if (generation == operation) label.text = host.getString(R.string.common_video_generating, percent) }
                 }
                 if (generation != operation || topic() != id || !available() || !host.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return@launch
                 host.startActivity(Intent(host,TopicVideoPreviewActivity::class.java).apply {
@@ -44,12 +45,12 @@ class TopicVideoExportFlow(private val host: FragmentActivity, private val topic
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) {
                 if (generation == operation) host.notice(when {
-                    e is PosterUnavailable -> e.message ?: "帖子暂不可用"
-                    e.message in listOf("帖子信息已变化，请重新导出","视频生成超时，请重试","视频配乐超时，请重试") -> e.message!!
-                    else -> "视频生成失败，请稍后重试"
+                    e is PosterUnavailable -> e.message ?: host.getString(R.string.common_post_unavailable_short)
+                    e.message in listOf(host.getString(R.string.common_post_changed),host.getString(R.string.common_video_timeout),host.getString(R.string.common_video_music_timeout)) -> e.message!!
+                    else -> host.getString(R.string.common_video_generation_failed)
                 })
             }
-            catch (e: OutOfMemoryError) { if (generation == operation) host.notice("视频生成失败，内存不足，请稍后重试") }
+            catch (e: OutOfMemoryError) { if (generation == operation) host.notice(host.getString(R.string.common_video_memory_failed)) }
             finally { output?.delete(); if (generation == operation) { busy = false; progress?.dismiss(); progress = null; changed() } }
         }
     }

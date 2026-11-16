@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import com.rescue.flutter_720yun.BuildConfig
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.ads.TakuAds
 import com.rescue.flutter_720yun.user.activity.BlackListActivity
 import com.rescue.flutter_720yun.user.activity.WebPageActivity
@@ -39,8 +40,8 @@ class StartupSafetyFlow(private val host: FragmentActivity, private val checked:
                 markChecked();host.startActivity(Intent(host,StartupSafetyGuideActivity::class.java))
             }
             StartupSafetyPolicy.Display.DAILY -> {
-                val body="特别提醒：请勿相信以任何名义(包括运费、押金、定金等)要求的提前转帐与打款的行为，不要提前转账或打款，若是红包领养，请当面给送养人。请提高警惕，以防被骗！"
-                val cases="查看案例->"
+                val body=host.getString(R.string.safety_warning_detail)
+                val cases=host.getString(R.string.adoption_view_cases)
                 val text=TextView(host).apply {
                     textSize=16f;setPadding(40,24,40,24);movementMethod=LinkMovementMethod.getInstance();highlightColor=Color.TRANSPARENT
                     text=SpannableString(body+cases).apply {
@@ -62,8 +63,8 @@ class StartupSafetyFlow(private val host: FragmentActivity, private val checked:
                     this.maxHeight = maxHeight
                     addView(text)
                 }
-                val noticeDialog = AlertDialog.Builder(host).setTitle("特别提醒").setView(scroll)
-                    .setPositiveButton("确定",null).create()
+                val noticeDialog = AlertDialog.Builder(host).setTitle(host.getString(R.string.safety_title)).setView(scroll)
+                    .setPositiveButton(host.getString(R.string.confirm_d),null).create()
                 dialog = noticeDialog
                 noticeDialog.show()
                 store.markDaily();markChecked()

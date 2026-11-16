@@ -18,7 +18,7 @@ object TopicShareSheet {
             orientation = LinearLayout.VERTICAL; setBackgroundColor(ContextCompat.getColor(context,R.color.color_defIcon)); setPadding(0,dp(10),0,0)
         }
         val row = LinearLayout(context).apply { setPadding(dp(15),dp(10),dp(15),dp(10)) }
-        val labels = listOf("导出视频","生成海报","分享链接","复制链接")
+        val labels = listOf(context.getString(R.string.share_export_video),context.getString(R.string.share_generate_poster),context.getString(R.string.common_share_link),context.getString(R.string.share_copy_link))
         val icons = listOf(R.drawable.ic_share_video,R.drawable.icon_share_hb,R.drawable.icon_share_share,R.drawable.icon_share_url)
         labels.forEachIndexed { index, title ->
             val option = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; isFocusable = true; contentDescription = title }
@@ -32,7 +32,7 @@ object TopicShareSheet {
             row.addView(option,LinearLayout.LayoutParams(0,dp(95),1f))
         }
         root.addView(row)
-        root.addView(TextView(context).apply { text = "取消"; textSize = 16f; gravity = Gravity.CENTER; setTextColor(Color.BLACK); setBackgroundColor(Color.WHITE); setOnClickListener { dialog.dismiss() } },LinearLayout.LayoutParams(-1,dp(50)))
+        root.addView(TextView(context).apply { text = context.getString(R.string.cancel); textSize = 16f; gravity = Gravity.CENTER; setTextColor(Color.BLACK); setBackgroundColor(Color.WHITE); setOnClickListener { dialog.dismiss() } },LinearLayout.LayoutParams(-1,dp(50)))
         dialog.setContentView(root); dialog.show(); return dialog
     }
 }

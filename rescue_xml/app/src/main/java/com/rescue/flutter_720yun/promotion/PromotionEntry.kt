@@ -1,4 +1,5 @@
 package com.rescue.flutter_720yun.promotion
+import com.rescue.flutter_720yun.R
 
 import android.view.View
 import android.widget.TextView
@@ -57,20 +58,20 @@ class PromotionEntry(private val host: FragmentActivity, private val button: Tex
                 }
             } catch(e: CancellationException) { throw e }
             catch(e: Exception) { if(operation==generation && revision==UserManager.sessionRevision.value) {
-                state=null;render();button.text="推广状态加载失败，点击重试"
+                state=null;render();button.text=host.getString(R.string.promotion_load_failed)
             } }
         }
     }
     private fun render() {
         button.visibility=if(com.rescue.flutter_720yun.BuildConfig.ADS_ENABLED && owner && UserManager.isLogin && topic>0) View.VISIBLE else View.GONE
         button.text=when {
-            workflow=="adopted" -> "完成领养"
-            workflow=="closed" -> "结束领养"
-            state==null -> "推广状态待刷新，点击重试"
+            workflow=="adopted" -> host.getString(R.string.promotion_complete_adoption)
+            workflow=="closed" -> host.getString(R.string.promotion_end_adoption)
+            state==null -> host.getString(R.string.promotion_wait_refresh)
             state?.can_promote!=true -> PromotionPolicy.reason(state?.reason)
-            state?.promotion?.is_active==true -> "观看视频，延长推广 · 截至${PromotionDisplay.time(state?.promotion?.effective_until)}"
-            state?.promotion?.promotion_id!=null -> "推广已结束 · 观看视频，增加曝光"
-            else -> "观看视频，增加曝光"
+            state?.promotion?.is_active==true -> host.getString(R.string.promotion_watch_extend_until,PromotionDisplay.time(state?.promotion?.effective_until))
+            state?.promotion?.promotion_id!=null -> host.getString(R.string.promotion_ended_watch_exposure)
+            else -> host.getString(R.string.promotion_watch_exposure)
         }
         val terminal=workflow in listOf("adopted","closed")
         button.isEnabled=!terminal && state?.can_promote!=false && !RewardedTopicPromotionCoordinator.busy

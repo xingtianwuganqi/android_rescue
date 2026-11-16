@@ -69,7 +69,7 @@ class EvidenceGridView @JvmOverloads constructor(
                 }
                 cell.addView(overflow, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
             }
-            cell.contentDescription = "举报证据，第 ${index + 1} 张，共 ${urls.size} 张"
+            cell.contentDescription = context.getString(R.string.evidence_description, index + 1, urls.size)
             cell.setOnClickListener { onImageClick?.invoke(index) }
             Glide.with(context)
                 .load(urls[index].toImgUrl())

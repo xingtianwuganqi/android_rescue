@@ -1,9 +1,11 @@
 package com.rescue.flutter_720yun.message.viewmodels
 
 import androidx.lifecycle.*
+import com.rescue.flutter_720yun.R
 import com.rescue.flutter_720yun.findpet.FindPetRepository
 import com.rescue.flutter_720yun.message.models.MessageSystemListModel
 import com.rescue.flutter_720yun.util.*
+import com.rescue.flutter_720yun.util.localized
 import kotlinx.coroutines.*
 
 /** Original system notification query still marks its notifications read server-side. */
@@ -23,7 +25,7 @@ class MessageSystemListViewModel : ViewModel(), CommonViewModelInterface {
         if(current!=session) {
             session=current;generation++;job?.cancel();loading.value=false
             uiState.value=UiState.Success(emptyList())
-            if(UserManager.isLogin) systemMessageListNetworking(RefreshState.REFRESH) else uiState.value=UiState.Error("请登录后查看")
+            if(UserManager.isLogin) systemMessageListNetworking(RefreshState.REFRESH) else uiState.value=UiState.Error(localized(R.string.adoption_login_to_view,"请登录后查看"))
         }
     }
     init { UserManager.sessionRevision.observeForever(observer) }
@@ -38,7 +40,7 @@ class MessageSystemListViewModel : ViewModel(), CommonViewModelInterface {
                 if(request!=generation) return@launch
                 uiState.value=UiState.Success(items)
             } catch(e: CancellationException) { throw e }
-            catch(e: Exception) { if(request==generation) uiState.value=UiState.Error(e.message ?: "消息加载失败，请重试") }
+            catch(e: Exception) { if(request==generation) uiState.value=UiState.Error(e.message ?: localized(R.string.message_load_failed,"消息加载失败，请重试")) }
             finally { if(request==generation) loading.value=false }
         }
     }

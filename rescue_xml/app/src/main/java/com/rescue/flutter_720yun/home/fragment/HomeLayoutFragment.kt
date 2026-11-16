@@ -1,4 +1,5 @@
 package com.rescue.flutter_720yun.home.fragment
+import com.rescue.flutter_720yun.R
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -40,9 +41,9 @@ class HomeLayoutFragment : Fragment() {
             viewPager
         ) { tab, position ->
             when(position) {
-                0 -> tab.text = "推荐"
-                1 -> tab.text = "同城"
-                2 -> tab.text = "找宠"
+                0 -> tab.text = getString(R.string.home_tab_recommend)
+                1 -> tab.text = getString(R.string.home_tab_local)
+                2 -> tab.text = getString(R.string.home_tab_find_pet)
             }
         }.attach()
         viewPager.offscreenPageLimit = 3

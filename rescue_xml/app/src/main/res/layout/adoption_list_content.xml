@@ -52,21 +52,21 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="未读提醒"
+                        android:text="@string/unread_reminder"
                         android:textColor="@color/color_content"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                     <ProgressBar android:id="@+id/adoption_reminder_loading" android:layout_width="28dp" android:layout_height="28dp" android:layout_gravity="center_horizontal" android:visibility="gone" />
                     <TextView android:id="@+id/adoption_reminder_status" style="@style/AdoptionCardSecondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="8dp" android:textSize="12sp" />
                     <androidx.recyclerview.widget.RecyclerView android:id="@+id/adoption_reminder_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:nestedScrollingEnabled="false" android:saveEnabled="false" />
-                    <Button android:id="@+id/adoption_reminder_retry" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:backgroundTint="@null" android:elevation="0dp" android:stateListAnimator="@null" android:minHeight="40dp" android:paddingHorizontal="0dp" android:text="提醒加载失败，点击重试" android:textAllCaps="false" android:textColor="@color/color_system" android:textSize="13sp" android:visibility="gone" />
-                    <Button android:id="@+id/adoption_reminder_more" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:backgroundTint="@null" android:elevation="0dp" android:stateListAnimator="@null" android:minHeight="40dp" android:paddingHorizontal="0dp" android:text="加载更多提醒" android:textAllCaps="false" android:textColor="@color/color_system" android:textSize="13sp" android:visibility="gone" />
+                    <Button android:id="@+id/adoption_reminder_retry" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:backgroundTint="@null" android:elevation="0dp" android:stateListAnimator="@null" android:minHeight="40dp" android:paddingHorizontal="0dp" android:text="@string/reminder_load_failed_retry" android:textAllCaps="false" android:textColor="@color/color_system" android:textSize="13sp" android:visibility="gone" />
+                    <Button android:id="@+id/adoption_reminder_more" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="?attr/selectableItemBackground" android:backgroundTint="@null" android:elevation="0dp" android:stateListAnimator="@null" android:minHeight="40dp" android:paddingHorizontal="0dp" android:text="@string/load_more_reminders" android:textAllCaps="false" android:textColor="@color/color_system" android:textSize="13sp" android:visibility="gone" />
                 </LinearLayout>
                 <ProgressBar android:id="@+id/adoption_list_loading" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center_horizontal" android:layout_marginVertical="36dp" android:visibility="gone" />
-                <TextView android:id="@+id/adoption_list_empty" android:layout_width="match_parent" android:layout_height="220dp" android:gravity="center" android:text="暂无数据\n请点击重试" android:textSize="@dimen/address_font" android:textColor="@color/color_desc" android:visibility="gone" />
+                <TextView android:id="@+id/adoption_list_empty" android:layout_width="match_parent" android:layout_height="220dp" android:gravity="center" android:text="@string/empty_retry" android:textSize="@dimen/address_font" android:textColor="@color/color_desc" android:visibility="gone" />
                 <TextView android:id="@+id/adoption_list_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="100dp" android:padding="24dp" android:gravity="center" android:textSize="@dimen/address_font" android:textColor="@color/color_desc" android:visibility="gone" />
                 <androidx.recyclerview.widget.RecyclerView android:id="@+id/adoption_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:nestedScrollingEnabled="false" android:saveEnabled="false" />
-                <Button android:id="@+id/adoption_more" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:background="@android:color/transparent" android:textColor="@color/adoption_text_secondary" android:textSize="13sp" android:text="加载更多" android:visibility="gone" />
+                <Button android:id="@+id/adoption_more" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:background="@android:color/transparent" android:textColor="@color/adoption_text_secondary" android:textSize="13sp" android:text="@string/load_more" android:visibility="gone" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </com.scwang.smart.refresh.layout.SmartRefreshLayout>
